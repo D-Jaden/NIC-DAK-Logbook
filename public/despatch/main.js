@@ -436,12 +436,16 @@ window.loadReports = async function () {
 
     const container = document.getElementById('reportsContent');
     container.innerHTML = `
-        <div id="reportsPDFContainer" style="background:#fff; padding:20px; font-family:var(--sans);">
-            <div style="text-align:center; margin-bottom:20px;">
-                <h2 style="margin:0; font-family:var(--sans); font-size:18px;">NIC National Informatics Centre Meghalaya Shillong~793003</h2>
-                <h3 style="margin:0; font-family:'Noto Sans Devanagari', sans-serif; font-size:16px; color:#444;">एनआईसी राष्ट्रीय सूचना विज्ञान केंद्र मेघालय शिलांग~793003</h3>
-                <h4 style="margin:10px 0 0 0; color:#1a2e44; font-size:15px;">DAK Despatch Register - Analytics Report</h4>
-                <p style="margin:5px 0 0 0; color:#666; font-size:12px;">Total Records: <strong>${filteredRows.length}</strong> | Filter: ${range}</p>
+        <div id="reportsPDFContainer" style="background:#fff; padding:20px; font-family:'Times New Roman', Times, serif; color:#000;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom: 1px solid #000; padding-bottom: 10px;">
+                <img src="/images/digital-india.png" alt="Govt Logo" style="height:55px;" />
+                <div style="text-align:center; flex:1;">
+                    <h2 style="margin:0 0 3px 0; font-family:'Times New Roman', Times, serif; font-size:13px; font-weight:bold;">National Informatics Centre / राष्ट्रीय सूचना विज्ञान केंद्र</h2>
+                    <h3 style="margin:0 0 8px 0; font-size:10px; font-weight:normal;">Meghalaya State Centre, Shillong - 793003 / मेघालय राज्य केंद्र, शिलांग - 793003</h3>
+                    <h4 style="margin:0; font-size:12px; font-weight:bold; text-decoration:underline;">DAK Despatch Register - Analytics Report</h4>
+                    <p style="margin:4px 0 0 0; font-size:10px;">Total Records: <strong>${filteredRows.length}</strong> | Filter: ${range}</p>
+                </div>
+                <img src="/images/NIC Logo JPG/BILINGUAL _SQUARE_NIC_Logo_white_bg-01.jpg" alt="NIC Logo" style="height:55px;" />
             </div>
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
                 <div class="card" style="border:1px solid #ccc; box-shadow:none;"><div class="card-header"><span class="card-title-en">Zones</span></div><div class="card-body"><canvas id="chartZones"></canvas></div></div>
@@ -515,14 +519,26 @@ window.loadReports = async function () {
 window.exportReportsPDF = function () {
     const el = document.getElementById('reportsPDFContainer');
     if (!el) return;
-    const opt = {
-        margin: 10,
-        filename: 'despatch_reports_charts.pdf',
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2 },
-        jsPDF: { unit: 'mm', format: [430, 300], orientation: 'landscape', compress: true }
-    };
-    html2pdf().set(opt).from(el).save();
+    showToast('Preparing PDF... Please wait.', 'info');
+    setTimeout(() => {
+        const opt = {
+            margin: 15,
+            filename: 'despatch_reports_charts.pdf',
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2 },
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape', compress: true }
+        };
+        html2pdf().set(opt).from(el).toPdf().get('pdf').then(function (pdf) {
+            var totalPages = pdf.internal.getNumberOfPages();
+            for (let i = 1; i <= totalPages; i++) {
+                pdf.setPage(i);
+                pdf.setFont('times', 'normal');
+                pdf.setFontSize(10);
+                pdf.setTextColor(100);
+                pdf.text('Page ' + i + ' of ' + totalPages, pdf.internal.pageSize.getWidth() / 2, pdf.internal.pageSize.getHeight() - 5, { align: 'center' });
+            }
+        }).save();
+    }, 1500); // Small delay to ensure charts are fully rendered
 }
 
 // ── Utility: translation ──────────────────────────────────────────────────────
@@ -758,7 +774,7 @@ window.executeExportPDF = function () {
             document.getElementById('reportTo').value = document.getElementById('tabularExportTo').value;
         }
         loadReports();
-        setTimeout(() => exportReportsPDF(), 500); // Wait for charts to render
+        setTimeout(() => exportReportsPDF(), 1500); // Wait for charts to render
     } else {
         exportToPDF(filteredRows);
     }
@@ -771,15 +787,15 @@ window.exportToPDF = function (filteredRows) {
     // ── 1. Column definitions ──────────────────────────────────────────────
     // [header label , data key , width , align ]
     const cols = [
-        ['No.<br><span style="font-family:\'Noto Sans Devanagari\',sans-serif;font-size:10px;font-weight:normal;color:#ffffff">क्र.सं.</span>', 'serialNo', '1.5%', 'center'],
-        ['Date of Despatch<br><span style="font-family:\'Noto Sans Devanagari\',sans-serif;font-size:10px;font-weight:normal;color:#ffffff">प्रेषण की तिथि</span>', 'despatchDate', '8%', 'center'],
-        ['Letter No. & Date<br><span style="font-family:\'Noto Sans Devanagari\',sans-serif;font-size:10px;font-weight:normal;color:#ffffff">पत्र संख्या एवं तिथि</span>', 'letterNoDate', '9%', 'left'],
-        ['Mode<br><span style="font-family:\'Noto Sans Devanagari\',sans-serif;font-size:10px;font-weight:normal;color:#ffffff">माध्यम</span>', 'deliveryMethod', '6%', 'left'],
-        ['Sent To (name|address|zone)<br><span style="font-family:\'Noto Sans Devanagari\',sans-serif;font-size:10px;font-weight:normal;color:#ffffff">प्रेषित (नाम|पता|क्षेत्र)</span>', 'sentToDetails', '16%', 'left'],
-        ['Sent By (name|desg)<br><span style="font-family:\'Noto Sans Devanagari\',sans-serif;font-size:10px;font-weight:normal;color:#ffffff">प्रेषक (नाम|पद)</span>', 'sentBy', '8%', 'left'],
-        ['Subject<br><span style="font-family:\'Noto Sans Devanagari\',sans-serif;font-size:10px;font-weight:normal;color:#ffffff">विषय</span>', 'subjectDetails', '26%', 'left'],
-        ['Priority<br><span style="font-family:\'Noto Sans Devanagari\',sans-serif;font-size:10px;font-weight:normal;color:#ffffff">प्राथमिकता</span>', 'priority', '5%', 'left'],
-        ['Language<br><span style="font-family:\'Noto Sans Devanagari\',sans-serif;font-size:10px;font-weight:normal;color:#ffffff">भाषा</span>', 'letterLanguage', '8%', 'left']
+        ['No.<br><span style="font-family:\'Noto Sans Devanagari\',sans-serif;font-size:8px;font-weight:normal;color:#333">क्र.सं.</span>', 'serialNo', '2%', 'center'],
+        ['Date of Despatch<br><span style="font-family:\'Noto Sans Devanagari\',sans-serif;font-size:8px;font-weight:normal;color:#333">प्रेषण की तिथि</span>', 'despatchDate', '10%', 'center'],
+        ['Letter No. & Date<br><span style="font-family:\'Noto Sans Devanagari\',sans-serif;font-size:8px;font-weight:normal;color:#333">पत्र संख्या एवं तिथि</span>', 'letterNoDate', '12%', 'left'],
+        ['Mode<br><span style="font-family:\'Noto Sans Devanagari\',sans-serif;font-size:8px;font-weight:normal;color:#333">माध्यम</span>', 'deliveryMethod', '6%', 'left'],
+        ['Sent To (name|address|zone)<br><span style="font-family:\'Noto Sans Devanagari\',sans-serif;font-size:8px;font-weight:normal;color:#333">प्रेषित (नाम|पता|क्षेत्र)</span>', 'sentToDetails', '16%', 'left'],
+        ['Sent By (name|desg)<br><span style="font-family:\'Noto Sans Devanagari\',sans-serif;font-size:8px;font-weight:normal;color:#333">प्रेषक (नाम|पद)</span>', 'sentBy', '10%', 'left'],
+        ['Subject<br><span style="font-family:\'Noto Sans Devanagari\',sans-serif;font-size:8px;font-weight:normal;color:#333">विषय</span>', 'subjectDetails', '24%', 'left'],
+        ['Priority<br><span style="font-family:\'Noto Sans Devanagari\',sans-serif;font-size:8px;font-weight:normal;color:#333">प्राथमिकता</span>', 'priority', '5%', 'left'],
+        ['Language<br><span style="font-family:\'Noto Sans Devanagari\',sans-serif;font-size:8px;font-weight:normal;color:#333">भाषा</span>', 'letterLanguage', '8%', 'left']
     ];
 
     function esc(v) {
@@ -850,9 +866,13 @@ window.exportToPDF = function (filteredRows) {
 
     // ── 4. Assemble HTML string ────────────────────────────────────────────
     const headerHtml = `
-      <div style="text-align:center; margin-bottom: 20px;">
-        <h2 style="margin:0; font-family:var(--sans); font-size:16px;">NIC National Informatics Centre Meghalaya Shillong~793003</h2>
-        <h3 style="margin:0; font-family:'Noto Sans Devanagari', sans-serif; font-size:14px; color:#444;">एनआईसी राष्ट्रीय सूचना विज्ञान केंद्र मेघालय शिलांग~793003</h3>
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 15px; border-bottom: 1px solid #000; padding-bottom: 10px;">
+        <img src="/images/NIC Logo JPG/BILINGUAL _SQUARE_NIC_Logo_white_bg-01.jpg" alt="NIC Logo" style="height:55px;" />
+        <div style="text-align:center; flex:1;">
+            <h2 style="margin:0 0 3px 0; font-family:'Times New Roman', Times, serif; font-size:20px; font-weight:bold;">National Informatics Centre / राष्ट्रीय सूचना विज्ञान केंद्र</h2>
+            <h3 style="margin:0; font-family:'Times New Roman', Times, serif; font-size:15px; font-weight:normal;">Meghalaya State Centre, Shillong - 793003 / मेघालय राज्य केंद्र, शिलांग - 793003</h3>
+        </div>
+        <img src="/images/digital-india.png" alt="Govt Logo" style="height:55px;" />
       </div>
     `;
 
@@ -869,26 +889,27 @@ window.exportToPDF = function (filteredRows) {
     const t_priorities = Object.values(p_priorities).reduce((a, b) => a + b, 0);
 
     const htmlContent = `
-        <div style="font-family: Arial, sans-serif; padding: 5mm; background: white; width: 430mm;">
+        <div style="font-family: 'Times New Roman', Times, serif; padding: 5mm; background: white; width: 267mm; color: #000;">
             <style>
-                .pdf-print-area table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+                .pdf-print-area table { width: 100%; border-collapse: collapse; table-layout: fixed; border: 1px solid #000; }
                 .pdf-print-area th { 
-                    background-color: #34495e !important; color: white !important; 
-                    padding: 6px; font-size: 10px; border: 1px solid #2c3e50; 
-                    text-align: center; word-wrap: break-word; 
+                    background-color: #f0f0f0 !important; color: #000 !important; 
+                    padding: 2px 3px; font-size: 8px; border: 1px solid #000; 
+                    text-align: center; word-wrap: break-word; font-weight: bold;
+                    line-height: 1.15;
                 }
                 .pdf-print-area td { 
-                    border: 1px solid #ccc; padding: 5px; font-size: 10px; 
-                    line-height: 1.4; word-wrap: break-word; vertical-align: top; 
+                    border: 1px solid #000; padding: 4px; font-size: 9px; color: #000 !important; 
+                    line-height: 1.3; word-wrap: break-word; vertical-align: top; 
                     white-space: normal; overflow-wrap: break-word; 
                 }
-                .pdf-print-area th:first-child { padding-left: 0px; padding-right: 2px; }
-                .pdf-print-area td:first-child { text-align: center; font-weight: bold; background-color: #ecf0f1; padding-left: 0px; padding-right: 2px; }
-                .pdf-print-area tr:nth-child(even) td { background-color: #f9f9f9; }
+                .pdf-print-area th:first-child { padding-left: 2px; padding-right: 2px; }
+                .pdf-print-area td:first-child { text-align: center; font-weight: bold; padding-left: 2px; padding-right: 2px; }
+                .pdf-print-area tr:nth-child(even) td { background-color: #fafafa !important; }
             </style>
             ${headerHtml}
-            <h2 style="text-align: center; font-size: 14px; margin: 0 0 5px; color: #1a2e44;">DAK Despatch Register</h2>
-            <div style="text-align: center; font-size: 10px; color: #555; margin-bottom: 10px;">Printed on ${new Date().toLocaleDateString('en-IN')} &nbsp;|&nbsp; ${exportData.length} record(s)</div>
+            <h2 style="text-align: center; font-family: 'Times New Roman', Times, serif; font-size: 12px; font-weight: bold; margin: 0 0 5px; text-decoration: underline;">DAK Despatch Register</h2>
+            <div style="text-align: center; font-size: 9px; margin-bottom: 10px; color: #0059ffff;">Printed on ${new Date().toLocaleDateString('en-IN')} &nbsp;|&nbsp; ${exportData.length} record(s)</div>
             <div class="pdf-print-area">
                 <table>${thead}${tbody}</table>
             </div>
@@ -919,15 +940,24 @@ window.exportToPDF = function (filteredRows) {
     `;
 
     const opt = {
-        margin: [5, 5, 5, 5],
+        margin: [15, 15, 15, 15],
         filename: `DAK_Despatch_${new Date().toISOString().split('T')[0]}.pdf`,
         image: { type: 'jpeg', quality: 0.98 },
         html2canvas: { scale: 2, useCORS: true, logging: false, scrollX: 0, scrollY: 0 },
-        jsPDF: { unit: 'mm', format: [430, 300], orientation: 'landscape', compress: true },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape', compress: true },
         pagebreak: { mode: ['css', 'legacy'], avoid: 'tr' }
     };
 
-    html2pdf().set(opt).from(htmlContent).save()
+    html2pdf().set(opt).from(htmlContent).toPdf().get('pdf').then(function (pdf) {
+        var totalPages = pdf.internal.getNumberOfPages();
+        for (let i = 1; i <= totalPages; i++) {
+            pdf.setPage(i);
+            pdf.setFont('times', 'normal');
+            pdf.setFontSize(10);
+            pdf.setTextColor(100);
+            pdf.text('Page ' + i + ' of ' + totalPages, pdf.internal.pageSize.getWidth() / 2, pdf.internal.pageSize.getHeight() - 5, { align: 'center' });
+        }
+    }).save()
         .then(() => {
             showToast('PDF exported successfully!', 'success');
         })
