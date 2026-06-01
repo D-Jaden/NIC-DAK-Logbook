@@ -125,18 +125,18 @@ Each receipt entry captures:
 
 ##  Tech Stack
 
-| Layer | Technology |
-|---|---|
-| **Frontend** | HTML, CSS, JavaScript |
-| **Runtime** | Node.js |
-| **Framework** | Express 5 |
-| **Database** | PostgreSQL (via `pg` pool) |
-| **Auth** | JWT (`jsonwebtoken`) + Argon2 hashing |
-| **Sessions** | `express-session` |
-| **Config** | `@dotenvx/dotenvx` |
-| **PDF Export** | jsPDF + html2canvas |
-| **Translation API** | Python (Deep Translator) on HuggingFace |
-| **Dev Tool** | Nodemon |
+| Layer | Technology | Version |
+|---|---|---|
+| **Frontend** | HTML, CSS, JavaScript | - |
+| **Runtime** | Node.js , npm  | v22.21.1 , v11.15.0|
+| **Framework** | Express 5 | - |
+| **Database** | PostgreSQL (via `pg` pool) | v18.3 |
+| **Auth** | JWT (`jsonwebtoken`) + Argon2 hashing | - |
+| **Sessions** | `express-session` | - |
+| **Config** | `@dotenvx/dotenvx` | v1.48.4 |
+| **PDF Export** | jsPDF + html2canvas | - |
+| **Translation API** | Python (Deep Translator) on HuggingFace | - |
+| **Dev Tool** | Nodemon | v3.1.10 |
 
 ---
 
