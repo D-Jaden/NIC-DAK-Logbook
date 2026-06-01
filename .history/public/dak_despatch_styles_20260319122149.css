@@ -1,0 +1,1479 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #f2f5ff;
+    min-height: 100vh;
+    padding: 0;
+    overflow-x: hidden;
+}
+
+.toolbar-container {
+    max-width: 100%;
+    margin: 0;
+    padding: 20px 20px 0 20px;
+    position: relative;
+}
+
+/* Mobile menu toggle button */
+.mobile-menu-toggle {
+    display: none;
+    background-color: #2577ad;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-bottom: 10px;
+}
+
+.mobile-menu-toggle:hover {
+    background-color: #1e5f8a;
+}
+
+.cell.highlight {
+    background-color: #91d6f0ce !important;
+}
+
+.cell.highlight:hover {
+    background: rgb(109, 179, 201);
+}
+
+/*==============================================================================*/
+/*FLIP CONTAINER*/
+/*==============================================================================*/
+#flipContainer {
+    transform-style: preserve-3d;
+    perspective: 1000px;
+
+}
+
+.flip-out {
+    animation: flipOut 0.5s forwards;
+}
+
+.flip-in {
+    animation: flipIn 0.5s forwards;
+}
+
+@keyframes flipOut {
+    from {
+        transform: rotateY(0deg);
+        opacity: 1;
+    }
+
+    to {
+        transform: rotateY(180deg);
+        opacity: 0;
+    }
+}
+
+@keyframes flipIn {
+    from {
+        transform: rotateY(180deg);
+        opacity: 0;
+    }
+
+    to {
+        transform: rotateY(0deg);
+        opacity: 1;
+    }
+}
+
+/*----------------------------------------TOP-BAR-------------------------------*/
+.container {
+    max-width: 100%;
+    margin: 0;
+    background: white;
+    border-radius: 0;
+    box-shadow: none;
+    overflow: hidden;
+    outline: none;
+    display: flex;
+    flex-direction: column;
+}
+
+.header {
+    background: linear-gradient(135deg, #2c3e50 100%, #34495ed3 0%);
+    border-bottom: 1px solid #162432;
+    color: white;
+    padding: 20px;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.header h1 {
+    font-size: 28px;
+    margin-bottom: 15px;
+}
+
+.header h3 {
+    opacity: 0.9;
+    font-size: 20px;
+    top: -10px;
+    position: relative;
+}
+
+.digital-india-logo img,
+.nic-logo img {
+    height: 10vh;
+    max-height: 70px;
+    width: auto;
+    max-width: 20vw;
+}
+
+.digital-india-logo {
+    flex: 0;
+}
+
+.nic-logo {
+    flex: 0;
+}
+
+/*---------------------------------------FEATURES------------------------------*/
+.toolbar-container {
+    max-width: 100%;
+    margin: 0;
+    padding: 20px 20px 0 20px;
+    position: relative;
+}
+
+/* Mobile menu toggle button */
+.mobile-menu-toggle {
+    display: none;
+    background-color: #2577ad;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-bottom: 10px;
+}
+
+.mobile-menu-toggle:hover {
+    background-color: #1e5f8a;
+}
+
+/* Main features container (Toolbar) */
+.features {
+    background-color: #ffffff;
+    width: 100%;
+    min-height: 80px;
+    border-radius: 8px;
+    padding: 15px 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    border: 1px solid #e1e8ed;
+}
+
+/* Base button groups */
+.toolbar-group {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.font-tools {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.text-format-btns, .action-btns {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.find-replace-group {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.global-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+/* Base Form Controls */
+.instr, .fstyle, .fsize {
+    height: 38px;
+    background: #fff;
+    color: #333;
+    border: 1px solid #e1e8ed;
+    border-radius: 5px;
+    padding: 0 10px;
+    outline: none;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.instr { border-color: rgb(33, 192, 12); min-width: 200px; }
+.fstyle { border-color: rgb(149, 189, 226); min-width: 140px; }
+.fsize { border-color: rgb(149, 189, 226); min-width: 80px; }
+
+.instr:hover, .fstyle:hover, .fsize:hover {
+    background-color: #f8f9fa;
+    border-color: #2577ad;
+}
+
+/* Tool Buttons (Undo, Redo, Bold, Italic, Underline) */
+.format-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 38px;
+    width: 38px;
+    background-color: #fff;
+    color: #333;
+    border: 1px solid #e1e8ed;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.2s;
+    outline: none;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.format-btn:hover {
+    background-color: #f1f5f9;
+    color: #2577ad;
+    border-color: #2577ad;
+}
+
+.undo-btn { background-color: #ff7043; color: white; border-color: #ff7043; }
+.redo-btn { background-color: #29b6f6; color: white; border-color: #29b6f6; }
+.undo-btn:hover { background-color: #f4511e; color: white; }
+.redo-btn:hover { background-color: #0288d1; color: white; }
+.undo-btn:active, .redo-btn:active { transform: translateY(1px); }
+
+/* Find and Replace */
+.find-replace {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.find-section, .replace-section {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.find-box, .replace-box {
+    padding: 0 10px;
+    font-size: 13px;
+    border: 1px solid #1468c7be;
+    background: white;
+    color: black;
+    border-radius: 4px;
+    outline: none;
+    width: 150px;
+    height: 32px;
+}
+
+.find-btn, .replace-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 32px;
+    padding: 0 12px;
+    background-color: #1468c7be;
+    color: white;
+    font-size: 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.find-btn:hover, .replace-btn:hover {
+    background-color: #1674e0be;
+}
+
+.match-counter {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: #f8f9fa;
+    width: 76px;
+    height: 70px;
+    border-radius: 5px;
+    border: 1px solid #e1e8ed;
+    color: #2196f3;
+}
+
+.match-counter b { font-size: 11px; color: #333; margin-bottom: 2px; }
+.match-counter span { font-size: 16px; font-weight: bold; }
+
+/* Global Action Buttons */
+.pdf-btn, .save-btn, .logout-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 38px;
+    padding: 0 15px;
+    font-size: 13px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.pdf-btn { background-color: #234bff; color: white; border: 1px solid #0267f4; }
+.pdf-btn:hover { background-color: #005eff; color: white; }
+
+.save-btn { background-color: #28a745; color: white; border: 1px solid #28a745; }
+.save-btn:hover { background-color: #218838; color: white; }
+
+.logout-btn { background-color: #ff0000; color: white; border: 1px solid #ff0000; }
+.logout-btn:hover { background-color: #cf2a2a; color: white; }
+
+.split-btn-container {
+    display: flex;
+    align-items: center;
+    height: 38px;
+    position: relative;
+}
+
+.entries-btn, .dropdown-toggle {
+    height: 100%;
+    border: 1px solid #256e9e;
+    background: #2577ad;
+    color: white;
+    cursor: pointer;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 12px;
+}
+
+.entries-btn {
+    border-radius: 4px 0 0 4px;
+    border-right: none;
+}
+
+.dropdown-toggle {
+    border-radius: 0 4px 4px 0;
+    padding: 0 8px;
+}
+
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    right: 0;
+    min-width: 160px;
+    background: white;
+    border: 1px solid #e1e8ed;
+    border-radius: 4px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.split-btn-container.active .dropdown-menu {
+    display: block;
+}
+
+.dropdown-menu li a {
+    display: block;
+    padding: 8px 12px;
+    text-decoration: none;
+    color: rgb(0, 0, 0);
+}
+
+.dropdown-menu li a:hover {
+    background: #f0f0f0;
+}
+
+/* Tooltip styles */
+.fontsize-hidden-text {
+    visibility: hidden;
+    width: 60px;
+    background-color: #3878c5;
+    color: white;
+    text-align: center;
+    padding: 5px;
+    border-radius: 5px;
+    position: absolute;
+    z-index: 1;
+    top: 125%;
+    left: 50%;
+    transform: translateX(-50%);
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.fsize:hover .fontsize-hidden-text {
+    visibility: visible;
+    opacity: 1;
+}
+
+.undo-hidden-text {
+    visibility: hidden;
+    width: 60px;
+    background-color: #3878c5;
+    color: white;
+    text-align: center;
+    padding: 5px;
+    border-radius: 5px;
+    position: absolute;
+    z-index: 1;
+    top: 125%;
+    left: 50%;
+    transform: translateX(-50%);
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.undo-btn:hover .undo-hidden-text {
+    visibility: visible;
+    opacity: 1;
+}
+
+.redo-hidden-text {
+    visibility: hidden;
+    width: 60px;
+    background-color: #3878c5;
+    color: white;
+    text-align: center;
+    padding: 5px;
+    border-radius: 5px;
+    position: absolute;
+    z-index: 1;
+    top: 125%;
+    left: 50%;
+    transform: translateX(-50%);
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.redo-btn:hover .redo-hidden-text {
+    visibility: visible;
+    opacity: 1;
+}
+
+.bold-hidden-text {
+    visibility: hidden;
+    width: 60px;
+    background-color: #3878c5;
+    color: white;
+    text-align: center;
+    padding: 5px;
+    border-radius: 5px;
+    position: absolute;
+    z-index: 1;
+    top: 125%;
+    left: 50%;
+    transform: translateX(-50%);
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.bold-btn:hover .bold-hidden-text {
+    visibility: visible;
+    opacity: 1;
+}
+
+.italic-hidden-text {
+    visibility: hidden;
+    width: 60px;
+    background-color: #3878c5;
+    color: white;
+    text-align: center;
+    padding: 5px;
+    border-radius: 5px;
+    position: absolute;
+    z-index: 1;
+    top: 125%;
+    left: 50%;
+    transform: translateX(-50%);
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.italic-btn:hover .italic-hidden-text {
+    visibility: visible;
+    opacity: 1;
+}
+
+.underline-hidden-text {
+    visibility: hidden;
+    width: 90px;
+    background-color: #3878c5;
+    color: white;
+    text-align: center;
+    padding: 5px;
+    border-radius: 5px;
+    position: absolute;
+    z-index: 1;
+    top: 125%;
+    left: 50%;
+    transform: translateX(-50%);
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.underline-btn:hover .underline-hidden-text {
+    visibility: visible;
+    opacity: 1;
+}
+
+.tooltip {
+    visibility: hidden;
+    width: 80px;
+    background-color: #3878c5;
+    color: white;
+    text-align: center;
+    padding: 5px;
+    border-radius: 5px;
+    position: absolute;
+    z-index: 1;
+    top: 125%;
+    left: 50%;
+    transform: translateX(-50%);
+    opacity: 0;
+    transition: opacity 0.3s;
+    font-size: 12px;
+}
+
+.instr:hover .tooltip {
+    visibility: visible;
+    opacity: 1;
+}
+
+/*-----------------------------------------------------------------------*/
+/*---------------------------------TABLE---------------------------------*/
+/*-----------------------------------------------------------------------*/
+.table-scroll-wrapper {
+    overflow-x: auto;
+    overflow-y: visible; /* Dropdowns */
+    border-radius: 8px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+}
+
+.table-container {
+    padding: 20px;
+    table-layout: fixed;
+    position: relative;
+}
+
+.excel-table thead {
+    overflow: visible !important;
+}
+
+.excel-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    background: white;
+    position: relative;
+}
+
+.excel-table th {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: #003d87;
+    color: white;
+    padding: 10px 8px;
+    text-align: center;
+    font-weight: 600;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-right: 1px solid #143e5c;
+    border-bottom: 2px solid #143e5c;
+}
+
+.excel-table th.group-header {
+    background: #003d87;
+    font-size: 12px;
+    letter-spacing: 1px;
+    top: 0;
+}
+
+.excel-table th.row-number {
+    position: sticky;
+    top: 0;
+    left: 0;
+    z-index: 20;
+}
+
+.excel-table th i {
+    font-size: 1.2rem;
+    color: white;
+    position: relative;
+    right: 10px;
+    transform: translateY(-50%);
+}
+
+.excel-table td {
+    padding: 0;
+    border: 1px solid #e1e8ed;
+    background: white;
+    transition: all 0.3s ease;
+    overflow-wrap: break-word;
+    white-space: normal;
+    vertical-align: top;
+    height: auto;
+}
+
+.excel-table td.row-number {
+    position: sticky;
+    left: 0;
+    z-index: 5;
+    background-color: #f8f9fa;
+    border-right: 2px solid #143e5c;
+}
+
+.column-header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    position: relative;
+}
+
+.excel-table th.registrationDate {
+    min-width: 180px;
+}
+
+.cell {
+    width: 100%;
+    min-height: 90px;
+    height: auto;
+    padding: 12px;
+    border: none;
+    outline: none;
+    font-size: inherit;
+    font-family: inherit;
+    background: transparent;
+    cursor: text;
+    transition: all 0.3s ease;
+    display: block;
+    text-align: left;
+    box-sizing: border-box;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    white-space: pre-wrap;
+    resize: vertical;
+    line-height: 1.4;
+}
+
+.hindi-cell {
+    width: 100%;
+    min-height: 90px;
+    height: auto;
+    padding: 8px 12px;
+    border: none;
+    outline: none;
+    font-size: inherit;
+    font-family: 'Noto Sans Devanagari', 'Segoe UI', sans-serif;
+    background: #fffffff9;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: block;
+    text-align: left;
+    border-top: 1px solid #e1e8ed;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    white-space: pre-wrap;
+    resize: vertical;
+    line-height: 1.4;
+}
+
+.cell:hover,
+.hindi-cell:hover {
+    background: linear-gradient(135deg, #f8f9fa 0%, #cfe1f3 100%);
+}
+
+.cell:focus,
+.hindi-cell:focus {
+    background: linear-gradient(135deg, #e3f2fd 0%, #cfe1f3 100%);
+    cursor: text;
+    box-shadow: inset 0 0 0 2px #a6c9e7;
+}
+
+.cell.editing,
+.hindi-cell.editing {
+    background: linear-gradient(135deg, #f8f9fa 0%, #cfe1f3 100%);
+    box-shadow: inset 0 0 0 2px #0b6fe1;
+    /*editing here*/
+    box-shadow: inset 0 0 0 2px #c0c5e7;
+}
+
+.validation-error {
+    box-shadow: inset 0 0 0 2px #e74c3c !important;
+    background-color: #fdf5f5 !important;
+}
+
+.char-count-warning {
+    color: #e67e22;
+    font-size: 11px;
+    position: absolute;
+    bottom: 2px;
+    right: 5px;
+}
+.char-count-error {
+    color: #e74c3c;
+    font-size: 11px;
+    position: absolute;
+    bottom: 2px;
+    right: 5px;
+}
+
+.row-number {
+    background: linear-gradient(135deg, #f8f9fa 0%, #cfe1f3 100%);
+    font-weight: 600;
+    color: #ffffff;
+    text-align: center;
+    width: 4%;
+    min-width: 50px;
+    border-right: 1px solid #2c3e50;
+    vertical-align: middle;
+    /* Center vertically */
+}
+
+.excel-table tr {
+    height: auto;
+    /* Allow rows to expand with wrapped content */
+    min-height: 100px;
+    /* Minimum row height */
+}
+
+.excel-table tr:nth-child(even) td:not(.row-number) {
+    background: #527dfff9;
+}
+
+.excel-table tr:hover td {
+    background: linear-gradient(135deg, #f8f9fa 0%, #cfe1f3 100%);
+}
+
+.excel-table tr:hover td.row-number {
+    background: linear-gradient(135deg, #e3f2fd 0%, #cfe1f3 100%);
+    color: #1976d2;
+}
+
+.hamburger-menu {
+    position: absolute;
+    right: 8px;
+}
+
+.hamburger-btn {
+    background: none;
+    border: none;
+    color: rgba(255,255,255,0.85);
+    cursor: pointer;
+    padding: 2px 4px;
+    border-radius: 3px;
+    font-size: 12px;
+    line-height: 1;
+    transition: background-color 0.2s;
+}
+
+.hamburger-btn:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+    color: white;
+}
+
+.sort-dropdown {
+    position: fixed;
+    top: calc(100% + 2px);
+    bottom: auto;
+    right: 0;
+    background: white;
+    border: 1px solid #e1e8ed;
+    border-radius: 4px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 99999;
+    min-width: 250px;
+    max-width: 300px;
+    display: none;
+}
+
+.sort-dropdown.show {
+    display: block;
+}
+
+.dropdown-section {
+    border-bottom: 1px solid #eee;
+}
+
+.dropdown-section:last-child {
+    border-bottom: none;
+}
+
+.dropdown-header {
+    background: #e2eefdf9;
+    padding: 8px 12px;
+    font-weight: bold;
+    font-size: 12px;
+    color: #666;
+    text-transform: uppercase;
+}
+
+.sort-option,
+.search-option {
+    padding: 10px 12px;
+    cursor: pointer;
+    color: rgb(0, 0, 0);
+    font-size: 14px;
+    transition: background-color 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.sort-option:hover,
+.search-option:hover {
+    background-color: #f1f5f9;
+}
+
+.column-search-input {
+    width: calc(100% - 24px);
+    padding: 8px 10px;
+    border: 1px solid #e1e8ed;
+    border-radius: 4px;
+    font-size: 13px;
+    margin: 8px 12px;
+    box-sizing: border-box;
+}
+
+.column-search-input:focus {
+    outline: none;
+    border-color: #4a90e2;
+    box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.2);
+}
+
+.search-actions {
+    padding: 8px 12px;
+    display: flex;
+    gap: 8px;
+}
+
+.search-btn {
+    flex: 1;
+    padding: 6px 12px;
+    border: 1px solid #e1e8ed;
+    background: rgb(75, 151, 214);
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: all 0.2s;
+}
+
+.search-btn:hover {
+    background: rgb(57, 142, 212);
+}
+
+.search-btn.clear {
+    background: #28a745;
+    color: white;
+    border-color: #28a745;
+}
+
+.search-btn.clear:hover {
+    background: #218838;
+}
+
+
+
+
+/*----------------------------------------------ROW INSERTION--------------------------------------------------------------*/
+.insert-row-btn {
+    position: absolute;
+    right: 4px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: #000000;
+    color: rgb(255, 0, 0);
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    cursor: pointer;
+    z-index: 100;
+    white-space: nowrap;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    transition: all 0.2s ease;
+}
+
+.insert-row-btn:hover {
+    background: #0056b3;
+    transform: translateY(-50%) scale(1.05);
+}
+
+.context-menu {
+    background: white;
+    border: 1px solid #e1e8ed;
+    border-radius: 4px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 4px 0;
+    min-width: 150px;
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+}
+
+.context-menu-item {
+    padding: 8px 16px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.context-menu-item:hover {
+    background-color: #f1f5f9;
+}
+
+.context-menu-item[data-action="delete-row"] {
+    color: #ff0019;
+}
+
+.context-menu-item[data-action="delete-row"]:hover {
+    background-color: #f8d7da;
+}
+
+.excel-table tbody tr:hover {
+    background-color: #fffffff9;
+}
+
+.excel-table tbody tr {
+    position: relative;
+}
+
+.table-container {
+    padding: 15px;
+}
+
+/*-----------------------------BOTTOM-BUTTONS------------------------------*/
+.add-row-btn {
+    margin: 20px 0;
+    padding: 12px 24px;
+    background: linear-gradient(135deg, #18A209 0%, #18a209e7 100%);
+    color: white;
+    border: none;
+    border-radius: 25px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px #008000;
+}
+
+.add-row-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(62, 212, 67, 0.4);
+}
+
+.add-row-btn:active {
+    transform: translateY(0);
+}
+
+/* Old Save Button was removed from here because it's in the top format bar */
+.switch-btn {
+    margin: 35px 0px;
+    padding: 12px 24px;
+    background: linear-gradient(135deg, #001a70 0%, #201c62 100%);
+    color: white;
+    border: none;
+    border-radius: 25px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px #2727e8;
+}
+
+.switch-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(9, 31, 180, 0.772);
+}
+
+.switch-btn:active {
+    transform: translateY(0);
+}
+
+.hidden-text {
+    visibility: hidden;
+    width: 220px;
+    background-color: #3669a8;
+    color: white;
+    text-align: center;
+    padding: 5px;
+    border-radius: 5px;
+    position: absolute;
+    z-index: 1;
+    bottom: 125%;
+    left: 50%;
+    transform: translateX(-50%);
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.switch-btn:hover .hidden-text {
+    visibility: visible;
+    opacity: 1;
+}
+
+.row-changed {
+    background-color: #fff3cd !important;
+    border-left: 4px solid #ffc107;
+}
+
+.row-new {
+    background-color: #d4edda !important;
+    border-left: 4px solid #28a745;
+}
+
+.row-changed td {
+    position: relative;
+}
+
+.row-new td {
+    position: relative;
+}
+
+/* Add indicator icons */
+.row-changed td:first-child::before {
+    content: "Editing";
+    position: absolute;
+    left: 2px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 12px;
+}
+
+.row-new td:first-child::before {
+    content: "Adding";
+    position: absolute;
+    left: 2px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 12px;
+}
+
+/* Status indicator in save button */
+.save-btn.has-changes {
+    background-color: #ffc107;
+    color: #000;
+}
+
+.save-btn.has-changes::after {
+    content: " (" attr(data-changes) ")";
+    font-size: 12px;
+}
+
+/* Notification styles */
+#notification {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 6px;
+}
+
+/*---------------------------------RESPONSIVENESS----------------------------*/
+@media (max-width: 768px) {
+    .container {
+        margin: 10px;
+        border-radius: 10px;
+    }
+
+    .buttons {
+        justify-content: space-between;
+    }
+
+    .split-btn-container {
+        width: 100%;
+    }
+
+    .header {
+        height: 10vh;
+        min-height: 80px;
+    }
+
+    .header h1 {
+        font-size: 3vw;
+    }
+
+    .header h3 {
+        font-size: 2vw;
+    }
+
+    .digital-india-logo img,
+    .nic-logo img {
+        height: 6vh;
+        max-width: 25vw;
+    }
+
+    .excel-table {
+        bottom: 13rem;
+    }
+
+    .table-container {
+        padding: 15px;
+    }
+
+    .excel-table th,
+    .cell,
+    .hindi-cell {
+        padding: 8px;
+        font-size: 13px;
+    }
+
+    .cell {
+        height: 45px;
+        width: 120px;
+    }
+
+    .hindi-cell {
+        height: 35px;
+        font-size: 11px;
+    }
+
+    .insert-row-btn {
+        right: -100px;
+        font-size: 10px;
+        padding: 2px 6px;
+    }
+
+    .table-container {
+        padding: 15px;
+    }
+
+    .button-container {
+        position: relative;
+        bottom: 6rem;
+    }
+
+}
+
+@media (max-width: 768px) {
+    .mobile-menu-toggle {
+        display: block;
+    }
+
+    .features {
+        display: none;
+        position: absolute;
+        top: 50px;
+        left: 0;
+        right: 0;
+        width: auto;
+        height: auto;
+        background-color: white;
+        border: 1px solid #e1e8ed;
+        border-radius: 8px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+        z-index: 1000;
+        flex-direction: column;
+        align-items: stretch;
+        padding: 20px;
+        max-height: 80vh;
+        overflow-y: auto;
+    }
+
+    .features.active {
+        display: flex;
+    }
+
+    /* Reset all absolute positioning for mobile */
+    .instr,
+    .fstyle,
+    .fsize,
+    .action-btn,
+    .format-btn {
+        position: static;
+        margin: 5px;
+    }
+
+    .find-replace,
+    .export-section {
+        position: static;
+        margin: 10px 0;
+    }
+
+    .undo-btn,
+    .redo-btn {
+        position: relative;
+        top: -9rem;
+    }
+
+    .bold-btn,
+    .italic-btn,
+    .underline-btn {
+        position: relative;
+        top: -6rem;
+    }
+
+    .find-replace {
+        width: 200px;
+        position: relative;
+        bottom: 3rem;
+        left: 0.4rem;
+    }
+
+    .find-row,
+    .replace-row {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+    }
+
+    .find-box,
+    .replace-box {
+        width: 140px;
+        height: 35px;
+        border: 1px solid #1468c7be;
+        background: white;
+        color: black;
+    }
+
+    .find-btn,
+    .replace-btn {
+        width: 100%;
+    }
+
+    .match-counter {
+        position: relative;
+        border: solid 1px #000000;
+        width: 120px;
+        height: 80px;
+        left: 14rem;
+        bottom: 20px;
+    }
+
+    .search-container {
+        position: relative;
+        right: 32rem;
+        bottom: 11rem;
+    }
+
+    .entries-btn,
+    .dropdown-toggle {
+        right: 8.5rem;
+    }
+
+    .pdf-btn {
+        width: 150px;
+    }
+
+    .entries-btn {
+        width: 120px;
+    }
+
+    .export-section {
+        justify-content: center;
+        flex-direction: column;
+    }
+
+    .instr {
+        width: 100%;
+        max-width: 200px;
+    }
+
+    .fstyle,
+    .fsize {
+        width: 200px;
+    }
+
+}
+
+@media (max-width: 480px) {
+    .btn-group {
+        gap: 3px;
+    }
+
+    .format-btn,
+    .action-btn {
+        width: 30px;
+        height: 35px;
+    }
+
+    .entries-btn {
+        width: 60px;
+        font-size: 11px;
+    }
+}
+
+/* Responsive logout button */
+@media (max-width: 768px) {
+    .logout-btn {
+        font-size: 13px;
+        padding: 0 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    .logout-btn {
+        width: 100%;
+        font-size: 12px;
+        margin: 5px auto 0 auto;
+    }
+}
+
+/*==============================================================================*/
+/* RADIO BUTTON CELLS - New Fields: Delivery Method & Letter Language          */
+/*==============================================================================*/
+
+.radio-cell {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 10px 12px;
+    min-height: 70px;
+    justify-content: center;
+}
+
+.radio-label {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 13px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: rgb(0, 0, 0);
+    cursor: pointer;
+    padding: 3px 5px;
+    border-radius: 4px;
+    border-left: 3px solid transparent;
+    /* always reserve space — prevents layout shift on hover/check */
+    transition: background-color 0.15s ease;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    user-select: none;
+    min-height: 22px;
+    box-sizing: border-box;
+}
+
+.radio-label:hover {
+    background-color: #f1f5f9;
+}
+
+.radio-label input[type="radio"] {
+    width: 15px;
+    height: 15px;
+    accent-color: #1a5276;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.radio-label input[type="radio"]:checked+* {
+    font-weight: 600;
+    color: #1a5276;
+}
+
+/* Highlight the whole label when its radio is checked */
+.radio-label:has(input[type="radio"]:checked) {
+    background-color: #f1f5f9;
+    border-left-color: #1a5276;
+    color: #1a5276;
+    font-weight: 600;
+    border-left-color: #2577ad;
+    /* only change colour, space already reserved */
+}
+
+/* Column widths - % based for responsiveness */
+.excel-table th.date,
+.excel-table td:nth-child(2),
+.excel-table td:nth-child(3) {
+    width: 9%;
+    min-width: 165px;
+}
+
+.excel-table th.whomSent,
+.excel-table td:nth-child(4),
+.excel-table td:nth-child(5) {
+    width: 14%;
+    min-width: 300px;
+}
+
+.excel-table th.place,
+.excel-table td:nth-child(6),
+.excel-table td:nth-child(7) {
+    width: 14%;
+    min-width: 300px;
+}
+
+.excel-table th.subject,
+.excel-table td:nth-child(8) {
+    width: 25%;
+    min-width: 500px;
+}
+
+.excel-table th.sentBy,
+.excel-table td:nth-child(9) {
+    width: 12%;
+    min-width: 200px;
+}
+
+.excel-table th.letterNo,
+.excel-table td:nth-child(10) {
+    width: 8%;
+    min-width: 150px;
+}
+
+.excel-table th.deliveryMethod,
+.excel-table td:nth-child(11) {
+    width: 11%;
+    min-width: 190px;
+}
+
+.excel-table th.letterLanguage,
+.excel-table td:nth-child(12) {
+    width: 8%;
+    min-width: 140px;
+}
+
+.excel-table th.zone,
+.excel-table td:nth-child(13) {     
+    width: 8%;     
+    min-width: 120px; 
+}
+
+.excel-table {
+    min-width: 2500px; /* Increased significantly for the new array of fields and translations */
+}
+
+/* Page Footer */
+.page-footer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    width: 100%;
+    height: 38px;
+    background-color: #1e2a37;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    z-index: 1000;
+}
+
+.page-footer h3 {
+    margin: 0;
+    font-size: 13px;
+    font-weight: normal;
+    text-align: center;
+}

@@ -1,0 +1,581 @@
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    font-family: Arial, sans-serif;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 20px;
+    box-sizing: border-box;
+    overflow: hidden; 
+}
+
+
+
+/*==============================================================================*/
+/*FLIP CONTAINER*/
+/*==============================================================================*/
+
+.flip-container {
+    perspective: 1000px;
+    width: 100%;
+    min-height: 500px;
+}
+.flipper {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transform-style: preserve-3d;
+    transition: transform 0.5s;
+}
+.front, .back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+}
+.front {
+    transform: rotateY(0deg);
+}
+.back {
+    transform: rotateY(180deg);
+}
+.flip-container.flipped .flipper {
+    transform: rotateY(180deg);
+}
+
+/*---------------------------------TOP COLUMN----------------------------------------------------*/
+.horizontal-column {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background-color: #2c3e50 ;
+    height: 10vh; 
+    min-height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 2vw;
+    z-index: 1000;
+}
+
+.rak {
+    flex: 1;
+    text-align: center;
+}
+
+.rak h1 {
+    color: white;
+    font-size: 2.5vw; 
+    margin: 0;
+    white-space: nowrap;
+}
+
+.digital-india-logo img,
+.nic-logo img {
+    height: 8vh; 
+    max-height: 65px;
+    width: auto;
+    max-width: 20vw; 
+}
+
+.digital-india-logo {
+    flex: 0;
+}
+
+.nic-logo {
+    flex: 0;
+}
+
+/*---------------------------------INTRO----------------------------------------------------*/
+
+.intro {
+    margin-top: 1vh; 
+    text-align: center;
+}
+
+.intro h2 {
+    color: #2c3e50 ;
+    font-size: 2vw; 
+    margin: 1rem 0;
+}
+
+/*---------------------------------SIGNUP/LOGIN---------------------------------------------*/
+
+.head {
+    display: flex;
+    justify-content: center;
+    gap: 3vw; 
+    font-size: 1.8rem; 
+    margin: 1rem 0;
+}
+
+.head b {
+    color: #2c3e50 ;
+    cursor: pointer;
+}
+
+/*---------------------------------TOGGLE BUTTON--------------------------------------------*/
+
+.toggle-container {
+    display: flex;
+    justify-content: center;
+    margin: 1rem 0;
+}
+
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #2c3e50 ;
+    transition: 0.3s;
+    border-radius: 34px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: 0.3s;
+    border-radius: 50%;
+}
+
+input:checked + .slider {
+    background-color:#2c3e50 ;
+}
+
+input:checked + .slider:before {
+    transform: translateX(26px);
+}
+
+
+/*---------------------------------LOGIN BOX------------------------------------------------*/
+.login-box {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 110%;
+    max-width: 700px;
+    margin: 1em auto;
+    margin-top: 0;
+    min-height: 300px;
+    display: flex;
+    flex-direction: column;
+}
+
+.outer-box {
+    position: relative;
+    right:2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 15px;
+    width: 180%;
+    min-height: 250px;
+    max-width: 330px;
+    border-radius: 10px;
+    border: 1px solid #2c3e50 ;
+    backdrop-filter: blur(10px);
+    background: white;
+    box-sizing: border-box; 
+}
+
+.outer-box h2 {
+    color: #2c3e50 ;
+    font-size: 1.8rem;
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+.input-box {
+    position: relative;
+    width: 100%;
+    margin: 0.5rem 0;
+}
+.input-box input {
+    width: 100%;
+    height:40px;
+    outline: none;
+    border-radius: 10px;
+    padding: 8px 15px 8px 35px;
+    background: #2c3e50 ;
+    border: 1px solid #2c3e50 ;
+    box-sizing: border-box;
+    color: white;
+    font-size: 1rem;
+}
+
+.input-box i {
+    font-size: 1.2rem;
+    color: #ffffff;
+    position: absolute;
+    top: 50%;
+    left: 10px;
+    transform: translateY(-50%);
+}
+.input-box ::placeholder{
+    color:white;
+    opacity:2;
+}
+.input-box box-icon {
+    width:20px;
+    position: absolute;
+    left: 10px; 
+    top: 50%; 
+    transform: translateY(-50%); 
+    z-index: 1; 
+}
+.below {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    margin-top: 1rem; /* Added spacing above the button */
+}
+
+.log-btn button {
+    background-color: #2c3e50 ;
+    border: 1px solid #2c3e50 ;
+    border-radius: 10px;
+    width: 120px; 
+    max-width: 300px;  
+    height: 40px;
+    color: #ffffff;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: transform 150ms, box-shadow 150ms;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.log-btn button:hover {
+    transform: translateY(-2px);
+    background-color: #2e5071;
+}
+.log-btn button:disabled {
+    background-color: #072d53; 
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.log-btn button:hover:not(:disabled) {
+    background-color: #2e5071; 
+}
+
+
+/*---------------------------------REGISTER BOX---------------------------------------------*/
+
+.register-box {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    max-width: 80%;
+    margin: 1rem auto; 
+    margin-top: 0;
+    min-height: 80%; 
+    backface-visibility: hidden;
+    display: flex;
+    flex-direction: column; 
+}
+.reg-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content:flex-start; 
+    padding: 3%; 
+    width: 110%;
+    max-width: 130%;
+    border-radius: 10px;
+    border: 1px solid #2c3e50 ;
+    backdrop-filter: blur(10px);
+    background: white;
+    box-sizing: border-box; 
+}
+.reg-box h2 {
+    color: #2c3e50 ;
+    font-size: 1.8vw;
+    margin-bottom: 5%; 
+    text-align: center;
+}
+.captcha-area {
+    display: none;
+}
+#captcha-text {
+    text-align: center;
+    border-radius: 0 10px 10px 0; 
+    z-index: 2; 
+    display: flex;
+    align-items: center;
+    position: absolute;
+    top: -4px;
+    right: -7px;
+    flex: 0 0 25%; 
+    width: 25%; 
+    height: 100%; 
+    padding: 5px;
+    color: rgb(0, 0, 0);
+    font-size: 0.9vw;
+}
+
+.cap-in {
+    position: relative;
+    top:-14px;
+    width: 100%;
+    margin: 0.75rem 0;
+    display: flex;
+    align-items: center;
+    border-radius: 10px;
+    background: #2c3e50 ;
+    border: 1px solid #2c3e50 ;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+
+.cap-in input {
+    flex: 1;
+    outline: none;
+    border: none;
+    padding: 8px 15px 8px 35px;
+    background: transparent;
+    color: white;
+    font-size: 1rem;
+    box-sizing: border-box;
+    position: relative; 
+    z-index: 1; 
+}
+
+.captcha-image {
+    flex: 0 0 25%; 
+    padding: 5px;
+}
+
+.captcha-image img {
+    width: 10%; 
+    height: 30px;
+    border-radius: 0 10px 10px 0; 
+    background: #008080;
+    border: none;
+    box-sizing: border-box;
+}
+
+.cap-in i {
+    font-size: 1.1rem;
+    color: #ffffff;
+    position: absolute;
+    top: 50%;
+    left: 10px;
+    transform: translateY(-50%);
+}
+
+.checkbox {
+    width: 100%;
+    font-size: 1.2rem;
+    position: relative;
+    justify-content: flex-start;
+    bottom: 19px;
+    left: 2px;
+}
+
+.checkbox i {
+    color: #000000;
+    position: relative;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+}
+
+.reload {
+    display: none;
+}
+.reg-btn {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-top: 1rem;
+}
+
+.reg-btn button {
+    background-color: #2c3e50 ;
+    border: 1px solid #2c3e50 ;
+    border-radius: 10px;
+    width: 110%; 
+    max-width: 260px; 
+    height: 40px;
+    color: #ffffff;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: transform 150ms, box-shadow 150ms;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.reg-btn button:hover {
+    transform: translateY(-2px);
+    background-color: #2e5071;
+}
+.reg-btn button:disabled {
+    background-color: #072d53; 
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.reg-btn button:hover:not(:disabled) {
+    background-color: #2e5071; 
+}
+
+/*-------------------------------------------BOTTOM ROW-----------------------------------------------------*/
+.bottom-column {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: #1e2a37 ;
+    height: 7%; 
+    min-height: 5%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 2vw;
+}
+/*----------------------------------------------------------------------------------------------------------*/
+/*---------------------------------RESPONSIVENESS MEDIA QUERIES---------------------------------------------*/
+
+/*---------------------------------------------BOXES--------------------------------------------------------*/
+@media (max-width: 768px) {
+    .login-box, .register-box {
+        max-width: 500px;
+        padding: 0 10px;
+        position: relative;
+    }
+
+    .outer-box, .reg-box {
+        width: 350px;
+        max-width: 500px;
+        padding: 10px;
+        justify-content: center;
+        align-items: center;
+    }
+    .reg-box{
+        justify-content: center;
+    }
+    .outer-box{
+        position: relative;
+        left:0em;
+        width: 300px;
+    }
+
+    .reg-box{
+        position: relative;
+        left:0;
+    }
+    .outer-box h2, .reg-box h2 {
+        font-size: 1.8rem;
+    }
+
+    .reg-btn button {
+        width: 100%;
+        max-width: 300px;
+        font-size: 0.8rem;
+        height: 40px;
+        justify-content: center;
+    }
+    .log-btn{
+        width: 100px;
+        max-width: 300px;
+        font-size: 0.8rem;
+        height: 40px;
+        position: relative;
+        justify-content: center;
+        left: -0.4rem;
+        
+    }
+}
+/*-----------------------------------------HORIZONTAL COLUMN----------------------------------*/
+@media (max-width: 768px) {
+    .horizontal-column .bottom-column {
+        height: 8vh;
+        min-height: 50px;
+    }
+
+    .rak h1 {
+        font-size: 4vw;
+    }
+
+    .digital-india-logo img,
+    .nic-logo img {
+        height: 6vh;
+        max-width: 25vw;
+    }
+
+    .intro h2 {
+        font-size: 5vw;
+    }
+
+    .head {
+        font-size: 1.6rem;
+        gap: 2vw;
+    }
+
+    .switch {
+        width: 50px;
+        height: 28px;
+    }
+
+    .slider:before {
+        height: 20px;
+        width: 20px;
+        left: 4px;
+        bottom: 4px;
+    }
+    .cap-in b{
+        position:relative;
+        right:5.1rem;
+    }
+    #captcha-text {
+        font-size: 1.25rem;
+    }
+    input:checked + .slider:before {
+        transform: translateX(22px);
+    }
+    .checkbox label{
+        font-size: 1rem;
+    }
+    .bottom-column h3{
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+    }
+}

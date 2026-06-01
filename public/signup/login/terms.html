@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="login_styles.css">
+    <link rel="shortcut icon" href="images/NIC Logo JPG/BILINGUAL _SQUARE_NIC_Logo_white_bg-01.jpg" type="image/x-icon">
+    <title>Terms & Conditions</title>
+    <style>
+        .terms-container {
+            max-width: 700px;
+            margin: 120px auto 120px; 
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid #2c3e50;
+            backdrop-filter: blur(10px);
+            background: white;
+            box-sizing: border-box;
+            min-height: calc(100vh - 160px); 
+        }
+        .terms-container h1 {
+            color: #2c3e50;
+            font-size: 1.9rem;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+        .terms-container h2 {
+            color: #2c3e50;
+            font-size: 1.6rem;
+            margin: 1rem 0 0.5rem;
+        }
+        .terms-container p, .terms-container ul {
+            color: #333;
+            font-size: 1.4rem;
+            line-height: 1.6;
+            margin: 0.5rem 0;
+        }
+        .terms-container ul {
+            padding-left: 20px;
+        }
+        .back-link {
+            display: block;
+            text-align: center;
+            margin: 1rem 0;
+            color: #2c3e50;
+            font-weight: bold;
+            text-decoration: underline;
+        }
+        .back-link:hover {
+            color: #2e5071;
+        }
+        @media (max-width: 768px) {
+            .terms-container {
+                max-width: 500px;
+                padding: 10px;
+                margin: 70px auto 70px; /* Slightly smaller margins for smaller screens */
+                min-height: calc(100vh - 140px);
+            }
+            .terms-container h1 {
+                font-size: 1.6rem;
+            }
+            .terms-container h2 {
+                font-size: 1.2rem;
+            }
+            .terms-container p, .terms-container ul {
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body style="background-color: #f2f5ff">
+    <div class="container">
+        <!-- Top Column -->
+        <div class="horizontal-column" id="hrz-clmn">
+            <div class="digital-india-logo">
+                <img src="images/digital-india.png" alt="Digital India Logo">
+            </div>
+            <div class="rak">
+                <h1>DAK LOGBOOK</h1>
+            </div>
+            <div class="nic-logo">
+                <img src="images/NIC-Logo-white.png" alt="NIC Logo">
+            </div>
+        </div>
+
+        <!-- Terms Content -->
+        <div class="terms-container">
+            <h1>Terms & Conditions</h1>
+            <p>Welcome to the DAK Register Web Application, developed and hosted by the National Informatics Centre (NIC), Meghalaya State Center, Shillong. By using this application, you agree to the following terms and conditions:</p>
+
+            <h2>1. Registration and Account Creation</h2>
+            <p>Users must register by providing accurate first name, last name, and phone number. A CAPTCHA verification is required to prevent automated registrations. Duplicate registrations, including variations in capitalization, are not permitted. The phone number must contain only numerical digits. Your account is personal and should not be shared.</p>
+
+            <h2>2. Login and Data Access</h2>
+            <p>Login requires the registered phone number. Upon successful login, users can access their Dispatch and Acquired logbook tables, with data loaded from a PostgreSQL database specific to their account.</p>
+
+            <h2>3. Logbook Features</h2>
+            <p>The application provides tools for managing Dispatch and Acquired logs, including:</p>
+            <ul>
+                <li>Font customization (size, style, bold, underline, italics).</li>
+                <li>Find and replace functionality.</li>
+                <li>View up to 100 rows (default 6 rows).</li>
+                <li>Inbuilt PDF viewer.</li>
+                <li>Column-specific search and filter (ascending/descending).</li>
+                <li>Add rows via button or right-click (above/below existing rows).</li>
+                <li>Delete rows via right-click.</li>
+                <li>Switch between Dispatch and Acquired tables.</li>
+            </ul>
+            <p>All data is stored securely in a PostgreSQL database.</p>
+
+            <h2>4. Usage Restrictions</h2>
+            <p>The application is intended solely for logging Dispatch and Acquired records. Misuse, such as entering invalid data or attempting to bypass security measures (e.g., CAPTCHA), may result in account suspension. Users must comply with NIC Meghalaya's guidelines and applicable laws.</p>
+
+            <h2>5. Data Privacy</h2>
+            <p>Your personal information (first name, last name, phone number) is stored securely in a PostgreSQL database and will not be shared without your consent, except as required by law or for operational purposes by NIC Meghalaya.</p>
+
+            <h2>6. Modifications to Terms</h2>
+            <p>NIC Meghalaya reserves the right to update these terms. Continued use of the application constitutes acceptance of any changes. Check this page periodically for updates.</p>
+
+            <h2>7. Contact Information</h2>
+            <p>For questions or support, contact the National Informatics Centre, Meghalaya State Center, Shillong.</p>
+
+            <a href="login.html" class="back-link">Back to Login/Registration</a>
+        </div>
+
+        <!-- Bottom Bar -->
+        <div class="bottom-column">
+            <h3 style="color: white;">Copyright © 2025, Designed, Developed & Hosted By National Informatics Center, Meghalaya State Center Shillong</h3>
+        </div>
+    </div>
+</body>
+</html>

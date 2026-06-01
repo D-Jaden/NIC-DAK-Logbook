@@ -1,0 +1,1420 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #f2f5ff;
+    min-height: 100vh;
+    padding: 20px;
+    overflow-x:hidden;
+}
+
+.toolbar-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    position: relative;
+}
+
+/* Mobile menu toggle button */
+.mobile-menu-toggle {
+    display: none;
+    background-color: #2577ad;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-bottom: 10px;
+}
+.mobile-menu-toggle:hover {
+    background-color: #1e5f8a;
+}
+
+.cell.highlight {
+    background-color: #91d6f0ce !important;
+}
+.cell.highlight:hover{
+    background: rgb(109, 179, 201);
+}
+
+/*==============================================================================*/
+/*FLIP CONTAINER*/
+/*==============================================================================*/
+#flipContainer {
+    transform-style: preserve-3d;
+    perspective: 1000px;
+}
+
+.flip-out {
+    animation: flipOut 0.5s forwards;
+}
+
+.flip-in {
+    animation: flipIn 0.5s forwards;
+}
+
+@keyframes flipOut {
+    from {
+        transform: rotateY(0deg);
+        opacity: 1;
+    }
+    to {
+        transform: rotateY(180deg);
+        opacity: 0;
+    }
+}
+
+@keyframes flipIn {
+    from {
+        transform: rotateY(180deg);
+        opacity: 0;
+    }
+    to {
+        transform: rotateY(0deg);
+        opacity: 1;
+    }
+}
+
+/*----------------------------------------TOP-BAR-------------------------------*/
+.container {
+    max-width: 2000px;
+    margin: 0 auto;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+    overflow: hidden;
+    outline: #000000;
+    display: flex;
+    flex-direction: column;
+}
+
+.header {
+    background: linear-gradient(135deg, #2c3e50 100%, #34495ed3  0%);
+    color: white;
+    padding: 20px;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.header h1 {
+    font-size: 28px;
+    margin-bottom: 15px;
+}
+
+.header h3 {
+    opacity: 0.9;
+    font-size: 20px;
+    top:-10px;
+    position:relative;
+}
+
+.digital-india-logo img,
+.nic-logo img {
+    height: 10vh; 
+    max-height: 70px;
+    width: auto;
+    max-width: 20vw; 
+}
+
+.digital-india-logo {
+    flex: 0;
+}
+
+.nic-logo {
+    flex: 0;
+}
+
+/*---------------------------------------FEATURES------------------------------*/
+.toolbar-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    position: relative;
+}
+
+/* Main features container */
+.features {
+    background-color: #e2eefdf9;
+    width: 880px;
+    height: 90px;
+    border-radius: 5px;
+    padding: 5px;
+    position: relative;
+    left: 16rem;
+    bottom: 1rem;
+    transition: all 0.3s ease;
+}
+
+/* Button groups */
+.btn-group {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+    position: relative;
+}
+
+/* Base button styles */
+.btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    outline: none;
+    position: relative;
+}
+
+/* Instruction button */
+.instr {
+    align-items: center;
+    justify-content: center;
+    height: 38px;
+    width: 237px;
+    background: white;
+    color: #000000;
+    border-color: rgb(33, 192, 12);
+    outline: none;
+    border-radius: 5px;
+    position: relative;
+    left: 0;
+    top: -2px;
+}
+
+.instr:hover {
+    background-color: #f3f3f3f9;
+    color: rgb(0, 0, 0);
+}
+
+/* Font style button */
+.fstyle {
+    align-items: center;
+    justify-content: center;
+    height: 40px;
+    width: 152px;
+    background-color: #fffffff9;
+    color: rgb(0, 0, 0);
+    border-color: rgb(149, 189, 226);
+    border-radius: 5px;
+    outline: none;
+}
+
+.fstyle:hover {
+    background-color: #fafafaf9;
+    color: rgb(51, 47, 243);
+}
+
+/* Font size button */
+.fsize {
+    align-items: center;
+    justify-content: center;
+    height: 40px;
+    width: 80px;
+    background-color: #fffffff9;
+    color: rgb(0, 0, 0);
+    border-color: rgb(149, 189, 226);
+    border-radius: 5px;
+    position: relative;
+    left: 157px;
+    top: -40px;
+    outline: none;
+}
+
+.fsize:hover {
+    background-color: #fafafaf9;
+    color: rgb(51, 47, 243);
+}
+
+/* Action buttons (undo, redo, etc.) */
+.undo-btn {
+    align-items: center;
+    justify-content: center;
+    height: 38px;
+    width: 53px;
+    background-color: #ff7043;
+    color: rgb(255, 255, 255);
+    border-color: rgb(149, 189, 226);
+    border-radius: 5px;
+    position: relative;
+    left: 244px;
+    top: -122px;
+    outline: none;
+}
+
+.undo-btn:hover {
+    background-color: #f4511e;
+    box-shadow: 0 6px 20px rgba(255, 169, 72, 0.877);
+}
+
+.undo-btn:active {
+    transform: translateY(0);
+}
+
+.redo-btn {
+    align-items: center;
+    justify-content: center;
+    height: 38px;
+    width: 53px;
+    background-color: #29b6f6;
+    color: rgb(255, 255, 255);
+    border-color: rgb(149, 189, 226);
+    border-radius: 5px;
+    position: relative;
+    left: 244px;
+    top: -122px;
+    outline: none;
+}
+
+.redo-btn:hover {
+    background-color: #0288d1;
+    box-shadow: 0 6px 20px rgba(83, 127, 247, 0.877);
+}
+
+.redo-btn:active {
+    transform: translateY(0);
+}
+
+/* Text formatting buttons */
+.bold-btn {
+    position: relative;
+    left: 130px;
+    top: -81px;
+    align-items: center;
+    justify-content: center;
+    height: 40px;
+    width: 33px;
+    background-color: #fffffff9;
+    color: rgb(0, 0, 0);
+    border-color: rgb(0, 0, 0);
+    border-radius: 5px;
+    outline: none;
+}
+
+.bold-btn:hover {
+    background-color: black;
+    color: white;
+}
+
+.italic-btn {
+    position: relative;
+    left: 130px;
+    top: -81px;
+    align-items: center;
+    justify-content: center;
+    height: 40px;
+    width: 33px;
+    background-color: #fffffff9;
+    color: rgb(0, 0, 0);
+    border-color: rgb(0, 0, 0);
+    border-radius: 5px;
+    outline: none;
+}
+.italic-btn:hover {
+    background-color: rgb(0, 0, 0);
+    color: white;
+}
+
+.underline-btn {
+    position: relative;
+    left: 130px;
+    top: -81px;
+    align-items: center;
+    justify-content: center;
+    height: 40px;
+    width: 33px;
+    background-color: #fffffff9;
+    color: rgb(0, 0, 0);
+    border-color: rgb(0, 0, 0);
+    border-radius: 5px;
+    outline: none;
+}
+.underline-btn:hover {
+    background-color: rgb(0, 0, 0);
+    color: white;
+}
+
+/* Find and replace section */
+.find-replace {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    margin-left: 360px;
+    margin-top: -159px;
+    justify-content: center;
+}
+.find-row, .replace-row {
+    display: flex;
+    align-items: center;
+}
+.find-box, .replace-box {
+    padding: 8px;
+    font-size: 14px;
+    border: 2px solid #1468c7be;
+    border-radius: 5px;
+    outline: none;
+    width: 220px;
+    height: 38px;
+}
+.find-btn, .replace-btn {
+    position: relative;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 16px;
+    height: 35px;
+    width: 80px;
+    background-color: #1468c7be;
+    color: white;
+    font-size: 14px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+.find-btn:hover, .replace-btn:hover {
+    background-color: #1674e0be;
+}
+.match-counter {
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    position: relative;
+    left: 310px;
+    top: -77px;
+    background-color: #ffffff;
+    width: 70px;
+    height: 78px;
+    border-radius: 5px;
+    border: 2.23px solid #2195f39c;
+    color: #2196f3;
+}
+.match-counter b {
+    font-weight: bold;
+    color: black;
+    display: block;
+    text-align: center;
+    position: relative;
+    top: 21px;
+}
+.match-counter span {
+    font-size: 16px;
+    font-weight:bold;
+    position: relative;
+    left: 29px;
+    top: 5px;
+    font-weight: bold;
+    color: black;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Export section */
+.pdf {
+    position: relative;
+    left: 46.4rem;
+    bottom: 9.6rem;
+}
+.pdf-btn {
+    height: 33px;
+    width: 125px;
+    padding: 10px;
+    background-color: #F40F02;
+    color: white;
+    font-size: 13px;
+    border: 2px solid #F40F02;
+    position: relative;
+    left: 2px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    text-align: center;
+}
+.pdf-btn:hover {
+    background-color: #f40e02d1;
+}
+.split-btn-container {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    left: 46.5rem;
+    bottom: 9.1rem;
+}
+.entries-btn, .dropdown-toggle {
+    width: 98px;
+    height: 33px;
+    padding: 8px 12px;
+    border: 1px solid #256e9e;
+    background: #2577ad;
+    color: white;
+    cursor: pointer;
+    font-size: 12px;
+    position: relative;
+}
+.entries-btn {
+    border-radius: 4px 0 0 4px;
+    border-right: none;
+}
+.dropdown-toggle {
+    border-radius: 0 4px 4px 0;
+    padding: 8px 10px;
+    width: 30px;
+}
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    right: 0;
+    min-width: 160px;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    z-index: 1000;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.split-btn-container.active .dropdown-menu {
+    display: block;
+}
+.dropdown-menu li a {
+    display: block;
+    padding: 8px 12px;
+    text-decoration: none;
+    color: #333;
+}
+.dropdown-menu li a:hover {
+    background: #f0f0f0;
+}
+
+/* Tooltip styles */
+.fontsize-hidden-text {
+    visibility: hidden;
+    width: 60px;
+    background-color: #3878c5;
+    color: white;
+    text-align: center;
+    padding: 5px;
+    border-radius: 5px;
+    position: absolute;
+    z-index: 1;
+    top: 125%;
+    left: 50%;
+    transform: translateX(-50%);
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+.fsize:hover .fontsize-hidden-text {
+    visibility: visible;
+    opacity: 1;
+}
+.undo-hidden-text {
+    visibility: hidden;
+    width: 60px;
+    background-color: #3878c5;
+    color: white;
+    text-align: center;
+    padding: 5px;
+    border-radius: 5px;
+    position: absolute;
+    z-index: 1;
+    top: 125%;
+    left: 50%;
+    transform: translateX(-50%);
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+.undo-btn:hover .undo-hidden-text {
+    visibility: visible;
+    opacity: 1;
+}
+
+.redo-hidden-text {
+    visibility: hidden;
+    width: 60px;
+    background-color: #3878c5;
+    color: white;
+    text-align: center;
+    padding: 5px;
+    border-radius: 5px;
+    position: absolute;
+    z-index: 1;
+    top: 125%;
+    left: 50%;
+    transform: translateX(-50%);
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+.redo-btn:hover .redo-hidden-text {
+    visibility: visible;
+    opacity: 1;
+}
+.bold-hidden-text {
+    visibility: hidden;
+    width: 60px;
+    background-color: #3878c5;
+    color: white;
+    text-align: center;
+    padding: 5px;
+    border-radius: 5px;
+    position: absolute;
+    z-index: 1;
+    top: 125%;
+    left: 50%;
+    transform: translateX(-50%);
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+.bold-btn:hover .bold-hidden-text {
+    visibility: visible;
+    opacity: 1;
+}
+.italic-hidden-text {
+    visibility: hidden;
+    width: 60px;
+    background-color: #3878c5;
+    color: white;
+    text-align: center;
+    padding: 5px;
+    border-radius: 5px;
+    position: absolute;
+    z-index: 1;
+    top: 125%;
+    left: 50%;
+    transform: translateX(-50%);
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+.italic-btn:hover .italic-hidden-text {
+    visibility: visible;
+    opacity: 1;
+}
+.underline-hidden-text {
+    visibility: hidden;
+    width: 90px;
+    background-color: #3878c5;
+    color: white;
+    text-align: center;
+    padding: 5px;
+    border-radius: 5px;
+    position: absolute;
+    z-index: 1;
+    top: 125%;
+    left: 50%;
+    transform: translateX(-50%);
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+.underline-btn:hover .underline-hidden-text {
+    visibility: visible;
+    opacity: 1;
+}
+.tooltip {
+    visibility: hidden;
+    width: 80px;
+    background-color: #3878c5;
+    color: white;
+    text-align: center;
+    padding: 5px;
+    border-radius: 5px;
+    position: absolute;
+    z-index: 1;
+    top: 125%;
+    left: 50%;
+    transform: translateX(-50%);
+    opacity: 0;
+    transition: opacity 0.3s;
+    font-size: 12px;
+}
+.instr:hover .tooltip {
+    visibility: visible;
+    opacity: 1;
+}
+
+/*-----------------------------------------------------------------------*/
+/*---------------------------------TABLE---------------------------------*/
+/*-----------------------------------------------------------------------*/
+.table-container {
+    padding: 20px;
+    overflow: visible;
+    position: relative;
+}
+
+.excel-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.1);
+}
+
+.excel-table thead {
+    overflow: visible !important;
+}
+
+.excel-table th {
+    background: linear-gradient(135deg, #34495e 0%, #2c3e50 100%);
+    color: white;
+    padding: 15px 12px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-right: 1px solid #2c3e50;
+    overflow: visible !important; 
+}
+
+.excel-table th i {
+    font-size: 1.2rem;
+    color: #ffffff;
+    position: relative;
+    right: 10px;
+    transform: translateY(-50%);
+}
+
+.excel-table th:last-child {
+    border-right: none;
+}
+
+.excel-table td {
+    padding: 0;
+    border: 1px solid #e1e8ed;
+    background: white;
+    transition: background-color 0.2s ease;
+    overflow-wrap: break-word;
+    white-space: normal;
+    vertical-align: top;
+    height: auto;
+}
+
+.column-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.cell {
+    width: 100%;
+    min-height: 70px;
+    height: auto;
+    padding: 12px;
+    border: none;
+    outline: none;
+    font-size: 14px;
+    font-family: inherit;
+    background: transparent;
+    cursor: text;
+    transition: background-color 0.2s ease;
+    display: block;
+    text-align: left;
+    box-sizing: border-box;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    white-space: pre-wrap;
+    resize: vertical;
+    line-height: 1.4;
+}
+
+.hindi-cell {
+    width: 100%;
+    min-height: 70px;
+    height: auto;
+    padding: 8px 12px;
+    border: none;
+    outline: none;
+    font-size: 13px;
+    font-family: 'Noto Sans Devanagari', 'Segoe UI', sans-serif;
+    background: #f8f9fa;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    display: block;
+    text-align: left;
+    border-top: 1px solid #e1e8ed;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    white-space: pre-wrap;
+    resize: vertical;
+    line-height: 1.4;
+}
+
+.cell:hover, .hindi-cell:hover {
+    background: linear-gradient(135deg, #f8f9fa 0%, #cfe1f3 100%);
+}
+
+.cell:focus, .hindi-cell:focus {
+    background: linear-gradient(135deg, #e3f2fd 0%, #cfe1f3 100%);
+    cursor: text;
+    box-shadow: inset 0 0 0 2px #a6c9e7;
+}
+
+.cell.editing, .hindi-cell.editing {
+    background: linear-gradient(135deg, #ffffd8 0%, #a0cfff 100%);
+    box-shadow: inset 0 0 0 2px #c0c5e7;
+}
+
+.row-number {
+    background: linear-gradient(135deg, #f8f9fa 0%, #cfe1f3 100%);
+    font-weight: 600;
+    color: #6c757d;
+    text-align: center;
+    width: 4%;
+    min-width: 50px;
+    border-right: 2px solid #dee2e6;
+    vertical-align: middle;
+}
+
+.excel-table tr {
+    height: auto;
+    min-height: 80px;
+}
+
+.excel-table tr:nth-child(even) td:not(.row-number) {
+    background: #f8f9fa;
+}
+
+.excel-table tr:hover td {
+    background: linear-gradient(135deg, #e8f5e8 0%, #cfe1f3 100%);
+}
+
+.excel-table tr:hover td.row-number {
+    background: linear-gradient(135deg, #e3f2fd 0%, #cfe1f3 100%);
+    color: #1976d2;
+}
+
+.hamburger-menu {
+    position: relative;
+}
+.hamburger-btn {
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 3px;
+    transition: background-color 0.2s;
+}
+.hamburger-btn:hover {
+    background-color: rgba(255,255,255,0.2);
+}
+.sort-dropdown {
+    position: fixed; 
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.2); 
+    z-index: 99999; 
+    min-width: 200px;
+    display: none;
+    overflow: hidden;
+}
+.sort-dropdown.show {
+    display: block;
+}
+.dropdown-section {
+    border-bottom: 1px solid #eee;
+}
+.dropdown-section:last-child {
+    border-bottom: none;
+}
+.dropdown-header {
+    background: #f8f9fa;
+    padding: 8px 12px;
+    font-weight: bold;
+    font-size: 12px;
+    color: #666;
+    text-transform: uppercase;
+}
+.sort-option, .search-option {
+    padding: 8px 12px;
+    cursor: pointer;
+    color: #333;
+    font-size: 14px;
+    transition: background-color 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.sort-option:hover, .search-option:hover {
+    background-color: #f5f5f5;
+}
+.column-search-input {
+    width: 100%;
+    padding: 6px 8px;
+    border: 1px solid rgb(121, 121, 121);
+    border-radius: 3px;
+    font-size: 12px;
+    margin: 8px;
+    width: calc(100% - 16px);
+}
+.column-search-input:focus {
+    outline: none;
+    border-color: #4a90e2;
+    box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.2);
+}
+.search-actions {
+    padding: 8px 12px;
+    display: flex;
+    gap: 8px;
+}
+.search-btn {
+    flex: 1;
+    padding: 4px 8px;
+    border: 1px solid #ddd;
+    background: rgb(75, 151, 214);
+    color: white;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 11px;
+    transition: all 0.2s;
+}
+.search-btn:hover {
+    background: rgb(57, 142, 212);
+}
+.search-btn.clear {
+    background: #399935;
+    color: white;
+    border-color: #38993598;
+}
+.search-btn.clear:hover {
+    background: #2e8b2b;
+}
+/*==============================================================================*/
+/* RADIO BUTTON CELLS - Letter Language - FIXED                                */
+/*==============================================================================*/
+
+/* EARLY OVERRIDE: Block ALL hover effects on radio cell BEFORE they apply */
+.excel-table td:last-child,
+.excel-table td:nth-child(7) {
+    transition: none !important;
+    background: white !important;
+    background-color: white !important;
+    background-image: none !important;
+    height: 90px !important;
+    min-height: 90px !important;
+    max-height: 90px !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    /* Block the gradient hover from applying */
+    background: white !important;
+}
+
+/* FORCE row hover to skip the radio cell completely */
+.excel-table tr:hover td:last-child,
+.excel-table tr:hover td:nth-child(7),
+.excel-table tr:hover td:last-child *,
+.excel-table tr:hover td:nth-child(7) * {
+    background: white !important;
+    background-color: white !important;
+    background-image: none !important;
+    transform: none !important;
+    transition: none !important;
+}
+
+/* The radio-cell container - completely static */
+.radio-cell {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    padding: 8px 10px;
+    height: 90px;
+    min-height: 90px;
+    max-height: 90px;
+    justify-content: space-evenly;
+    background: white !important;
+    box-sizing: border-box;
+    overflow: hidden;
+    transition: none !important;
+    transform: none !important;
+}
+
+.radio-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #2c3e50;
+    cursor: pointer;
+    height: 24px;
+    min-height: 24px;
+    max-height: 24px;
+    padding: 0 5px;
+    border-radius: 4px;
+    border-left: 3px solid transparent;
+    /* Only background color transition */
+    transition: background-color 0.12s ease, border-left-color 0.12s ease;
+    white-space: nowrap;
+    overflow: hidden;
+    user-select: none;
+    box-sizing: border-box;
+    font-weight: 400;
+    line-height: 24px;
+}
+
+.radio-label:hover {
+    background-color: #e8f4fd;
+}
+
+.radio-label input[type="radio"] {
+    width: 14px;
+    height: 14px;
+    accent-color: #2577ad;
+    cursor: pointer;
+    flex-shrink: 0;
+    min-width: 14px;
+    margin: 0;
+    padding: 0;
+    vertical-align: middle;
+    transition: none;
+}
+
+/* Checked state - NO font-weight change! */
+.radio-label:has(input[type="radio"]:checked) {
+    background-color: #d6eaf8;
+    color: #1a5276;
+    font-weight: 400; /* Keep same weight to prevent shift */
+    border-left-color: #2577ad;
+}
+/*----------------------------------------------ROW INSERTION--------------------------------------------------------------*/
+.insert-row-btn {
+    position: absolute;
+    right: 4px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: #000000;
+    color: rgb(255, 0, 0);
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    cursor: pointer;
+    z-index: 100;
+    white-space: nowrap;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    transition: all 0.2s ease;
+}
+
+.insert-row-btn:hover {
+    background: #0056b3;
+    transform: translateY(-50%) scale(1.05);
+}
+
+.context-menu {
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    padding: 4px 0;
+    min-width: 150px;
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+}
+
+.context-menu-item {
+    padding: 8px 16px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.context-menu-item:hover {
+    background-color: #f0f0f0;
+}
+
+.context-menu-item[data-action="delete-row"] {
+    color: #ff0019;
+}
+
+.context-menu-item[data-action="delete-row"]:hover {
+    background-color: #f8d7da;
+}
+
+.excel-table tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+.excel-table tbody tr {
+    position: relative;
+}
+
+/* insert-row-btn now lives inside the td, no extra padding needed */
+
+/*-----------------------------BOTTOM-BUTTONS------------------------------*/
+.add-row-btn {
+    margin: 20px 0;
+    padding: 12px 24px;
+    background: linear-gradient(135deg, #18A209 0%, #18a209e7 100%);
+    color: white;
+    border: none;
+    border-radius: 25px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px #008000;
+}
+
+.add-row-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(62, 212, 67, 0.4);
+}
+
+.add-row-btn:active {
+    transform: translateY(0);
+}
+
+.save-btn {
+    margin: 30px 0px;
+    padding: 12px 24px;
+    background: linear-gradient(135deg, #18A209 0%, #18a209f9 100%);
+    color: white;
+    border: none;
+    border-radius: 25px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px #008000;
+}
+
+.save-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(62, 212, 67, 0.4);
+}
+
+.save-btn:active {
+    transform: translateY(0);
+}
+
+.switch-btn {
+    margin: 35px 0px;
+    padding: 12px 24px;
+    background: linear-gradient(135deg, #001a70 0%, #201c62 100%);
+    color: white;
+    border: none;
+    border-radius: 25px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px #2727e8;
+}
+
+.switch-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(9, 31, 180, 0.772);
+}
+
+.switch-btn:active {
+    transform: translateY(0);
+}
+
+.hidden-text {
+    visibility: hidden;
+    width: 220px;
+    background-color: #3669a8;
+    color: white;
+    text-align: center;
+    padding: 5px;
+    border-radius: 5px;
+    position: absolute;
+    z-index: 1;
+    bottom: 125%;
+    left: 50%;
+    transform: translateX(-50%);
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.switch-btn:hover .hidden-text {
+    visibility: visible;
+    opacity: 1;
+}
+
+.logout-btn {
+    display: block;
+    margin: 10px 20px 20px auto;
+    padding: 12px 24px;
+    background: linear-gradient(135deg, #dd2121 0%, #e40b0be7 100%);
+    color: white;
+    border: none;
+    border-radius: 25px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px #ff5b5b;
+}
+
+.logout-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgb(255, 0, 0);
+}
+
+.logout-btn:active {
+    transform: translateY(0);
+}
+
+.row-changed {
+    background-color: #fff3cd !important;
+    border-left: 4px solid #ffc107;
+}
+
+.row-new {
+    background-color: #d4edda !important;
+    border-left: 4px solid #28a745;
+}
+
+.row-changed td {
+    position: relative;
+}
+
+.row-new td {
+    position: relative;
+}
+
+/* Add indicator icons */
+.row-changed td:first-child::before {
+    content: "Editing";
+    position: absolute;
+    left: 2px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 12px;
+}
+
+.row-new td:first-child::before {
+    content: "Adding";
+    position: absolute;
+    left: 2px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 12px;
+}
+
+/* Status indicator in save button */
+.save-btn.has-changes {
+    background-color: #ffc107;
+    color: #000;
+}
+
+.save-btn.has-changes::after {
+    content: " (" attr(data-changes) ")";
+    font-size: 12px;
+}
+
+/* Notification styles */
+#notification {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    border-radius: 6px;
+}
+
+/*---------------------------------RESPONSIVENESS----------------------------*/
+@media (max-width: 768px) {
+    .container {
+        margin: 10px;
+        border-radius: 10px;
+    }
+    .buttons {
+      justify-content: space-between;
+    }   
+    .split-btn-container {
+      width: 100%;
+    }
+    .header {
+        height: 10vh;
+        min-height: 80px;
+    }
+
+    .header h1 {
+        font-size: 3vw;
+    }
+
+    .header h3 {
+        font-size: 2vw;
+    }
+
+    .digital-india-logo img,
+    .nic-logo img {
+        height: 6vh;
+        max-width: 25vw;
+    }
+
+    .excel-table{
+        bottom:13rem;
+    }
+
+    .table-container {
+        padding: 15px;
+    }
+
+    .excel-table th,
+    .cell,
+    .hindi-cell {
+        padding: 8px;
+        font-size: 13px;
+    }
+
+    .cell {
+        height: 45px;
+        width:120px;
+    }
+
+    .hindi-cell {
+        height: 35px;
+        font-size: 11px;
+    }
+
+    .insert-row-btn {
+        right: -100px;
+        font-size: 10px;
+        padding: 2px 6px;
+    }
+    .button-container{
+        position: relative;
+    }
+
+}
+@media (max-width: 768px) {
+    .mobile-menu-toggle {
+        display: block;
+    }
+
+    .features {
+        display: none;
+        position: absolute;
+        top: 50px;
+        left: 0;
+        right: 0;
+        width: auto;
+        height: auto;
+        background-color: white;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+        z-index: 1000;
+        flex-direction: column;
+        align-items: stretch;
+        padding: 20px;
+        max-height: 80vh;
+        overflow-y: auto;
+    }
+
+    .features.active {
+        display: flex;
+    }
+
+    /* Reset all absolute positioning for mobile */
+    .instr, .fstyle, .fsize, .action-btn, .format-btn {
+        position: static;
+        margin: 5px;
+    }
+
+    .find-replace, .export-section {
+        position: static;
+        margin: 10px 0;
+    }
+    .undo-btn, .redo-btn{
+        position:relative;
+        top:-9rem;
+    }
+    .bold-btn, .italic-btn ,.underline-btn{
+        position:relative;
+        top:-6rem;
+    }
+
+    .find-replace {
+        width: 200px;
+        position: relative;
+        bottom:3rem;
+        left:0.4rem;
+    }
+    .find-row, .replace-row {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+    }
+    .find-box, .replace-box {
+        width: 100%;
+        gap:5px;
+    }
+    .find-btn, .replace-btn {
+        width: 100%;
+    }
+    .match-counter{
+        position:relative;
+        border: solid 1px #000000;
+        width:120px;
+        height:80px;
+        left: 14rem;
+        bottom:20px;
+    }
+    .search-container{
+        position:relative;
+        right:32rem;
+        bottom:11rem;
+    }
+    .entries-btn, .dropdown-toggle{
+        right:8.5rem;
+    }
+    .pdf-btn{
+        width:150px;
+    }
+    .entries-btn{
+        width:120px;
+    }
+    .export-section {
+        justify-content: center;
+        flex-direction: column;
+    }
+    .instr {
+        width: 100%;
+        max-width: 200px;
+    }
+    .fstyle, .fsize {
+        width: 200px;
+    }
+    
+}
+
+@media (max-width: 480px) {
+    .btn-group {
+        gap: 3px;
+    }
+
+    .format-btn, .action-btn {
+        width: 30px;
+        height: 35px;
+    }
+    .entries-btn {
+        width: 60px;
+        font-size: 11px;
+    }
+}
+
+/* Responsive logout button */
+@media (max-width: 768px) {
+    .logout-btn {
+        display: block;
+        font-size: 15px;
+        position: relative;
+        bottom: 16.9rem;
+        left:28rem;
+    }
+}
+@media (max-width: 480px) {
+    .logout-btn {
+        width: 100%;
+        font-size: 13px;
+        margin: 10px auto 0 auto;
+        position: relative;
+        bottom: 16.9rem;
+        left:10rem;
+    }
+}

@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="login_styles.css">
+
+    <!-----------ICON PACKAGE----------------->
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <script src="https://unpkg.com/boxicons@2.1.4/dist/boxicons.js"></script>
+
+    <!-----------ICON IMAGE----------------->
+    <link rel = "shortcut icon" href = "images/NIC Logo JPG/BILINGUAL _SQUARE_NIC_Logo_white_bg-01.jpg" type="image/x-icon">
+    <title>LogIn</title>
+</head>
+
+<body style="background-color: #f2f5ff">
+    <div class="container">
+        <!------------------------------------TOP COLUMN---------------------------------------->
+
+        <div class="horizontal-column" id="hrz-clmn">
+            <div class="digital-india-logo">
+                <img src="images/digital-india.png" alt="Digital India Logo">
+            </div>
+            <div class="rak">
+                <h1>DAK REGISTER</h1>
+            </div>
+            <div class="nic-logo">
+                <img src="images/NIC-Logo-white.png" alt="NIC Logo">
+            </div>
+        </div>
+
+        <!------------------------------------INTRO--------------------------------------------->
+
+        <div class="intro">
+            <h2>Welcome To NIC Meghalaya</h2>
+        </div>
+
+        <!------------------------------------SIGN-UP & LOGIN----------------------------------->
+        <div class="head">
+            <b>LOG IN</b>
+            <b>SIGN UP</b>
+        </div>
+
+        <div class="toggle-container">
+            <label class="switch">
+                <input type="checkbox">
+                <span class="slider"></span>
+            </label>
+        </div>
+
+        <div class="flip-container" id="flipContainer">
+            <div class="flipper">
+                <div class="front">
+                    <!--------------------------------------LOGIN BOX--------------------------------------->
+                    <div class="login-box" id="login-box">
+                        <form id="form" action="/">
+                            <div class="outer-box">
+                                <h2>Log In</h2>
+                                <div class="input-box">
+                                    <input type="text" id="loginphoneNo" name="phone-number" placeholder="Phone Number" onkeyup="validNumber(this.value)" onkeypress="return (event.charCode > 47 && event.charCode < 58)" autocomplete="off">
+                                    <i class='bx bx-phone'></i>
+                                </div>
+
+                                <div class="below">
+                                    <div class="log-btn">
+                                        <button role="button" onclick = "comparePhoneNo()">LOG IN</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+              
+           
+                <div class="back">
+                    <!------------------------------------------------REGISTER----------------------------------------------->
+                    <div class="register-box" id="register-box">
+                        <form id="form">
+                            <div class="reg-box">
+                                <h2>Sign Up</h2>
+                                <div class="input-box">
+                                    <input type="text" id="Fname" name="name" placeholder="First Name" onkeypress="return (event.charCode > 64 && event.charCode < 91) || (event.charCode > 96 && event.charCode < 123)" autocomplete="off" required>
+                                    <box-icon name='face' color='#ffffff'></box-icon>
+                                </div>
+                                <div class="input-box">
+                                    <input type="text" id="Lname" name="name" placeholder="Last Name" onkeypress="return (event.charCode > 64 && event.charCode < 91) || (event.charCode > 96 && event.charCode < 123)"autocomplete="off" required>
+                                    <box-icon name='face' color='#ffffff'></box-icon>
+                                </div>
+                                <div class="input-box">
+                                    <input type="text" id="registerphoneNo" name="phone-number" placeholder="Phone Number" onkeypress="return (event.charCode > 47 && event.charCode < 58)" autocomplete="off" required>
+                                    <span id = "message"></span>
+                                    <i class='bx bx-phone'></i>
+                                </div>
+                            
+                                <div class="input-box">
+                                    <div class="cap-in">
+                                        <i class='bx bx-ghost'></i>
+                                        <input type="text" id="captchaInput" placeholder="Enter Captcha" required>
+                                        <img src="images/captcha.png" alt="Captcha" class="captcha-image" width = "30" height = "30">
+                                        <b><div id="captcha-text" class="captcha-image"></div></b>
+                                    </div>
+                                </div>
+                            
+                                <div class = "checkbox">
+                                    <input type = "checkbox" id ="agreement">
+                                    <label for="agreement"><b>I Agree To The <a href="terms.html" target="_blank" style="color: #2c3e50; text-decoration: underline;">Terms & Conditions</a></b></label>
+                                </div>
+                            
+                                <div class="below">
+                                    <div class="reg-btn">
+                                        <button type = "submit" id="signupButton" disabled>SIGN UP</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+             </div>
+        </div> 
+        <!--------------------------------------------------BOTTOM BAR------------------------------------------------->
+
+        <div class = "bottom-column">
+            <h3 style ="color: white;">Copyright © 2025, Designed, Developed & Hosted By National Informatics Center, Meghalaya State Center Shillong</h3>
+        </div>
+        
+    </div>
+</body>
+<script src="auth.js"></script>
+<script src="login.js"></script>
+</html>

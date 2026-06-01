@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="images/NIC Logo JPG/BILINGUAL _SQUARE_NIC_Logo_white_bg-01.jpg" type="image/x-icon">
+    <title>DAK Acquired</title>
+    <link rel="stylesheet" href="./dak_acquired_styles.css">
+    <script src="https://unpkg.com/boxicons@2.1.4/dist/boxicons.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+</head>
+<body>
+    <div class="flip-container" id="flipContainer">
+        <div class="flipper">
+
+        <div class="container">
+            <div class="header">
+                <div class="digital-india-logo">
+                    <img src="images/digital-india.png" alt="Digital India Logo">
+                </div>
+                <div class="log-name">
+                    <h1>NIC DAK ACQUIRED</h1>
+                    <h3>Control Every Step: Log it. Track it. Edit it. Acquire it.</h3>
+                </div>
+                <div class="nic-logo">
+                    <img src="images/NIC-Logo-white.png" alt="NIC Logo">
+                </div>
+            </div>
+
+            <div class="table-container">
+                <!-- ══════════ TOOLBAR ══════════ -->
+                <div class="toolbar-container">
+                    <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">&#9776;</button>
+                    <div class="features" id="toolbar">
+                        <!-- Group 1: Instructions & Zones -->
+                        <div class="toolbar-group">
+                            <select class="instr" id="instr">
+                                <option>Instructions</option>
+                                <option>Click On Any Cell To Start Editing</option>
+                                <option>Use Tab To Move To Next Cell</option>
+                                <option>Right Click To Insert Or Delete Row</option>
+                                <option>Press Enter or Click Elsewhere To Save</option>
+                                <option>Use hamburger menu to sort columns</option>
+                                <option>Click "Add New Row" to expand your table</option>
+                                <option>Double Check Before Saving</option>
+                            </select>
+                            <select class="instr" id="zoneA_dropdown">
+                                <option>ZONE A</option> 
+                                <option>Bihar</option>
+                                <option>Haryana</option>
+                                <option>Rajasthan</option>
+                                <option>Jharkhand</option>
+                                <option>Delhi(New)</option>
+                                <option>Chhattisgarh</option>
+                                <option>Uttarakhand</option>
+                                <option>Uttar-Pradesh</option>
+                                <option>Madhya-Pradesh</option>
+                                <option>Himachal-Pradesh</option>
+                                <option>Andaman & Nicobar Islands</option>
+                            </select>
+                            <select class="instr" id="zoneB_dropdown">
+                                <option>ZONE B</option>
+                                <option>Punjab</option>
+                                <option>Gujarat</option>
+                                <option>Chandigarh</option>
+                                <option>Maharashtra</option>
+                                <option>Daman & Diu</option>
+                                <option>Dandra & Nagar Haveli</option>
+                            </select>
+                            <select class="instr" id="zoneC_dropdown">
+                                <option>ZONE C</option>
+                                <option>Goa</option>
+                                <option>Kerala</option>
+                                <option>Assam</option>
+                                <option>Sikkim</option>
+                                <option>Odisha</option>
+                                <option>Tripura</option>
+                                <option>Ladakh</option>
+                                <option>Manipur</option>
+                                <option>Mizoram</option>
+                                <option>Nagaland</option>
+                                <option>Karnataka</option>
+                                
+                                <option>Telangana</option>
+                                
+                                <option>Meghalaya</option>
+                                <option>Tamil Nadu</option>
+                                
+                                
+                                <option>Puducherry</option>
+                                <option>West Bengal</option>
+                                <option>Lakshadweep</option>
+                                <option>Andhra Pradesh</option>
+                                <option>Jammu and Kashmir</option>
+                                <option>Arunachal Pradesh</option>
+                            </select>
+                        </div>
+
+                        <!-- Group 2: Font tools -->
+                        <div class="toolbar-group font-tools">
+                            <select class="fstyle" id="fStyle" onChange="changeFontStyle(this);">
+                                <option value="Arial">Arial</option>
+                                <option value="Georgia">Georgia</option>
+                                <option value="Helvetica">Helvetica</option>
+                                <option value="New York">New York</option>
+                                <option value="Sans">Sans</option>
+                                <option value="Times New Roman">Times New Roman</option>
+                            </select>
+                            <select class="fsize" id="fSize" onChange="changeFontSize(this);">
+                                <option value="8px">8px</option>
+                                <option value="10px">10px</option>
+                                <option value="12px">12px</option>
+                                <option value="14px">14px</option>
+                                <option value="16px">16px</option>
+                                <option value="18px">18px</option>
+                                <option value="20px">20px</option>
+                                <option value="22px">22px</option>
+                                <option value="24px">24px</option>
+                            </select>
+                            <div class="text-format-btns">
+                                <button class="bold-btn format-btn" id="boldBtn" title="Bold"><b>B</b></button>
+                                <button class="italic-btn format-btn" id="italicsBtn" title="Italic"><b>I</b></button>
+                                <button class="underline-btn format-btn" id="underlineBtn" title="Underline"><b>U</b></button>
+                            </div>
+                            <div class="action-btns">
+                                <button class="undo-btn format-btn" id="undo" title="Undo"><b>&#x21B6;</b></button>
+                                <button class="redo-btn format-btn" id="redo" title="Redo"><b>&#x21B7;</b></button>
+                            </div>
+                        </div>
+
+                        <!-- Group 3: Find & Replace -->
+                        <div class="toolbar-group find-replace-group">
+                            <div class="find-replace">
+                                <div class="find-section">
+                                    <input type="text" class="find-box" placeholder="Find Word...">
+                                    <button id="findWord" class="find-btn">Find</button>
+                                </div>
+                                <div class="replace-section">
+                                    <input type="text" class="replace-box" placeholder="Replace Word...">
+                                    <button id="replaceWord" class="replace-btn">Replace</button>
+                                </div>
+                            </div>
+                            <div class="match-counter">
+                                <b>MATCHES</b><span>0</span>
+                            </div>
+                        </div>
+
+                        <!-- Group 4: Global Actions -->
+                        <div class="toolbar-group global-actions">
+                            <button class="pdf-btn dashboard-link" onclick="exportToPDF()">View as PDF</button>
+                            <a href="dashboard_acquired.html" class="pdf-btn dashboard-link" style="text-decoration:none;display:flex;align-items:center;">Dashboard</a>
+                            <button class="save-btn btn dashboard-link" id="saveBtn">Save</button>
+                            <button class="logout-btn btn dashboard-link" id="logoutBtn">Log Out</button>
+                            <div class="split-btn-container">
+                                <button class="entries-btn">No Of Entries</button>
+                                <button class="dropdown-toggle" aria-expanded="false">
+                                    <span class="caret">&#11015;</span>
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><a>6 Entries</a></li>
+                                    <li><a>12 Entries</a></li>
+                                    <li><a>18 Entries</a></li>
+                                    <li><a>25 Entries</a></li>
+                                    <li><a>50 Entries</a></li>
+                                    <li><a>100 Entries</a></li>
+                                    <li><a>150 Entries</a></li>
+                                    <li><a>250 Entries</a></li>
+                                    <li><a>500 Entries</a></li>
+                                    <li><a>1000 Entries</a></li> 
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ══════════ TABLE ══════════ -->
+                <div class="table-scroll-wrapper">
+                <table class="excel-table" id="excelTable">
+                    <thead>
+                        <!-- ── ROW 1: Group headers ── -->
+                        <tr class="group-header-row">
+                            <!-- SERIAL NO (rowspan 2) -->
+                            <th class="row-number" rowspan="2">
+                                <div class="column-header"><span>NO.</span></div>
+                            </th>
+
+                            <!-- DATES group (colspan 2) -->
+                            <th class="group-header dates-group" colspan="2">DATES</th>
+
+                            <!-- RECEIVED FROM group (colspan 2) -->
+                            <th class="group-header received-from-group" colspan="2">RECEIVED FROM</th>
+
+                            <!-- LETTER LANGUAGE (rowspan 2) -->
+                            <th class="letterLanguage" rowspan="2">
+                                <div class="column-header">
+                                    <span>LETTER LANGUAGE</span>
+                                    <div class="hamburger-menu">
+                                        <button class="hamburger-btn">&#9776;</button>
+                                        <div class="sort-dropdown" id="sort-letterLanguage">
+                                            <div class="dropdown-section">
+                                                <div class="dropdown-header">Sort</div>
+                                                <div class="sort-option" data-order="asc" onclick="sortColumn('letterLanguage','asc')">Sort Ascending</div>
+                                                <div class="sort-option" data-order="desc" onclick="sortColumn('letterLanguage','desc')">Sort Descending</div>
+                                                <div class="sort-option" data-order="neutral" onclick="sortColumn('letterLanguage','neutral')">Sort Neutral</div>
+                                            </div>
+                                            <div class="dropdown-section">
+                                                <div class="dropdown-header">Search</div>
+                                                <input type="text" class="column-search-input" placeholder="Search language..." data-column="letterLanguage">
+                                                <div class="search-actions">
+                                                    <button class="search-btn" onclick="searchColumn('letterLanguage')">Filter</button>
+                                                    <button class="search-btn clear" onclick="clearColumnSearch('letterLanguage')">Clear</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </th>
+
+                            <!-- ZONE group header (rowspan 2) -->
+                            <th class="zone" rowspan="2">
+                                <div class="column-header">
+                                    <span>ZONE</span>
+                                    <div class="hamburger-menu">
+                                        <button class="hamburger-btn">&#9776;</button>
+                                        <div class="sort-dropdown" id="sort-zone">
+                                            <div class="dropdown-section">
+                                                <div class="dropdown-header">Sort</div>
+                                                <div class="sort-option" data-order="asc" onclick="sortColumn('zone','asc')">Sort Ascending</div>
+                                                <div class="sort-option" data-order="desc" onclick="sortColumn('zone','desc')">Sort Descending</div>
+                                                <div class="sort-option" data-order="neutral" onclick="sortColumn('zone','neutral')">Sort Neutral</div>
+                                            </div>
+                                            <div class="dropdown-section">
+                                                <div class="dropdown-header">Search</div>
+                                                <input type="text" class="column-search-input" placeholder="Search zone..." data-column="zone">
+                                                <div class="search-actions">
+                                                    <button class="search-btn" onclick="searchColumn('zone')">Filter</button>
+                                                    <button class="search-btn clear" onclick="clearColumnSearch('zone')">Clear</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </th>
+
+                            <!-- LETTER INFO group (colspan 1) -->
+                            <th class="group-header letter-info-group" colspan="1">LETTER INFO</th>
+
+                            <!-- SUBJECT (rowspan 2) -->
+                            <th class="subject" rowspan="2">
+                                <div class="column-header">
+                                    <span>SUBJECT</span>
+                                    <div class="hamburger-menu">
+                                        <button class="hamburger-btn">&#9776;</button>
+                                        <div class="sort-dropdown" id="sort-subject">
+                                            <div class="dropdown-section">
+                                                <div class="dropdown-header">Sort</div>
+                                                <div class="sort-option" data-order="asc" onclick="sortColumn('subject','asc')">Sort Ascending</div>
+                                                <div class="sort-option" data-order="desc" onclick="sortColumn('subject','desc')">Sort Descending</div>
+                                                <div class="sort-option" data-order="neutral" onclick="sortColumn('subject','neutral')">Sort Neutral</div>
+                                            </div>
+                                            <div class="dropdown-section">
+                                                <div class="dropdown-header">Search</div>
+                                                <input type="text" class="column-search-input" placeholder="Search subjects..." data-column="subject">
+                                                <div class="search-actions">
+                                                    <button class="search-btn" onclick="searchColumn('subject')">Filter</button>
+                                                    <button class="search-btn clear" onclick="clearColumnSearch('subject')">Clear</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </th>
+
+                            <!-- METHOD OF ACQUIRING group (colspan 1) -->
+                            <th class="group-header method-group" colspan="1">METHOD OF ACQUIRING</th>
+                        </tr>
+
+                        <!-- ── ROW 2: Sub-column headers ── -->
+                        <tr class="sub-header-row">
+                            <!-- DATES sub-cols -->
+                            <th class="letterDate sub-col">
+                                <div class="column-header">
+                                    <span>Date of Letter</span>
+                                    <div class="hamburger-menu">
+                                        <button class="hamburger-btn">&#9776;</button>
+                                        <div class="sort-dropdown" id="sort-letterDate">
+                                            <div class="dropdown-section">
+                                                <div class="dropdown-header">Sort</div>
+                                                <div class="sort-option" onclick="sortColumn('letterDate','asc')">Sort Ascending</div>
+                                                <div class="sort-option" onclick="sortColumn('letterDate','desc')">Sort Descending</div>
+                                            </div>
+                                            <div class="dropdown-section">
+                                                <div class="dropdown-header">Search</div>
+                                                <input type="text" class="column-search-input" placeholder="DD/MM/YYYY" data-column="letterDate">
+                                                <div class="search-actions">
+                                                    <button class="search-btn" onclick="searchColumn('letterDate')">Filter</button>
+                                                    <button class="search-btn clear" onclick="clearColumnSearch('letterDate')">Clear</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </th>
+                            <th class="acquiredOn sub-col">
+                                <div class="column-header">
+                                    <span>Received On</span>
+                                    <div class="hamburger-menu">
+                                        <button class="hamburger-btn">&#9776;</button>
+                                        <div class="sort-dropdown" id="sort-acquiredOn">
+                                            <div class="dropdown-section">
+                                                <div class="dropdown-header">Sort</div>
+                                                <div class="sort-option" onclick="sortColumn('acquiredOn','asc')">Sort Ascending</div>
+                                                <div class="sort-option" onclick="sortColumn('acquiredOn','desc')">Sort Descending</div>
+                                            </div>
+                                            <div class="dropdown-section">
+                                                <div class="dropdown-header">Search</div>
+                                                <input type="text" class="column-search-input" placeholder="DD/MM/YYYY" data-column="acquiredOn">
+                                                <div class="search-actions">
+                                                    <button class="search-btn" onclick="searchColumn('acquiredOn')">Filter</button>
+                                                    <button class="search-btn clear" onclick="clearColumnSearch('acquiredOn')">Clear</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </th>
+
+                            <!-- RECEIVED FROM sub-cols -->
+                            <th class="officeName sub-col">
+                                <div class="column-header">
+                                    <span>Office / Dept Name</span>
+                                    <div class="hamburger-menu">
+                                        <button class="hamburger-btn">&#9776;</button>
+                                        <div class="sort-dropdown" id="sort-officeName">
+                                            <div class="dropdown-section">
+                                                <div class="dropdown-header">Sort</div>
+                                                <div class="sort-option" onclick="sortColumn('officeName','asc')">Sort Ascending</div>
+                                                <div class="sort-option" onclick="sortColumn('officeName','desc')">Sort Descending</div>
+                                            </div>
+                                            <div class="dropdown-section">
+                                                <div class="dropdown-header">Search</div>
+                                                <input type="text" class="column-search-input" placeholder="Search office..." data-column="officeName">
+                                                <div class="search-actions">
+                                                    <button class="search-btn" onclick="searchColumn('officeName')">Filter</button>
+                                                    <button class="search-btn clear" onclick="clearColumnSearch('officeName')">Clear</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </th>
+                            <th class="specificPerson sub-col">
+                                <div class="column-header">
+                                    <span>Name of person</span>
+                                    <div class="hamburger-menu">
+                                        <button class="hamburger-btn">&#9776;</button>
+                                        <div class="sort-dropdown" id="sort-specificPerson">
+                                            <div class="dropdown-section">
+                                                <div class="dropdown-header">Sort</div>
+                                                <div class="sort-option" onclick="sortColumn('specificPerson','asc')">Sort Ascending</div>
+                                                <div class="sort-option" onclick="sortColumn('specificPerson','desc')">Sort Descending</div>
+                                            </div>
+                                            <div class="dropdown-section">
+                                                <div class="dropdown-header">Search</div>
+                                                <input type="text" class="column-search-input" placeholder="Search person name..." data-column="specificPerson">
+                                                <div class="search-actions">
+                                                    <button class="search-btn" onclick="searchColumn('specificPerson')">Filter</button>
+                                                    <button class="search-btn clear" onclick="clearColumnSearch('specificPerson')">Clear</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </th>
+
+                            <!-- LETTER INFO sub-col -->
+                            <th class="letterNo sub-col">
+                                <div class="column-header">
+                                    <span>Letter No.</span>
+                                    <div class="hamburger-menu">
+                                        <button class="hamburger-btn">&#9776;</button>
+                                        <div class="sort-dropdown" id="sort-letterNo">
+                                            <div class="dropdown-section">
+                                                <div class="dropdown-header">Sort</div>
+                                                <div class="sort-option" onclick="sortColumn('letterNo','asc')">Sort Ascending</div>
+                                                <div class="sort-option" onclick="sortColumn('letterNo','desc')">Sort Descending</div>
+                                            </div>
+                                            <div class="dropdown-section">
+                                                <div class="dropdown-header">Search</div>
+                                                <input type="text" class="column-search-input" placeholder="Search letter no..." data-column="letterNo">
+                                                <div class="search-actions">
+                                                    <button class="search-btn" onclick="searchColumn('letterNo')">Filter</button>
+                                                    <button class="search-btn clear" onclick="clearColumnSearch('letterNo')">Clear</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </th>
+
+                            <!-- METHOD OF ACQUIRING sub-col -->
+                            <th class="acquisitionMethod sub-col">
+                                <div class="column-header">
+                                    <span>Through</span>
+                                    <div class="hamburger-menu">
+                                        <button class="hamburger-btn">&#9776;</button>
+                                        <div class="sort-dropdown" id="sort-acquisitionMethod">
+                                            <div class="dropdown-section">
+                                                <div class="dropdown-header">Sort</div>
+                                                <div class="sort-option" onclick="sortColumn('acquisitionMethod','asc')">Sort Ascending</div>
+                                                <div class="sort-option" onclick="sortColumn('acquisitionMethod','desc')">Sort Descending</div>
+                                            </div>
+                                            <div class="dropdown-section">
+                                                <div class="dropdown-header">Search</div>
+                                                <input type="text" class="column-search-input" placeholder="Search method..." data-column="acquisitionMethod">
+                                                <div class="search-actions">
+                                                    <button class="search-btn" onclick="searchColumn('acquisitionMethod')">Filter</button>
+                                                    <button class="search-btn clear" onclick="clearColumnSearch('acquisitionMethod')">Clear</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="tableBody">
+                        <!-- Initial rows will be added by JavaScript -->
+                    </tbody>
+
+                </table>
+                </div><!-- /table-scroll-wrapper -->
+
+                <!-- ══════════ BOTTOM BUTTONS ══════════ -->
+                <div class="button-container">
+                    <button class="add-row-btn" onclick="addNewRow()">+ Add New Row</button>
+                    <button class="switch-btn" onclick="switchPage('despatch')">Switch
+                        <span class="hidden-text">Switch To DAK Delivered </span>
+                    </button>
+                </div>
+            </div>
+
+        </div>
+        </div>
+    </div>
+
+    <script src="auth.js"></script>
+    <script src="shared.js"></script>
+    <script src="dak_acquired.js"></script>
+
+    <div class="page-footer">
+        <h3>Copyright &copy; 2025, Designed, Developed &amp; Hosted By National Informatics Center, Meghalaya State Center Shillong</h3>
+    </div>
+    <button id="scrollToTopBtn" title="Go to top">
+        <i class='bx bx-up-arrow-alt' style="font-size: 24px;"></i> <span>⬆️ Top</span>
+    </button>
+</body>
+</html>

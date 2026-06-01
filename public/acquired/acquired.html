@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dak Receipt — डीएके रसीद</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@300;400;500;600&family=Noto+Sans+Devanagari:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel = "shortcut icon" href = "/images/NIC Logo JPG/BILINGUAL _SQUARE_NIC_Logo_white_bg-01.jpg" type="image/x-icon">
+  <link rel="stylesheet" href="acquired_styles.css">
+</head>
+<body>
+
+<!-- ══════════ HEADER ══════════ -->
+<header class="site-header">
+  <div class="header-brand">
+    <div class="header-logo">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+        <path d="M22 2L11 13" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+        <path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="white" stroke-width="1.5" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <div class="header-titles">
+      <div class="header-title-en">Dak Receipt</div>
+      <div class="header-title-hi">डीएके रसीद</div>
+    </div>
+    <div class="header-divider"></div>
+    <div style="display:flex;flex-direction:column;gap:2px">
+      <div style="font-size:12px;color:rgba(255,255,255,1);font-weight:500">National Informatics Centre</div>
+      <div class="header-dept">राष्ट्रीय सूचना विज्ञान केंद्र</div>
+    </div>
+    <div class="header-divider"></div>
+    <div style="display:flex;flex-direction:column;gap:2px">
+      <div style="font-size:12px;color:rgba(255,255,255,1);font-weight:500">Digital India Power to Empower</div>
+      <div class="header-dept">डिजिटल इंडिया पावर टू एम्पावर</div>
+    </div>
+  </div>
+  <div class="header-right">
+    <button class="logout-btn btn dashboard-link" id="logoutBtn">Log Out</button>
+    <span class="inward-badge">INWARD</span>
+    <div class="header-serial">
+      <div class="header-serial-no" id="headerSerial">—</div>
+      <div class="header-serial-label">क्रम संख्या / Serial</div>
+    </div>
+    <div class="header-user" id="headerUser" title="User profile">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+      </svg>
+    </div>
+  </div>
+</header>
+
+<!-- ══════════ NAV ══════════ -->
+<nav class="nav-bar">
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="showPage('entry')">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+      New Receipt <span class="nav-tab-hi">नई प्राप्ति</span>
+    </button>
+    <button class="nav-tab" onclick="showPage('dashboard')">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      Dashboard <span class="nav-tab-hi">डैशबोर्ड</span>
+    </button>
+    <button class="nav-tab" onclick="showPage('search')">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      Search <span class="nav-tab-hi">खोज</span>
+    </button>
+    <button class="nav-tab" onclick="showPage('pending')">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      Pending <span class="nav-tab-hi">लंबित</span>
+    </button>
+    <button class="nav-tab" onclick="showPage('reports')">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+      Reports <span class="nav-tab-hi">रिपोर्ट</span>
+    </button>
+  </div>
+  <div class="nav-right-actions">
+    <div class="nav-search">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <input type="text" id="quickSearch" placeholder="Quick search… / खोजें…" oninput="handleQuickSearch(this.value)">
+    </div>
+    <button class="btn btn-sm" onclick="window.location.href='/despatch/despatch.html'" style="margin-right:4px; background-color: #1449c3; color: white; border: none; font-weight: 600; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+      To Despatch (Outward)
+    </button>
+    <button class="btn btn-primary btn-sm" onclick="showPage('entry')">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      New
+    </button>
+  </div>
+</nav>
+
+<!-- ══════════ MAIN ══════════ -->
+<div class="main-wrap">
+
+<!-- ── PAGE: ENTRY ── -->
+<div id="page-entry" class="page active">
+  <div class="section-header">
+    <div><div class="section-title-en">New Receipt Entry</div><div class="section-title-hi">नई प्राप्ति प्रविष्टि</div></div>
+    <button class="btn btn-secondary btn-sm" onclick="loadData()">Load Saved</button>
+  </div>
+
+  <!-- Basic Details -->
+  <div class="card">
+    <div class="card-header"><div class="card-dot"></div><span class="card-title-en">Basic Details</span><span class="card-title-hi">मूल विवरण</span></div>
+    <div class="card-body">
+      <div class="field-row">
+        <div class="field"><span class="field-label">Receipt Date <span class="field-label-hi">/ प्राप्ति तिथि</span></span><input type="date" id="acquiredDate"></div>
+        <div class="field"><span class="field-label">Letter Date <span class="field-label-hi">/ पत्र तिथि</span></span><input type="date" id="letterDate"></div>
+        <div class="field"><span class="field-label">Letter No. <span class="field-label-hi">/ पत्र संख्या</span></span><input type="text" id="letterNo" placeholder="e.g. DGP/CID/2026/114"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mode of Receipt -->
+  <div class="card">
+    <div class="card-header"><div class="card-dot"></div><span class="card-title-en">Mode of Receipt</span><span class="card-title-hi">प्राप्ति माध्यम</span></div>
+    <div class="card-body">
+      <div class="mode-opts" id="modeRow">
+        <div class="mode-opt selected" data-mode="hand"    onclick="toggleMode(this)"> Hand  / हाथ</div>
+        <div class="mode-opt"          data-mode="email"   onclick="toggleMode(this)"> Email / ईमेल</div>
+        <div class="mode-opt"          data-mode="efile"   onclick="toggleMode(this)"> eFile / ईफाइल</div>
+        <div class="mode-opt"          data-mode="speed"   onclick="toggleMode(this)"> Speed Post / स्पीड पोस्ट</div>
+        <div class="mode-opt"          data-mode="regd"    onclick="toggleMode(this)"> Registered Post / रजिस्टर्ड पोस्ट </div>
+      </div>
+      <div class="mode-count" id="modeCount">1 of 2 selected — maximum 2 modes</div>
+    </div>
+  </div>
+
+  <!-- Priority -->
+  <div class="card">
+    <div class="card-header"><div class="card-dot"></div><span class="card-title-en">Priority</span><span class="card-title-hi">प्राथमिकता</span></div>
+    <div class="card-body">
+      <div class="priority-row" id="priorityRow">
+        <div class="priority-opt" onclick="selectPriority(this,'immediate')"><div class="priority-opt-en">🔴 Immediate</div><div class="priority-opt-hi">अतिआवश्यक</div></div>
+        <div class="priority-opt sel-priority" onclick="selectPriority(this,'priority')"><div class="priority-opt-en">🟡 Priority</div><div class="priority-opt-hi">प्राथमिक</div></div>
+      </div>
+      <input type="hidden" id="priorityValue" value="priority">
+    </div>
+  </div>
+
+  <!-- Letter Language -->
+  <div class="card">
+    <div class="card-header"><div class="card-dot"></div><span class="card-title-en">Letter Language</span><span class="card-title-hi">पत्र की भाषा</span></div>
+    <div class="card-body">
+      <div class="lang-opts" id="langRow">
+        <div class="lang-opt selected" data-lang="hi" onclick="selectLang(this)">Hindi</div>
+        <div class="lang-opt" data-lang="en" onclick="selectLang(this)">English</div>
+        <div class="lang-opt" data-lang="bi" onclick="selectLang(this)">Bilingual / द्विभाषी</div>
+      </div>
+      <input type="hidden" id="langValue" value="hi">
+    </div>
+  </div>
+  
+  <!-- Subject -->
+  <div class="card">
+    <div class="card-header"><div class="card-dot"></div><span class="card-title-en">Subject</span><span class="card-title-hi">विषय</span></div>
+    <div class="card-body">
+      <div class="field"><span class="field-label">Subject (English)</span><textarea id="subjectEn" placeholder="Enter subject in English…" oninput="triggerTranslate('subjectEn','subjectHi')"></textarea></div>
+      <div class="field" style="margin-top:10px"><span class="field-label">विषय (हिंदी) <span class="translate-spinner" id="spinner-subjectHi"></span></span><div class="field-hindi" id="subjectHi">यहाँ अनुवाद स्वतः दिखेगा…</div></div>
+    </div>
+  </div>
+
+  <!-- Sender (From) -->
+  <div class="card">
+    <div class="card-header"><div class="card-dot"></div><span class="card-title-en">Sent From</span><span class="card-title-hi">प्रेषक / कार्यालय</span></div>
+    <div class="card-body">
+      <div class="field-row">
+        <div class="field" style="grid-column:1/span 2"><span class="field-label">Office / Organisation Name <span class="field-label-hi">/ कार्यालय नाम</span></span><input type="text" id="officeName" placeholder="e.g. Office of DGP, Meghalaya" oninput="triggerTranslate('officeName','officeNameHi')"></div>
+        <div class="field"><span class="field-label">Specific Person <span class="field-label-hi">/ व्यक्ति</span></span><input type="text" id="specificPerson" placeholder="Name of sender (optional)" oninput="triggerTranslate('specificPerson','specificPersonHi')"></div>
+      </div>
+      <div class="field-row" style="margin-top:4px">
+        <div class="field" style="grid-column:1/span 2"><span class="field-label">कार्यालय (हिंदी) <span class="translate-spinner" id="spinner-officeNameHi"></span></span><div class="field-hindi" id="officeNameHi">कार्यालय नाम…</div></div>
+        <div class="field"><span class="field-label">व्यक्ति (हिंदी) <span class="translate-spinner" id="spinner-specificPersonHi"></span></span><div class="field-hindi" id="specificPersonHi">प्रेषक का नाम…</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Address -->
+  <div class="card">
+    <div class="card-header"><div class="card-dot"></div><span class="card-title-en">Sender Address</span><span class="card-title-hi">प्रेषक पता</span></div>
+    <div class="card-body">
+      <div class="field-row">
+        <div class="field"><span class="field-label">Pincode <span class="field-label-hi">/ पिन कोड</span></span><input type="text" id="addrPin" placeholder="6-digit Pincode" maxlength="6" oninput="onPincodeInput(this)"></div>
+        <div class="field"><span class="field-label">City <span class="field-label-hi">/ शहर</span></span><input type="text" id="addrCity" placeholder="City…" oninput="onAddressChange()"></div>
+        <div class="field"><span class="field-label">District <span class="field-label-hi">/ जिला</span></span><input type="text" id="addrDistrict" placeholder="District…"></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><span class="field-label">Block <span class="field-label-hi">/ प्रखंड</span></span><input type="text" id="addrBlock" placeholder="Block / Tehsil…"></div>
+        <div class="field">
+          <span class="field-label">State <span class="field-label-hi">/ राज्य</span></span>
+          <select id="addrState" onchange="onStateChange()">
+            <option value="">— Select State —</option>
+          </select>
+        </div>
+        <div class="field"><span class="field-label">Zone (Auto) <span class="field-label-hi">/ क्षेत्र</span></span>
+          <div id="zoneDisplay" class="zone-auto-tag hidden"><span class="dot"></span>Zone: <strong id="zoneLabel">—</strong><span class="hi" id="zoneHi">—</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Received By -->
+  <div class="card">
+    <div class="card-header"><div class="card-dot"></div><span class="card-title-en">Received By</span><span class="card-title-hi">प्राप्तकर्ता अधिकारी</span></div>
+    <div class="card-body">
+      <div class="field-row">
+        <div class="field"><span class="field-label">Name <span class="field-label-hi">/ नाम</span></span><input type="text" id="recByName" placeholder="Officer name…" oninput="triggerTranslate('recByName','recByNameHi')"></div>
+        <div class="field"><span class="field-label">Designation <span class="field-label-hi">/ पद</span></span><input type="text" id="recByDsgn" placeholder="Designation…" oninput="triggerTranslate('recByDsgn','recByDsgnHi')"></div>
+        <div class="field"><span class="field-label">Department <span class="field-label-hi">/ विभाग</span></span><input type="text" id="recByDept" placeholder="Section / Branch…" oninput="triggerTranslate('recByDept','recByDeptHi')"></div>
+      </div>
+      <div class="field-row" style="margin-top:4px">
+        <div class="field"><span class="field-label">नाम (हिंदी) <span class="translate-spinner" id="spinner-recByNameHi"></span></span><div class="field-hindi" id="recByNameHi">अधिकारी का नाम…</div></div>
+        <div class="field"><span class="field-label">पद (हिंदी) <span class="translate-spinner" id="spinner-recByDsgnHi"></span></span><div class="field-hindi" id="recByDsgnHi">पदनाम…</div></div>
+        <div class="field"><span class="field-label">विभाग (हिंदी) <span class="translate-spinner" id="spinner-recByDeptHi"></span></span><div class="field-hindi" id="recByDeptHi">विभाग / शाखा…</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Remarks -->
+  <div class="card">
+    <div class="card-header"><div class="card-dot"></div><span class="card-title-en">Remarks</span><span class="card-title-hi">टिप्पणी</span></div>
+    <div class="card-body">
+      <div class="field"><span class="field-label">Remarks (English)</span><textarea id="remarksEn" placeholder="Any additional remarks, enclosures, references…" oninput="triggerTranslate('remarksEn','remarksHi')"></textarea></div>
+      <div class="field" style="margin-top:10px"><span class="field-label">टिप्पणी (हिंदी) <span class="translate-spinner" id="spinner-remarksHi"></span></span><div class="field-hindi" id="remarksHi">टिप्पणी…</div></div>
+    </div>
+  </div>
+
+  <div class="form-footer">
+    <button class="btn btn-danger" onclick="clearForm()">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg>
+      Clear / साफ़ करें
+    </button>
+    <div class="btn-group">
+      <button class="btn btn-secondary" onclick="saveDraft()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v14a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+        Save Draft / मसौदा
+      </button>
+      <button class="btn btn-primary" id="submitBtn" onclick="submitEntry()">
+        Save & Submit
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ── PAGE: DASHBOARD ── -->
+<div id="page-dashboard" class="page">
+  <div class="section-header">
+    <div><div class="section-title-en">Dashboard</div><div class="section-title-hi">डैशबोर्ड</div></div>
+    <div class="btn-group">
+      <button class="btn btn-secondary btn-sm" onclick="showExportModal('tabular')">Export PDF</button>
+      <button class="btn btn-primary btn-sm" onclick="showPage('entry')">New Receipt</button>
+    </div>
+  </div>
+  <div class="stats-row">
+    <div class="stat-card"><div class="stat-label">Total Received</div><div class="stat-value" id="statTotal">—</div><div class="stat-hi">कुल प्राप्त</div></div>
+    <div class="stat-card urgent"><div class="stat-label">Immediate</div><div class="stat-value" id="statImmediate">—</div><div class="stat-hi">अतिआवश्यक</div></div>
+    <div class="stat-card priority-s"><div class="stat-label">Priority</div><div class="stat-value" id="statPriority">—</div><div class="stat-hi">प्राथमिक</div></div>
+    <div class="stat-card"><div class="stat-label">Zones</div><div class="stat-value" id="statZones">—</div><div class="stat-hi">क्षेत्र</div></div>
+    <div class="stat-card pending-s"><div class="stat-label">Pending Fwd</div><div class="stat-value" id="statPending">—</div><div class="stat-hi">अग्रेषण शेष</div></div>
+  </div>
+  <div class="table-card"><div class="table-card-header"><span class="table-card-title">Recent Receipts / हालिया प्राप्तियाँ</span><button class="btn btn-secondary btn-sm" onclick="showPage('search')">View All</button></div><div id="recentTableBody"><p style="padding:20px;color:var(--text3);font-size:13px">Loading…</p></div></div>
+</div>
+
+<!-- ── PAGE: SEARCH ── -->
+<div id="page-search" class="page">
+  <div class="section-header"><div><div class="section-title-en">Search & Filter</div><div class="section-title-hi">खोज एवं फ़िल्टर</div></div><button class="btn btn-secondary btn-sm" onclick="showExportModal('tabular')">Export PDF</button></div>
+  <div class="search-bar-row"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><input type="text" id="searchInput" placeholder="Search by subject, sender, letter no… / खोजें…" oninput="filterTable(this.value)"></div>
+  <div class="filter-row">
+    <div class="filter-chip active">All</div>
+    <div class="filter-chip">Zone: <select id="filterZone" onchange="filterTable()"><option value="">All Zones</option><option value="A">A Zone</option><option value="B">B Zone</option><option value="C">C Zone</option></select></div>
+    <div class="filter-chip">Priority: <select id="filterPriority" onchange="filterTable()"><option value="">All</option><option value="immediate">Immediate</option><option value="priority">Priority</option></select></div>
+    <div class="filter-chip">Mode: <select id="filterMode" onchange="filterTable()"><option value="">All Modes</option><option value="hand">Hand</option><option value="email">Email</option><option value="efile">eFile</option><option value="speed">Speed Post</option><option value="regd">Regd. Post</option><option value="fax">Fax</option><option value="courier">Courier</option></select></div>
+    <div class="filter-chip">Lang: <select id="filterLang" onchange="filterTable()"><option value="">All</option><option value="hi">Hindi</option><option value="en">English</option><option value="bi">Bilingual</option></select></div>
+    <div class="filter-chip">From: <input type="date" id="filterFrom" onchange="filterTable()" style="padding:4px; border-radius:4px; border:1px solid var(--border); font-size:13px; background:var(--bg1); color:var(--text1); font-family:var(--sans)"></div>
+    <div class="filter-chip">To:   <input type="date" id="filterTo"   onchange="filterTable()" style="padding:4px; border-radius:4px; border:1px solid var(--border); font-size:13px; background:var(--bg1); color:var(--text1); font-family:var(--sans)"></div>
+  </div>
+  <div class="table-card"><div class="table-card-header"><span class="table-card-title" id="searchResultCount">Results</span></div><div id="searchTableBody"><p style="padding:20px;color:var(--text3);font-size:13px">Loading…</p></div></div>
+</div>
+
+<!-- ── PAGE: PENDING ── -->
+<div id="page-pending" class="page">
+  <div class="section-header"><div><div class="section-title-en">Pending Forwarding</div><div class="section-title-hi">लंबित अग्रेषण</div></div></div>
+  <div class="pending-bar">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+    <span class="pending-text">Letters awaiting forwarding to their respective sections.</span>
+    <span class="pending-hi">अग्रेषण शेष पत्र।</span>
+  </div>
+  <div class="table-card"><div class="table-card-header"><span class="table-card-title">Pending Letters / लंबित पत्र</span></div><div id="pendingTableBody"><p style="padding:20px;color:var(--text3);font-size:13px">Loading…</p></div></div>
+</div>
+
+<!-- ── PAGE: REPORTS ── -->
+<div id="page-reports" class="page">
+  <div class="section-header">
+    <div class="section-titles"><div class="section-title-en">Reports</div><div class="section-title-hi">रिपोर्ट</div></div>
+    <button class="btn btn-primary btn-sm" onclick="showExportModal('charts')">Download PDF</button>
+  </div>
+  <div class="search-bar-row" style="margin-bottom:20px;">
+    <select id="reportDateRange" class="filter-dropdown" style="padding:4px 8px;border-radius:4px;border:1px solid var(--border);" onchange="handleReportDateRange()">
+        <option value="all">All Time</option>
+        <option value="month">Specific Month</option>
+        <option value="6months">Past 6 Months</option>
+        <option value="year">Entire Year</option>
+        <option value="custom">Custom Range</option>
+    </select>
+    <div id="reportCustomRange" style="display:none; gap:10px;">
+      <input type="date" id="reportFrom" style="padding:4px 8px;border-radius:4px;border:1px solid var(--border);" onchange="loadReports()">
+      <span style="font-size:12px;color:var(--text3);line-height:26px;">to</span>
+      <input type="date" id="reportTo" style="padding:4px 8px;border-radius:4px;border:1px solid var(--border);" onchange="loadReports()">
+    </div>
+    <input type="month" id="reportSpecificMonth" style="display:none;padding:4px 8px;border-radius:4px;border:1px solid var(--border);" onchange="loadReports()">
+  </div>
+  <div id="reportsContent"><p style="padding:20px;color:var(--text3);font-size:13px">Loading statistics…</p></div>
+</div>
+
+</div>
+
+<!-- ── EXPORT MODAL ── -->
+<div class="modal-overlay" id="exportModal" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.5); z-index:9999; align-items:center; justify-content:center;">
+    <div class="modal" style="background:#fff; border-radius:8px; width:400px; padding:20px; box-shadow:0 4px 12px rgba(0,0,0,0.15);">
+        <div style="font-size:16px; font-weight:600; margin-bottom:15px; color:#1a2e44; display:flex; justify-content:space-between;">
+            <span>Export Register (PDF)</span>
+            <span style="cursor:pointer; color:#888;" onclick="document.getElementById('exportModal').style.display='none'">&times;</span>
+        </div>
+        <div style="margin-bottom:20px;">
+            <label style="display:block; font-size:12px; color:#555; margin-bottom:5px;">Select Date Range:</label>
+            <select id="tabularExportDateRange" style="width:100%; padding:8px; border-radius:4px; border:1px solid #ccc;" onchange="handleTabularExportDateRange()">
+                <option value="all">All Time</option>
+                <option value="month">Specific Month</option>
+                <option value="6months">Half Year (Past 6 Months)</option>
+                <option value="year">Full Year</option>
+                <option value="custom">Specific Range</option>
+            </select>
+            
+            <div id="tabularExportMonthContainer" style="display:none; margin-top:10px;">
+                <input type="month" id="tabularExportMonth" style="width:100%; padding:8px; border-radius:4px; border:1px solid #ccc;">
+            </div>
+            
+            <div id="tabularExportCustomContainer" style="display:none; margin-top:10px; gap:10px; align-items:center;">
+                <input type="date" id="tabularExportFrom" style="flex:1; padding:8px; border-radius:4px; border:1px solid #ccc;">
+                <span style="font-size:12px;color:#888;">to</span>
+                <input type="date" id="tabularExportTo" style="flex:1; padding:8px; border-radius:4px; border:1px solid #ccc;">
+            </div>
+        </div>
+        <div style="display:flex; justify-content:flex-end; gap:10px;">
+            <button class="btn btn-secondary" onclick="document.getElementById('exportModal').style.display='none'">Cancel</button>
+            <button class="btn btn-primary" onclick="executeExportPDF()">Generate PDF</button>
+        </div>
+    </div>
+</div>
+
+</div><!-- /main-wrap -->
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script src="/shared/nav.js" defer></script>
+<script src="/shared/translations.js"></script>
+<script type="module" src="main.js"></script>
+</body>
+</html>
