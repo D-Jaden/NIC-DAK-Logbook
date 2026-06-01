@@ -124,13 +124,13 @@ window.loadData = async function () {
     try {
         const res = await fetch('/api/acquired/load', { headers: AUTH() });
         const json = await res.json();
-        if (json.success) { 
-            allRows = json.data || []; 
+        if (json.success) {
+            allRows = json.data || [];
             const submittedRows = allRows.filter(r => r.status === 'submitted');
             const draftRows = allRows.filter(r => r.status === 'draft');
-            showToast(`Loaded ${submittedRows.length} records, ${draftRows.length} drafts`, 'info'); 
+            showToast(`Loaded ${submittedRows.length} records, ${draftRows.length} drafts`, 'info');
             renderPendingTable();
-            showPage('search'); 
+            showPage('search');
         }
         else showToast(json.error || 'Load failed', 'error');
     } catch (e) { showToast('Network error', 'error'); }
@@ -147,15 +147,15 @@ async function loadDashboard() {
         // Load recent
         const res2 = await fetch('/api/acquired/load', { headers: AUTH() });
         const json2 = await res2.json();
-        if (json2.success) { 
-            allRows = json2.data || []; 
+        if (json2.success) {
+            allRows = json2.data || [];
             const submittedRows = allRows.filter(r => r.status === 'submitted');
-            renderRecentTable(submittedRows.slice(-10).reverse()); 
-            
+            renderRecentTable(submittedRows.slice(-10).reverse());
+
             // Priority counts
             document.getElementById('statImmediate').textContent = submittedRows.filter(r => r.priority === 'immediate').length;
             document.getElementById('statPriority').textContent = submittedRows.filter(r => r.priority === 'priority').length;
-            
+
             // Pending forward counts
             const statPending = document.getElementById('statPending');
             if (statPending) statPending.textContent = allRows.filter(r => r.status === 'draft').length;
@@ -369,14 +369,14 @@ window.submitEntry = async function (isDraft = false) {
 let chartInstances = [];
 let currentExportType = null;
 
-window.parseIndianDate = function(str) {
+window.parseIndianDate = function (str) {
     if (!str) return new Date('');
     const parts = str.split('/');
     if (parts.length === 3) return new Date(`${parts[2]}-${parts[1]}-${parts[0]}T12:00:00Z`);
     return new Date(str);
 };
 
-window.handleReportDateRange = function() {
+window.handleReportDateRange = function () {
     const range = document.getElementById('reportDateRange').value;
     document.getElementById('reportSpecificMonth').style.display = range === 'month' ? 'block' : 'none';
     document.getElementById('reportCustomRange').style.display = range === 'custom' ? 'flex' : 'none';
@@ -387,13 +387,13 @@ window.loadReports = async function () {
     const range = document.getElementById('reportDateRange')?.value || 'all';
     let filteredRows = allRows;
     const now = new Date();
-    
+
     if (range === 'month') {
         const monthVal = document.getElementById('reportSpecificMonth')?.value; // YYYY-MM
         if (monthVal) {
             const [y, m] = monthVal.split('-');
             filteredRows = allRows.filter(r => {
-                if(!r.acquiredOn) return false;
+                if (!r.acquiredOn) return false;
                 const d = parseIndianDate(r.acquiredOn);
                 if (isNaN(d.getTime())) return false;
                 return d.getFullYear() === parseInt(y) && (d.getMonth() + 1) === parseInt(m);
@@ -402,13 +402,13 @@ window.loadReports = async function () {
     } else if (range === '6months') {
         const sixMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 6, now.getDate()).getTime();
         filteredRows = allRows.filter(r => {
-            if(!r.acquiredOn) return false;
+            if (!r.acquiredOn) return false;
             return parseIndianDate(r.acquiredOn).getTime() >= sixMonthsAgo;
         });
     } else if (range === 'year') {
         const currentYear = now.getFullYear();
         filteredRows = allRows.filter(r => {
-            if(!r.acquiredOn) return false;
+            if (!r.acquiredOn) return false;
             return parseIndianDate(r.acquiredOn).getFullYear() === currentYear;
         });
     } else if (range === 'custom') {
@@ -417,7 +417,7 @@ window.loadReports = async function () {
         const fromTime = from ? new Date(from).getTime() : 0;
         const toTime = to ? new Date(to).getTime() + 86400000 : Infinity; // add 1 day to include end date
         filteredRows = allRows.filter(r => {
-            if(!r.acquiredOn) return false;
+            if (!r.acquiredOn) return false;
             const t = parseIndianDate(r.acquiredOn).getTime();
             return t >= fromTime && t <= toTime;
         });
@@ -425,18 +425,22 @@ window.loadReports = async function () {
 
     const c = document.getElementById('reportsContent');
     c.innerHTML = `
-        <div id="reportsPDFContainer" style="background:#fff; padding:20px; font-family:var(--sans);">
-            <div style="text-align:center; margin-bottom:20px;">
-                <h2 style="margin:0; font-family:var(--sans); font-size:18px;">NIC National Informatics Centre Meghalaya Shillong~793003</h2>
-                <h3 style="margin:0; font-family:'Noto Sans Devanagari', sans-serif; font-size:16px; color:#444;">एनआईसी राष्ट्रीय सूचना विज्ञान केंद्र मेघालय शिलांग~793003</h3>
-                <h4 style="margin:10px 0 0 0; color:#1a2e44; font-size:15px;">DAK Acquired Register - Analytics Report</h4>
-                <p style="margin:5px 0 0 0; color:#666; font-size:12px;">Total Records: <strong>${filteredRows.length}</strong> | Filter: ${range}</p>
+        <div id="reportsPDFContainer" style="background:#fff; padding:20px; font-family:'Times New Roman', Times, serif; color:#000;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom: 1px solid #000; padding-bottom: 10px;">
+                <img src="/images/digital-india.png" alt="Govt Logo" style="height:55px;" />
+                <div style="text-align:center; flex:1;">
+                    <h2 style="margin:0 0 3px 0; font-family:'Times New Roman', Times, serif; font-size:13px; font-weight:bold;">National Informatics Centre / राष्ट्रीय सूचना विज्ञान केंद्र</h2>
+                    <h3 style="margin:0 0 8px 0; font-size:10px; font-weight:normal;">Meghalaya State Centre, Shillong - 793003 / मेघालय राज्य केंद्र, शिलांग - 793003</h3>
+                    <h4 style="margin:0; font-size:12px; font-weight:bold; text-decoration:underline;">DAK Acquired Register - Analytics Report</h4>
+                    <p style="margin:4px 0 0 0; font-size:10px;">Total Records: <strong>${filteredRows.length}</strong> | Filter: ${range}</p>
+                </div>
+                <img src="/images/NIC Logo JPG/BILINGUAL _SQUARE_NIC_Logo_white_bg-01.jpg" alt="NIC Logo" style="height:55px;" />
             </div>
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
-                <div class="card" style="border:1px solid #ccc; box-shadow:none;"><div class="card-header"><span class="card-title-en">Zones</span></div><div class="card-body"><canvas id="chartZones"></canvas></div></div>
-                <div class="card" style="border:1px solid #ccc; box-shadow:none;"><div class="card-header"><span class="card-title-en">Languages</span></div><div class="card-body"><canvas id="chartLangs"></canvas></div></div>
-                <div class="card" style="border:1px solid #ccc; box-shadow:none;"><div class="card-header"><span class="card-title-en">Methods of Receipt</span></div><div class="card-body"><canvas id="chartMethods"></canvas></div></div>
-                <div class="card" style="border:1px solid #ccc; box-shadow:none;"><div class="card-header"><span class="card-title-en">Priority</span></div><div class="card-body"><canvas id="chartPriority"></canvas></div></div>
+                <div class="card" style="border:1px solid #155bffff; box-shadow:none;"><div class="card-header"><span class="card-title-en">Zones</span></div><div class="card-body"><canvas id="chartZones"></canvas></div></div>
+                <div class="card" style="border:1px solid #155bffff; box-shadow:none;"><div class="card-header"><span class="card-title-en">Languages</span></div><div class="card-body"><canvas id="chartLangs"></canvas></div></div>
+                <div class="card" style="border:1px solid #155bffff; box-shadow:none;"><div class="card-header"><span class="card-title-en">Methods of Receipt</span></div><div class="card-body"><canvas id="chartMethods"></canvas></div></div>
+                <div class="card" style="border:1px solid #155bffff; box-shadow:none;"><div class="card-header"><span class="card-title-en">Priority</span></div><div class="card-body"><canvas id="chartPriority"></canvas></div></div>
             </div>
         </div>
     `;
@@ -447,31 +451,31 @@ window.loadReports = async function () {
     // Aggregations
     const zones = {}, langs = {}, methods = {}, priorities = {};
     filteredRows.forEach(r => {
-        if(r.zone) zones[r.zone] = (zones[r.zone] || 0) + 1;
-        
+        if (r.zone) zones[r.zone] = (zones[r.zone] || 0) + 1;
+
         let l = r.letterLanguage;
-        l = l === 'en' ? 'English' : l === 'hi' ? 'Hindi' : l === 'bi' ? 'Bilingual' : (l||'Unknown');
+        l = l === 'en' ? 'English' : l === 'hi' ? 'Hindi' : l === 'bi' ? 'Bilingual' : (l || 'Unknown');
         langs[l] = (langs[l] || 0) + 1;
 
-        if(r.priority) priorities[r.priority] = (priorities[r.priority] || 0) + 1;
+        if (r.priority) priorities[r.priority] = (priorities[r.priority] || 0) + 1;
 
         (r.acquisitionMethod || '').split(', ').forEach(m => {
             if (m) methods[m] = (methods[m] || 0) + 1;
         });
     });
 
-    const totalZones = Object.values(zones).reduce((a,b)=>a+b, 0);
-    const totalLangs = Object.values(langs).reduce((a,b)=>a+b, 0);
-    const totalMethods = Object.values(methods).reduce((a,b)=>a+b, 0);
-    const totalPriorities = Object.values(priorities).reduce((a,b)=>a+b, 0);
+    const totalZones = Object.values(zones).reduce((a, b) => a + b, 0);
+    const totalLangs = Object.values(langs).reduce((a, b) => a + b, 0);
+    const totalMethods = Object.values(methods).reduce((a, b) => a + b, 0);
+    const totalPriorities = Object.values(priorities).reduce((a, b) => a + b, 0);
 
     const statsHtml = `
         <div style="margin-top:20px; padding:15px; background:#f9f9f9; border-top:2px solid #ccc; font-size:12px; display:flex; gap:20px; justify-content:space-between; border-radius:5px;">
             <div style="flex:1;"><strong style="font-size:13px; color:#1a2e44; display:block; margin-bottom:5px;">Total Records: ${filteredRows.length}</strong></div>
-            <div style="flex:1;"><strong style="color:#1a2e44;">Languages</strong><br>${Object.entries(langs).map(([k,v]) => `${k}: ${v}`).join('<br>')}<hr style="margin:4px 0; border:none; border-top:1px solid #ddd;"><strong>Total: ${totalLangs}</strong></div>
-            <div style="flex:1;"><strong style="color:#1a2e44;">Zones</strong><br>${Object.entries(zones).map(([k,v]) => `${k}: ${v}`).join('<br>')}<hr style="margin:4px 0; border:none; border-top:1px solid #ddd;"><strong>Total: ${totalZones}</strong></div>
-            <div style="flex:1;"><strong style="color:#1a2e44;">Methods</strong><br>${Object.entries(methods).map(([k,v]) => `${k}: ${v}`).join('<br>')}<hr style="margin:4px 0; border:none; border-top:1px solid #ddd;"><strong>Total: ${totalMethods}</strong></div>
-            <div style="flex:1;"><strong style="color:#1a2e44;">Priority</strong><br>${Object.entries(priorities).map(([k,v]) => `${k}: ${v}`).join('<br>')}<hr style="margin:4px 0; border:none; border-top:1px solid #ddd;"><strong>Total: ${totalPriorities}</strong></div>
+            <div style="flex:1;"><strong style="color:#1a2e44;">Languages</strong><br>${Object.entries(langs).map(([k, v]) => `${k}: ${v}`).join('<br>')}<hr style="margin:4px 0; border:none; border-top:1px solid #ddd;"><strong>Total: ${totalLangs}</strong></div>
+            <div style="flex:1;"><strong style="color:#1a2e44;">Zones</strong><br>${Object.entries(zones).map(([k, v]) => `${k}: ${v}`).join('<br>')}<hr style="margin:4px 0; border:none; border-top:1px solid #ddd;"><strong>Total: ${totalZones}</strong></div>
+            <div style="flex:1;"><strong style="color:#1a2e44;">Methods</strong><br>${Object.entries(methods).map(([k, v]) => `${k}: ${v}`).join('<br>')}<hr style="margin:4px 0; border:none; border-top:1px solid #ddd;"><strong>Total: ${totalMethods}</strong></div>
+            <div style="flex:1;"><strong style="color:#1a2e44;">Priority</strong><br>${Object.entries(priorities).map(([k, v]) => `${k}: ${v}`).join('<br>')}<hr style="margin:4px 0; border:none; border-top:1px solid #ddd;"><strong>Total: ${totalPriorities}</strong></div>
         </div>
     `;
 
@@ -500,17 +504,29 @@ window.loadReports = async function () {
     createChart('chartPriority', 'pie', priorities, 'Priority');
 }
 
-window.exportReportsPDF = function() {
+window.exportReportsPDF = function () {
     const el = document.getElementById('reportsPDFContainer');
-    if(!el) return;
-    const opt = {
-        margin:       10,
-        filename:     'acquired_reports_charts.pdf',
-        image:        { type: 'jpeg', quality: 0.98 },
-        html2canvas:  { scale: 2 },
-        jsPDF:        { unit: 'mm', format: [430, 300], orientation: 'landscape', compress: true }
-    };
-    html2pdf().set(opt).from(el).save();
+    if (!el) return;
+    showToast('Preparing PDF... Please wait.', 'info');
+    setTimeout(() => {
+        const opt = {
+            margin: 15,
+            filename: 'acquired_reports_charts.pdf',
+            image: { type: 'jpeg', quality: 0.99 },
+            html2canvas: { scale: 2 },
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape', compress: true }
+        };
+        html2pdf().set(opt).from(el).toPdf().get('pdf').then(function (pdf) {
+            var totalPages = pdf.internal.getNumberOfPages();
+            for (let i = 1; i <= totalPages; i++) {
+                pdf.setPage(i);
+                pdf.setFont('times', 'normal');
+                pdf.setFontSize(9);
+                pdf.setTextColor(100);
+                pdf.text('Page ' + i + ' of ' + totalPages, pdf.internal.pageSize.getWidth() / 2, pdf.internal.pageSize.getHeight() - 5, { align: 'center' });
+            }
+        }).save();
+    }, 1500); // Small delay to ensure charts are fully rendered
 }
 
 // ── Pincode API ───────────────────────────────────────────────────────────────────
@@ -638,28 +654,28 @@ window.clearForm = function () {
     showToast('Form cleared', 'info');
 };
 
-window.showExportModal = function(type) {
+window.showExportModal = function (type) {
     window.currentExportType = type || 'tabular';
     document.getElementById('exportModal').style.display = 'flex';
 };
 
-window.handleTabularExportDateRange = function() {
+window.handleTabularExportDateRange = function () {
     const range = document.getElementById('tabularExportDateRange').value;
     document.getElementById('tabularExportMonthContainer').style.display = range === 'month' ? 'block' : 'none';
     document.getElementById('tabularExportCustomContainer').style.display = range === 'custom' ? 'flex' : 'none';
 };
 
-window.executeExportPDF = function() {
+window.executeExportPDF = function () {
     const range = document.getElementById('tabularExportDateRange').value;
     let filteredRows = allRows;
     const now = new Date();
-    
+
     if (range === 'month') {
         const monthVal = document.getElementById('tabularExportMonth')?.value;
         if (monthVal) {
             const [y, m] = monthVal.split('-');
             filteredRows = allRows.filter(r => {
-                if(!r.acquiredOn) return false;
+                if (!r.acquiredOn) return false;
                 const d = parseIndianDate(r.acquiredOn);
                 if (isNaN(d.getTime())) return false;
                 return d.getFullYear() === parseInt(y) && (d.getMonth() + 1) === parseInt(m);
@@ -668,13 +684,13 @@ window.executeExportPDF = function() {
     } else if (range === '6months') {
         const sixMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 6, now.getDate()).getTime();
         filteredRows = allRows.filter(r => {
-            if(!r.acquiredOn) return false;
+            if (!r.acquiredOn) return false;
             return parseIndianDate(r.acquiredOn).getTime() >= sixMonthsAgo;
         });
     } else if (range === 'year') {
         const currentYear = now.getFullYear();
         filteredRows = allRows.filter(r => {
-            if(!r.acquiredOn) return false;
+            if (!r.acquiredOn) return false;
             return parseIndianDate(r.acquiredOn).getFullYear() === currentYear;
         });
     } else if (range === 'custom') {
@@ -683,7 +699,7 @@ window.executeExportPDF = function() {
         const fromTime = from ? new Date(from).getTime() : 0;
         const toTime = to ? new Date(to).getTime() + 86400000 : Infinity;
         filteredRows = allRows.filter(r => {
-            if(!r.acquiredOn) return false;
+            if (!r.acquiredOn) return false;
             const t = parseIndianDate(r.acquiredOn).getTime();
             return t >= fromTime && t <= toTime;
         });
@@ -700,7 +716,7 @@ window.executeExportPDF = function() {
             document.getElementById('reportTo').value = document.getElementById('tabularExportTo').value;
         }
         loadReports();
-        setTimeout(() => exportReportsPDF(), 500); // Wait for charts to render
+        setTimeout(() => exportReportsPDF(), 1500); // Wait for charts to render
     } else {
         exportToPDF(filteredRows);
     }
@@ -713,14 +729,14 @@ window.exportToPDF = function (filteredRows) {
     // ── 1. Column definitions ──────────────────────────────────────────────
     // [header label , data key , width , align ]
     const cols = [
-        ['No.<br><span style="font-family:\'Noto Sans Devanagari\',sans-serif;font-size:10px;font-weight:normal;color:#ffffff">क्र.सं.</span>', 'serialNo', '1.5%', 'center'],
-        ['Date of Receipt<br><span style="font-family:\'Noto Sans Devanagari\',sans-serif;font-size:10px;font-weight:normal;color:#ffffff">प्राप्ति तिथि</span>', 'acquiredOn', '8%', 'center'],
-        ['Letter No. & Date<br><span style="font-family:\'Noto Sans Devanagari\',sans-serif;font-size:10px;font-weight:normal;color:#ffffff">पत्र संख्या एवं तिथि</span>', 'letterNoDate', '11%', 'left'],
-        ['Mode<br><span style="font-family:\'Noto Sans Devanagari\',sans-serif;font-size:10px;font-weight:normal;color:#ffffff">माध्यम</span>', 'acquisitionMethod', '6%', 'left'],
-        ['Received From (name|address|zone)<br><span style="font-family:\'Noto Sans Devanagari\',sans-serif;font-size:10px;font-weight:normal;color:#ffffff">प्राप्तकर्ता (नाम|पता|क्षेत्र)</span>', 'sentByDetails', '16%', 'left'],
-        ['Subject<br><span style="font-family:\'Noto Sans Devanagari\',sans-serif;font-size:10px;font-weight:normal;color:#ffffff">विषय</span>', 'subjectDetails', '26%', 'left'],
-        ['Priority<br><span style="font-family:\'Noto Sans Devanagari\',sans-serif;font-size:10px;font-weight:normal;color:#ffffff">प्राथमिकता</span>', 'priority', '5%', 'left'],
-        ['Language<br><span style="font-family:\'Noto Sans Devanagari\',sans-serif;font-size:10px;font-weight:normal;color:#ffffff">भाषा</span>', 'letterLanguage', '8%', 'left']
+        ['No.<br><span style="font-family:\'Noto Sans Devanagari\',sans-serif;font-size:6px;font-weight:normal;color:#333">क्र.सं.</span>', 'serialNo', '2%', 'center'],
+        ['Date of Receipt<br><span style="font-family:\'Noto Sans Devanagari\',sans-serif;font-size:4px;font-weight:normal;color:#333">प्राप्ति तिथि</span>', 'acquiredOn', '10%', 'center'],
+        ['Letter No. & Date<br><span style="font-family:\'Noto Sans Devanagari\',sans-serif;font-size:10px;font-weight:normal;color:#333">पत्र संख्या एवं तिथि</span>', 'letterNoDate', '10%', 'left'],
+        ['Mode<br><span style="font-family:\'Noto Sans Devanagari\',sans-serif;font-size:10px;font-weight:normal;color:#333">माध्यम</span>', 'acquisitionMethod', '6%', 'left'],
+        ['Received From (name|address|zone)<br><span style="font-family:\'Noto Sans Devanagari\',sans-serif;font-size:4px;font-weight:normal;color:#333">प्राप्तकर्ता (नाम|पता|क्षेत्र)</span>', 'sentByDetails', '18%', 'left'],
+        ['Subject<br><span style="font-family:\'Noto Sans Devanagari\',sans-serif;font-size:10px;font-weight:normal;color:#333">विषय</span>', 'subjectDetails', '24%', 'left'],
+        ['Priority<br><span style="font-family:\'Noto Sans Devanagari\',sans-serif;font-size:10px;font-weight:normal;color:#333">प्राथमिकता</span>', 'priority', '5%', 'centre'],
+        ['Language<br><span style="font-family:\'Noto Sans Devanagari\',sans-serif;font-size:10px;font-weight:normal;color:#333">भाषा</span>', 'letterLanguage', '8%', 'centre']
     ];
 
     function esc(v) {
@@ -730,7 +746,7 @@ window.exportToPDF = function (filteredRows) {
     // ── 2. Build thead ─────────────────────────────────────────────────────
     let thead = '<thead><tr>';
     cols.forEach(([label, , w]) => {
-        thead += `<th style="width:${w}">${label}</th>`; // Removed esc() so HTML renders correctly
+        thead += `<th style="width:${w}">${label}</th>`;
     });
     thead += '</tr></thead>';
 
@@ -787,45 +803,49 @@ window.exportToPDF = function (filteredRows) {
 
     // ── 4. Assemble HTML string ────────────────────────────────────────────
     const headerHtml = `
-      <div style="text-align:center; margin-bottom: 20px;">
-        <h2 style="margin:0; font-family:var(--sans); font-size:16px;">NIC National Informatics Centre Meghalaya Shillong~793003</h2>
-        <h3 style="margin:0; font-family:'Noto Sans Devanagari', sans-serif; font-size:14px; color:#444;">एनआईसी राष्ट्रीय सूचना विज्ञान केंद्र मेघालय शिलांग~793003</h3>
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 15px; border-bottom: 0.5px solid #000; padding-bottom: 10px;">
+        <img src="/images/NIC Logo JPG/BILINGUAL _SQUARE_NIC_Logo_white_bg-01.jpg" alt="NIC Logo" style="height:55px;" />
+        <div style="text-align:center; flex:1;">
+            <h2 style="margin:0 0 3px 0; font-family:'Times New Roman', Times, serif; font-size:18px; font-weight:bold;">National Informatics Centre / राष्ट्रीय सूचना विज्ञान केंद्र</h2>
+            <h3 style="margin:0; font-family:'Times New Roman', Times, serif; font-size:15px; font-weight:normal;">Meghalaya State Centre, Shillong - 793003 / मेघालय राज्य केंद्र, शिलांग - 793003</h3>
+        </div>
+        <img src="/images/digital-india.png" alt="Govt Logo" style="height:55px;" />
       </div>
     `;
 
     const p_langs = {}, p_zones = {}, p_methods = {}, p_priorities = {};
     exportData.forEach(r => {
-        let l = r.letterLanguage; l = l === 'en' ? 'English' : l === 'hi' ? 'Hindi' : l === 'bi' ? 'Bilingual' : (l||'Unknown'); p_langs[l] = (p_langs[l] || 0) + 1;
-        if(r.zone) p_zones[r.zone] = (p_zones[r.zone] || 0) + 1;
-        (r.acquisitionMethod || '').split(', ').forEach(m => { if(m) p_methods[m] = (p_methods[m] || 0) + 1; });
-        if(r.priority) p_priorities[r.priority] = (p_priorities[r.priority] || 0) + 1;
+        let l = r.letterLanguage; l = l === 'en' ? 'English' : l === 'hi' ? 'Hindi' : l === 'bi' ? 'Bilingual' : (l || 'Unknown'); p_langs[l] = (p_langs[l] || 0) + 1;
+        if (r.zone) p_zones[r.zone] = (p_zones[r.zone] || 0) + 1;
+        (r.acquisitionMethod || '').split(', ').forEach(m => { if (m) p_methods[m] = (p_methods[m] || 0) + 1; });
+        if (r.priority) p_priorities[r.priority] = (p_priorities[r.priority] || 0) + 1;
     });
-    const t_langs = Object.values(p_langs).reduce((a,b)=>a+b,0);
-    const t_zones = Object.values(p_zones).reduce((a,b)=>a+b,0);
-    const t_methods = Object.values(p_methods).reduce((a,b)=>a+b,0);
-    const t_priorities = Object.values(p_priorities).reduce((a,b)=>a+b,0);
+    const t_langs = Object.values(p_langs).reduce((a, b) => a + b, 0);
+    const t_zones = Object.values(p_zones).reduce((a, b) => a + b, 0);
+    const t_methods = Object.values(p_methods).reduce((a, b) => a + b, 0);
+    const t_priorities = Object.values(p_priorities).reduce((a, b) => a + b, 0);
 
     const htmlContent = `
-        <div style="font-family: Arial, sans-serif; padding: 5mm; background: white; width: 430mm;">
+        <div style="font-family: 'Times New Roman', Times, serif; padding: 5mm; background: white; width: 267mm; color: #000;">
             <style>
-                .pdf-print-area table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+                .pdf-print-area table { width: 100%; border-collapse: collapse; table-layout: fixed; border: 0.5px solid #000; }
                 .pdf-print-area th { 
-                    background-color: #34495e !important; color: white !important; 
-                    padding: 6px; font-size: 10px; border: 1px solid #2c3e50; 
-                    text-align: center; word-wrap: break-word; 
+                    background-color: #f0f0f0 !important; color: #000 !important; 
+                    padding: 4px; font-size: 9px; border: 1px solid #000; 
+                    text-align: center; word-wrap: break-word; font-weight: bold;
                 }
                 .pdf-print-area td { 
-                    border: 1px solid #ccc; padding: 5px; font-size: 10px; 
-                    line-height: 1.4; word-wrap: break-word; vertical-align: top; 
+                    border: 0.5px solid #000; padding: 4px; font-size: 9px; color: #000 !important; 
+                    line-height: 1.3; word-wrap: break-word; vertical-align: top; 
                     white-space: normal; overflow-wrap: break-word; 
                 }
                 .pdf-print-area th:first-child { padding-left: 2px; padding-right: 2px; }
-                .pdf-print-area td:first-child { text-align: center; font-weight: bold; background-color: #ecf0f1; padding-left: 2px; padding-right: 2px; }
-                .pdf-print-area tr:nth-child(even) td { background-color: #f9f9f9; }
+                .pdf-print-area td:first-child { text-align: center; font-weight: bold; padding-left: 2px; padding-right: 2px; }
+                .pdf-print-area tr:nth-child(even) td { background-color: #fafafa !important; }
             </style>
             ${headerHtml}
-            <h2 style="text-align: center; font-size: 14px; margin: 0 0 5px; color: #1a2e44;">DAK Acquired Register</h2>
-            <div style="text-align: center; font-size: 10px; color: #555; margin-bottom: 10px;">Printed on ${new Date().toLocaleDateString('en-IN')} &nbsp;|&nbsp; ${exportData.length} record(s)</div>
+            <h2 style="text-align: center; font-family: 'Times New Roman', Times, serif; font-size: 12px; font-weight: bold; margin: 0 0 5px; text-decoration: underline;">DAK Acquired Register</h2>
+            <div style="text-align: center; font-size: 9px; margin-bottom: 10px; color: #0059ffff;">Printed on ${new Date().toLocaleDateString('en-IN')} &nbsp;|&nbsp; ${exportData.length} record(s)</div>
             <div class="pdf-print-area">
                 <table>${thead}${tbody}</table>
             </div>
@@ -837,34 +857,43 @@ window.exportToPDF = function (filteredRows) {
                 </div>
                 <div style="flex:1;">
                     <strong style="color:#1a2e44;">Languages</strong><br>
-                    ${Object.entries(p_langs).map(([k,v]) => `${k}: ${v}`).join('<br>')}<hr style="margin:4px 0; border:none; border-top:1px solid #ddd;"><strong>Total: ${t_langs}</strong>
+                    ${Object.entries(p_langs).map(([k, v]) => `${k}: ${v}`).join('<br>')}<hr style="margin:4px 0; border:none; border-top:1px solid #ddd;"><strong>Total: ${t_langs}</strong>
                 </div>
                 <div style="flex:1;">
                     <strong style="color:#1a2e44;">Zones</strong><br>
-                    ${Object.entries(p_zones).map(([k,v]) => `${k}: ${v}`).join('<br>')}<hr style="margin:4px 0; border:none; border-top:1px solid #ddd;"><strong>Total: ${t_zones}</strong>
+                    ${Object.entries(p_zones).map(([k, v]) => `${k}: ${v}`).join('<br>')}<hr style="margin:4px 0; border:none; border-top:1px solid #ddd;"><strong>Total: ${t_zones}</strong>
                 </div>
                 <div style="flex:1;">
                     <strong style="color:#1a2e44;">Methods</strong><br>
-                    ${Object.entries(p_methods).map(([k,v]) => `${k}: ${v}`).join('<br>')}<hr style="margin:4px 0; border:none; border-top:1px solid #ddd;"><strong>Total: ${t_methods}</strong>
+                    ${Object.entries(p_methods).map(([k, v]) => `${k}: ${v}`).join('<br>')}<hr style="margin:4px 0; border:none; border-top:1px solid #ddd;"><strong>Total: ${t_methods}</strong>
                 </div>
                 <div style="flex:1;">
                     <strong style="color:#1a2e44;">Priority</strong><br>
-                    ${Object.entries(p_priorities).map(([k,v]) => `${k}: ${v}`).join('<br>')}<hr style="margin:4px 0; border:none; border-top:1px solid #ddd;"><strong>Total: ${t_priorities}</strong>
+                    ${Object.entries(p_priorities).map(([k, v]) => `${k}: ${v}`).join('<br>')}<hr style="margin:4px 0; border:none; border-top:1px solid #ddd;"><strong>Total: ${t_priorities}</strong>
                 </div>
             </div>
         </div>
     `;
 
     const opt = {
-        margin: [5, 5, 5, 5],
+        margin: [15, 15, 15, 15],
         filename: `DAK_Acquired_${new Date().toISOString().split('T')[0]}.pdf`,
         image: { type: 'jpeg', quality: 0.98 },
         html2canvas: { scale: 2, useCORS: true, logging: false, scrollX: 0, scrollY: 0 },
-        jsPDF: { unit: 'mm', format: [430, 300], orientation: 'landscape', compress: true },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape', compress: true },
         pagebreak: { mode: ['css', 'legacy'], avoid: 'tr' }
     };
 
-    html2pdf().set(opt).from(htmlContent).save()
+    html2pdf().set(opt).from(htmlContent).toPdf().get('pdf').then(function (pdf) {
+        var totalPages = pdf.internal.getNumberOfPages();
+        for (let i = 1; i <= totalPages; i++) {
+            pdf.setPage(i);
+            pdf.setFont('times', 'normal');
+            pdf.setFontSize(10);
+            pdf.setTextColor(100);
+            pdf.text('Page ' + i + ' of ' + totalPages, pdf.internal.pageSize.getWidth() / 2, pdf.internal.pageSize.getHeight() - 5, { align: 'center' });
+        }
+    }).save()
         .then(() => {
             showToast('PDF exported successfully!', 'success');
         })
