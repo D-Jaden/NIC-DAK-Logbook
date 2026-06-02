@@ -340,7 +340,7 @@ JWT_SECRET=your_jwt_secret_key
 SESSION_SECRET=your_session_secret
 
 # Translator (optional — falls back gracefully if not set)
-HF_TRANSLATE_URL=https://d-jaden02-pys-deep-transalator.hf.space/translate
+HF_TRANSLATE_URL= ....
 
 # Server
 PORT=3000
@@ -375,8 +375,6 @@ The app will be available at `http://localhost:3000`.
 ## Translator Service
 
 Auto-translation from English to Hindi is powered by a Python microservice hosted on HuggingFace Spaces.
-
-🔗 **Live API:** [https://huggingface.co/spaces/D-Jaden02/Pys_Deep_Transalator](https://huggingface.co/spaces/D-Jaden02/Pys_Deep_Transalator)
 
 The Node.js server proxies all translation requests to this service via `POST /api/translate`. If the service is unavailable, the original English text is returned as a graceful fallback.
 
