@@ -18,7 +18,7 @@ Developed as part of an internship at the **National Informatics Centre (NIC)**
 
 ---
 
-## 📖 Overview
+## Overview
 
 NIC DAK Logbook is a full-stack Node.js web application designed for NIC offices to digitally record and track official **DAK** (mail/correspondence). It supports two workflows:
 
@@ -193,6 +193,17 @@ The app uses a PostgreSQL database named **`dak`**.
 </details>
 
 <details>
+<summary><b>user_sessions</b></summary>
+
+| Column | Type | Notes |
+|---|---|---|
+| sid | VARCHAR | |
+| sess | JSON | |
+| expire | TIMESTAMP | |
+
+</details>
+
+<details>
 <summary><b>acquired</b> (Receipt / Incoming Mail)</summary>
 
 | Column | Type |
@@ -305,7 +316,8 @@ git clone https://github.com/D-Jaden/NIC-DAK-Logbook.git
 cd NIC-DAK-Logbook
 ```
 
-**2. Install dependencies**
+**2. Install dependencies** 
+Use npm or pnpm as you package installer accordingly 
 ```bash
 npm install
 npm init -y
@@ -316,6 +328,9 @@ npm install dotenv
 npm install express
 npm install jsonwebtoken
 npm install @dotenvx/dotenvx --save
+npm install connect-pg-simple
+npm install pino
+npm install pino-pretty
 ```
 
 **3. Create the PostgreSQL database**
@@ -371,7 +386,18 @@ The app will be available at `http://localhost:3000`.
 > Protected routes (`/despatch`, `/acquired`) redirect unauthenticated users to the login page.
 
 ---
+## LOGGING
+Done via pino and pino pretty
+Displays info like below
+| TimeStamp | Message | pid hostname | Description |
+|---|---|---|---|
+|[02-06-2026 01:06:12] | INFO | (205480) |Connected to the database successfully! |
+|[02-06-2026 01:06:13] | INFO | (205480) |Database initialised successfully.|
+|[02-06-2026 01:06:13] | INFO | (205480) |Server started|
+|[02-06-2026 01:06:13] | INFO | (205480) |DAK System running on (hostname) |
 
+
+---
 ## Translator Service
 
 Auto-translation from English to Hindi is powered by a Python microservice hosted on HuggingFace Spaces.
