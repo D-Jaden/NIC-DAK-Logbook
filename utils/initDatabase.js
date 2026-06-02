@@ -58,6 +58,8 @@ async function initDatabase() {
         await pool.query(`ALTER TABLE acquired ADD COLUMN IF NOT EXISTS eng_address            TEXT;`);
         await pool.query(`ALTER TABLE acquired ADD COLUMN IF NOT EXISTS hi_address             TEXT;`);
         await pool.query(`ALTER TABLE acquired ADD COLUMN IF NOT EXISTS priority               VARCHAR(50) DEFAULT 'priority';`);
+        await pool.query(`ALTER TABLE acquired ADD COLUMN IF NOT EXISTS eng_received_by        TEXT;`);
+        await pool.query(`ALTER TABLE acquired ADD COLUMN IF NOT EXISTS hi_received_by         TEXT;`);
 
         // Indices
         await pool.query(`CREATE INDEX IF NOT EXISTS idx_acquired_user_id   ON acquired(user_id);`);
