@@ -389,12 +389,13 @@ The app will be available at `http://localhost:3000`.
 ## LOGGING
 Done via pino and pino pretty
 Displays info like below
-| TimeStamp | Message | pid hostname | Description |
-|---|---|---|---|
-|[02-06-2026 01:06:12] | INFO | (205480) |Connected to the database successfully! |
-|[02-06-2026 01:06:13] | INFO | (205480) |Database initialised successfully.|
-|[02-06-2026 01:06:13] | INFO | (205480) |Server started|
-|[02-06-2026 01:06:13] | INFO | (205480) |DAK System running on (hostname) |
+| TimeStamp | Message | pid hostname | Description | api name | targetURL |
+|---|---|---|---|---|---|
+|[02-06-2026 01:06:12] | INFO | (205480) |Connected to the database successfully! | | |
+|[02-06-2026 01:06:13] | INFO | (205480) |Database initialised successfully.| | |
+|[02-06-2026 01:06:50] | INFO | (205480) |[EXTERNAL REQUEST] API call initiated| translation | (translation url name) |
+|[02-06-2026 01:07:00] | INFO | (205480) |DAK System running on (hostname) | pincode | (pincode url name) |
+|[02-06-2026 01:08:13] | INFO | (205480) |User logged out successfully |  |  |
 
 
 ---
