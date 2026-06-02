@@ -308,6 +308,14 @@ cd NIC-DAK-Logbook
 **2. Install dependencies**
 ```bash
 npm install
+npm init -y
+npm install boxicons
+npm install nodemon
+npm install js2pdf
+npm install dotenv
+npm install express
+npm install jsonwebtoken
+npm install @dotenvx/dotenvx --save
 ```
 
 **3. Create the PostgreSQL database**
