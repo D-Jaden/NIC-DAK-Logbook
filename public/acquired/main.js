@@ -75,7 +75,7 @@ function buildPayload() {
     const block = document.getElementById('addrBlock')?.value || '';
     const stateName = stateParts[0] || '';
     const pincode = document.getElementById('addrPin')?.value || '';
-    const address = [city, district, block, stateName, pincode].filter(Boolean).join(', ');
+    const address = [city, district, block, stateName, pincode].filter(Boolean).join(', ') + '#META#' + JSON.stringify({ city, district, block, state: stateName, pin: pincode });
 
     return {
         serialNo: null,
@@ -93,11 +93,10 @@ function buildPayload() {
         priority: document.getElementById('priorityValue')?.value || 'priority',
         modes,
         acquisitionMethod: modes.join(', '),
-        // Formatted address for saving
         address,
-        addressHindi: '', // Not easily translatable on frontend, keep empty for now
-        // Raw address fields for internal use
-        city, district, block, state: stateName, pincode
+        addressHindi: '',
+        receivedBy: [document.getElementById('recByName')?.value, document.getElementById('recByDsgn')?.value, document.getElementById('recByDept')?.value].filter(Boolean).join(' | '),
+        receivedByHindi: [document.getElementById('recByNameHi')?.textContent, document.getElementById('recByDsgnHi')?.textContent, document.getElementById('recByDeptHi')?.textContent].filter(Boolean).join(' | ')
     };
 }
 
@@ -183,7 +182,7 @@ async function loadSearchTable() {
         const res = await fetch('/api/acquired/load', { headers: AUTH() }).catch(() => null);
         if (res?.ok) { const j = await res.json(); if (j.success) allRows = j.data; }
     }
-    renderSearchTable(allRows);
+    renderSearchTable(allRows.filter(r => r.status === 'submitted'));
 }
 
 window.filterTable = function (q) {
@@ -246,14 +245,14 @@ window.editEntry = function (id) {
 
     // Populate form
     document.getElementById('letterDate').value = (row.letterDate || '').split('/').reverse().join('-');
-    document.getElementById('acquiredDate').value = (row.acquiredDate || '').split('/').reverse().join('-');
-    document.getElementById('letterNumber').value = row.letterNo || '';
+    document.getElementById('acquiredDate').value = (row.acquiredOn || '').split('/').reverse().join('-');
+    document.getElementById('letterNo').value = row.letterNo || '';
     document.getElementById('subjectEn').value = row.subject || '';
-    document.getElementById('subjectHi').value = row.subjectHindi || '';
+    document.getElementById('subjectHi').textContent = row.subjectHindi || '—';
     document.getElementById('officeName').value = row.officeName || '';
-    document.getElementById('officeNameHi').value = row.officeNameHindi || '';
+    document.getElementById('officeNameHi').textContent = row.officeNameHindi || '—';
     document.getElementById('specificPerson').value = row.specificPerson || '';
-    document.getElementById('specificPersonHi').value = row.specificPersonHindi || '';
+    document.getElementById('specificPersonHi').textContent = row.specificPersonHindi || '—';
 
     const modes = (row.acquisitionMethod || '').split(', ');
     document.querySelectorAll('#modeRow .mode-opt').forEach(el => {
@@ -267,7 +266,30 @@ window.editEntry = function (id) {
     });
     document.getElementById('langValue').value = row.letterLanguage || 'hi';
 
-    document.getElementById('addrState').value = Object.entries(zoneHindiMap).find(([z, meta]) => z === row.zone) ? `${row.zone}|${row.zone}` : ''; // Hack for state selection if state wasn't explicitly saved
+    let addrStr = row.address || '';
+    if (addrStr.includes('#META#')) {
+        const parts = addrStr.split('#META#');
+        try {
+            const meta = JSON.parse(parts[1]);
+            document.getElementById('addrPin').value = meta.pin || '';
+            document.getElementById('addrCity').value = meta.city || '';
+            document.getElementById('addrDistrict').value = meta.district || '';
+            document.getElementById('addrBlock').value = meta.block || '';
+            document.getElementById('addrState').value = meta.state && row.zone ? `${meta.state}|${row.zone}` : (row.zone ? `${row.zone}|${row.zone}` : '');
+        } catch(e) {}
+    } else {
+        document.getElementById('addrState').value = row.zone ? `${row.zone}|${row.zone}` : '';
+    }
+
+    const recByParts = (row.receivedBy || '').split(' | ');
+    document.getElementById('recByName').value = recByParts[0] || '';
+    document.getElementById('recByDsgn').value = recByParts[1] || '';
+    document.getElementById('recByDept').value = recByParts[2] || '';
+
+    const recByHiParts = (row.receivedByHindi || '').split(' | ');
+    document.getElementById('recByNameHi').textContent = recByHiParts[0] || 'अधिकारी का नाम…';
+    document.getElementById('recByDsgnHi').textContent = recByHiParts[1] || 'पदनाम…';
+    document.getElementById('recByDeptHi').textContent = recByHiParts[2] || 'विभाग / शाखा…';
 
     const btn = document.getElementById('submitBtn');
     btn.textContent = 'Update Entry';
@@ -763,7 +785,7 @@ window.exportToPDF = function (filteredRows) {
         const nameParts = [row.officeName, row.specificPerson].filter(Boolean).join(' - ');
         const sentByParts = [
             nameParts ? `<b>${esc(nameParts)}</b>` : '',
-            row.address ? esc(row.address) : '',
+            row.address ? esc(row.address.split('#META#')[0]) : '',
             row.zone ? `Zone: ${esc(row.zone)}` : ''
         ].filter(Boolean);
         let sentByDetails = sentByParts.join('<br>');
