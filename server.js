@@ -77,48 +77,39 @@ app.use('/api/despatch', despatchRoutes);
 app.use('/api/acquired', acquiredRoutes);
 
 // ── Translation proxy — forwards to HuggingFace Gradio app ──
+const { safeFetch } = require('./utils/safeHttpClient');
+const { getWhitelistedAPI } = require('./config/whitelistedAPIs');
+
 app.post('/api/translate', async (req, res) => {
     const { text } = req.body;
     if (!text || !text.trim()) return res.json({ translation: '' });
     try {
-        const HF_URL = process.env.HF_TRANSLATE_URL || 'https://d-jaden02-pys-deep-transalator.hf.space/translate';
-        const r = await fetch(HF_URL, {
-            method:  'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body:    JSON.stringify({ text: text.trim(), src: 'en', tgt: 'hi' }),
+        const data = await safeFetch('translation', {
+            method: 'POST',
+            body: { text: text.trim(), src: 'en', tgt: 'hi' }
         });
-        if (!r.ok) throw new Error('HF API error: ' + r.status);
-        const data = await r.json();
         res.json({ translation: data.translated_text || data.translation || text });
     } catch (err) {
-        console.error('[translate]', err.message);
+        console.error('[translate proxy]', err.message);
         res.json({ translation: text });   // graceful fallback
     }
 });
 
-// ── Pincode proxy — bypasses invalid SSL certs from API ──
-app.get('/api/pincode/:pin', (req, res) => {
+// ── Pincode proxy — safe HTTP Client ──
+app.get('/api/pincode/:pin', async (req, res) => {
     const pin = req.params.pin;
-    const https = require('https');
-    const options = {
-        hostname: 'api.postalpincode.in',
-        path: `/pincode/${pin}`,
-        method: 'GET',
-        rejectUnauthorized: false
-    };
-    const proxyReq = https.request(options, proxyRes => {
-        let body = '';
-        proxyRes.on('data', chunk => body += chunk);
-        proxyRes.on('end', () => {
-            try {
-                res.json(JSON.parse(body));
-            } catch (e) {
-                res.status(500).json({ error: 'Failed to parse response' });
-            }
+    try {
+        const baseUrl = getWhitelistedAPI('pincode').url;
+        // Ensure the base URL ends with a slash if needed, or simply append the pin
+        const data = await safeFetch('pincode', {
+            method: 'GET',
+            url: baseUrl.endsWith('/') ? `${baseUrl}${pin}` : `${baseUrl}/${pin}`
         });
-    });
-    proxyReq.on('error', e => res.status(500).json({ error: e.message }));
-    proxyReq.end();
+        res.json(data);
+    } catch (e) {
+        console.error('[pincode proxy]', e.message);
+        res.status(500).json({ error: 'Failed to fetch pincode data' });
+    }
 });
 
 //====================================
