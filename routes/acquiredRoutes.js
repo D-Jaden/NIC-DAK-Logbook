@@ -50,8 +50,10 @@ router.post('/save', authenticateJWT, async (req, res) => {
                     eng_received_from, hi_received_from,
                     specific_person, specific_person_hindi,
                     letter_no, eng_subject, hi_subject,
-                    language, zone, acquisition_method, user_id, status
-                ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15)
+                    language, zone, acquisition_method, user_id, status,
+                    eng_address, hi_address, priority,
+                    eng_received_by, hi_received_by
+                ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20)
             `, [
                 rowSerial,
                 row.letterDate           || row.acquiredDate      || '',
@@ -67,7 +69,12 @@ router.post('/save', authenticateJWT, async (req, res) => {
                 row.zone                 || '',
                 Array.isArray(row.modes) ? row.modes.join(', ') : (row.acquisitionMethod || ''),
                 userId,
-                row.status               || 'submitted'
+                row.status               || 'submitted',
+                row.address              || '',
+                row.addressHindi         || '',
+                row.priority             || 'priority',
+                row.receivedBy           || '',
+                row.receivedByHindi      || ''
             ]);
             savedCount++;
         }
@@ -97,6 +104,7 @@ router.get('/load', authenticateJWT, async (req, res) => {
                 letter_no, eng_subject, hi_subject,
                 language, zone, acquisition_method,
                 eng_address, hi_address, priority,
+                eng_received_by, hi_received_by,
                 status, created_at, updated_at
             FROM acquired
             WHERE user_id = $1
@@ -121,6 +129,8 @@ router.get('/load', authenticateJWT, async (req, res) => {
             address:              row.eng_address             || '',
             addressHindi:         row.hi_address              || '',
             priority:             row.priority                || 'priority',
+            receivedBy:           row.eng_received_by         || '',
+            receivedByHindi:      row.hi_received_by          || '',
             status:               row.status                  || 'submitted',
             isFromDatabase:       true,
             hasChanges:           false
@@ -154,6 +164,7 @@ router.post('/save-changes', authenticateJWT, async (req, res) => {
                     letter_no = $7, eng_subject = $8, hi_subject = $9,
                     language = $10, zone = $11, acquisition_method = $12, status = $13,
                     eng_address = $16, hi_address = $17, priority = $18,
+                    eng_received_by = $19, hi_received_by = $20,
                     updated_at = CURRENT_TIMESTAMP
                 WHERE id = $14 AND user_id = $15
             `, [
@@ -173,7 +184,9 @@ router.post('/save-changes', authenticateJWT, async (req, res) => {
                 row.id, userId,
                 row.address             || '',
                 row.addressHindi        || '',
-                row.priority            || 'priority'
+                row.priority            || 'priority',
+                row.receivedBy          || '',
+                row.receivedByHindi     || ''
             ]);
             if (r.rowCount > 0) updatedCount++;
         }
@@ -195,8 +208,9 @@ router.post('/save-changes', authenticateJWT, async (req, res) => {
                     letter_no, eng_subject, hi_subject,
                     language, zone, acquisition_method, user_id, status,
                     eng_address, hi_address, priority,
+                    eng_received_by, hi_received_by,
                     created_at, updated_at
-                ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,
+                ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,
                           CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
                 RETURNING id
             `, [
@@ -217,7 +231,9 @@ router.post('/save-changes', authenticateJWT, async (req, res) => {
                 row.status              || 'submitted',
                 row.address             || '',
                 row.addressHindi        || '',
-                row.priority            || 'priority'
+                row.priority            || 'priority',
+                row.receivedBy          || '',
+                row.receivedByHindi     || ''
             ]);
             if (r.rows.length > 0) {
                 newRowIds[row.serialNo - 1] = r.rows[0].id;
