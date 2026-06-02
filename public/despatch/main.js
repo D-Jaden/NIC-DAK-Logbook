@@ -156,7 +156,12 @@ function buildPayload() {
         // Sent To
         sentToName: document.getElementById('sentToName')?.value || '',
         sentToNameHi: document.getElementById('sentToNameHi')?.textContent || '',
-        sentToAddress: document.getElementById('sentToAddr')?.value || '',
+        sentToAddress: (document.getElementById('sentToAddr')?.value || '') + '#META#' + JSON.stringify({
+            pin: document.getElementById('sentToPin')?.value || '',
+            state: document.getElementById('sentToState')?.value || '',
+            city: document.getElementById('sentToCity')?.value || '',
+            district: document.getElementById('sentToDistrict')?.value || ''
+        }),
         sentToAddressHi: document.getElementById('sentToAddrHi')?.textContent || '',
         sentToZone: document.getElementById('sentToZone')?.value || '',
         // Subject
@@ -253,7 +258,7 @@ async function loadSearchTable() {
         const res = await fetch('/api/despatch/load', { headers: AUTH() }).catch(() => null);
         if (res?.ok) { const j = await res.json(); if (j.success) allRows = j.data; }
     }
-    renderSearchTable(allRows);
+    renderSearchTable(allRows.filter(r => r.status === 'submitted'));
 }
 
 window.filterTable = function (q) {
@@ -338,9 +343,62 @@ window.editEntry = function (id) {
     document.getElementById('subjectHi').value = row.subjectHindi || '';
     document.getElementById('sentToName').value = row.sentToName || '';
     document.getElementById('sentToNameHi').value = row.sentToNameHi || '';
-    document.getElementById('sentToAddr').value = row.sentToAddress || '';
+    let addrStr = row.sentToAddress || '';
+    if (addrStr.includes('#META#')) {
+        const parts = addrStr.split('#META#');
+        document.getElementById('sentToAddr').value = parts[0];
+        try {
+            const meta = JSON.parse(parts[1]);
+            document.getElementById('sentToPin').value = meta.pin || '';
+            document.getElementById('sentToState').value = meta.state || '';
+            document.getElementById('sentToCity').value = meta.city || '';
+            document.getElementById('sentToDistrict').value = meta.district || '';
+        } catch(e) {}
+    } else {
+        document.getElementById('sentToAddr').value = addrStr;
+    }
+
     document.getElementById('sentToAddrHi').value = row.sentToAddressHi || '';
     document.getElementById('sentToZone').value = row.zone ? `${row.zone} Zone` : '';
+
+    const sentByParts = (row.sentBy || '').split(' | ');
+    document.getElementById('sentByName').value = sentByParts[0] || '';
+    document.getElementById('sentByDsgn').value = sentByParts[1] || '';
+    document.getElementById('sentByDept').value = sentByParts[2] || '';
+
+    const sentByHiParts = (row.sentByHindi || '').split(' | ');
+    document.getElementById('sentByNameHi').textContent = sentByHiParts[0] || 'अधिकारी का नाम…';
+    document.getElementById('sentByDsgnHi').textContent = sentByHiParts[1] || 'पदनाम…';
+    document.getElementById('sentByDeptHi').textContent = sentByHiParts[2] || 'विभाग / शाखा…';
+
+    for (let i=1; i<=2; i++) {
+        const el = document.getElementById(`c${i}name`);
+        if (el) {
+            el.value = '';
+            document.getElementById(`c${i}office`).value = '';
+            document.getElementById(`c${i}city`).value = '';
+            document.getElementById(`c${i}district`).value = '';
+            document.getElementById(`c${i}pin`).value = '';
+            document.getElementById(`c${i}state`).value = '';
+        }
+    }
+    try {
+        if (row.copySentTo) {
+            const copies = JSON.parse(row.copySentTo);
+            copies.forEach((c, idx) => {
+                const n = idx + 1;
+                const nameEl = document.getElementById(`c${n}name`);
+                if(nameEl) {
+                   nameEl.value = c.name || '';
+                   document.getElementById(`c${n}office`).value = c.office || '';
+                   document.getElementById(`c${n}city`).value = c.city || '';
+                   document.getElementById(`c${n}district`).value = c.district || '';
+                   document.getElementById(`c${n}pin`).value = c.pin || '';
+                   document.getElementById(`c${n}state`).value = c.state ? `${c.state}|${c.zone}` : '';
+                }
+            });
+        }
+    } catch(e) {}
 
     const modes = (row.deliveryMethod || '').split(', ');
     document.querySelectorAll('#modeRow .mode-opt').forEach(el => {
@@ -821,7 +879,7 @@ window.exportToPDF = function (filteredRows) {
         // Sent To block
         const sentToParts = [
             row.sentToName ? `<b>${esc(row.sentToName)}</b>` : '',
-            row.sentToAddress ? esc(row.sentToAddress) : '',
+            row.sentToAddress ? esc(row.sentToAddress.split('#META#')[0]) : '',
             row.sentToZone ? `Zone: ${esc(row.sentToZone)}` : ''
         ].filter(Boolean);
         let sentToDetails = sentToParts.join('<br>');
