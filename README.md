@@ -143,32 +143,92 @@ Each receipt entry captures:
 ##  Project Structure
 
 ```
-NIC-DAK-Logbook/
-├── server.js                  # Express app entry point
+├── check_db.js
+├── config
+│   ├── readme.md
+│   └── whitelistedAPIs.js
+├── middleware
+│   └── validate.js
 ├── package.json
-│
-├── routes/
-│   ├── userRoutes.js          # POST /users/login, /users/register
-│   ├── despatchRoutes.js      # CRUD for outgoing mail
-│   └── acquiredRoutes.js      # CRUD for incoming mail (Receipt)
-│
-├── utils/
-│   ├── db.js                  # PostgreSQL connection pool
-│   ├── auth.js                # JWT middleware
-│   ├── helpers.js             # Date formatting utilities
-│   └── initDatabase.js        # Auto-creates/migrates tables on startup
-│
-├── public/
-│   ├── despatch/              # Despatch app (HTML, CSS, JS)
-│   ├── acquired/              # Receipt app (HTML, CSS, JS)
-│   ├── signup/login/          # Login & registration pages
-│   ├── shared/                # Shared assets
-│   └── images/                # Static images
-│
-└── Translator/
-    ├── app.py                 # Translation microservice
-    ├── Dockerfile
-    └── requirements.txt
+├── package-lock.json
+├── public
+│   ├── acquired
+│   │   ├── acquired.html
+│   │   ├── acquired_styles.css
+│   │   ├── main.js
+│   │   ├── modeOfReceipt.js
+│   │   ├── priorityAndLang.js
+│   │   └── senderAddress.js
+│   ├── despatch
+│   │   ├── copyRecipients.js
+│   │   ├── despatch.html
+│   │   ├── despatch_styles.css
+│   │   ├── language.js
+│   │   ├── main.js
+│   │   ├── modeOfDespatch.js
+│   │   └── priority.js
+│   ├── images
+│   │   ├── captcha.png
+│   │   ├── closed-eye.png
+│   │   ├── digital-india.png
+│   │   ├── NIC Logo JPG
+│   │   │   ├── BILINGUAL FULL LENGTH VERSION  blue bg-01.jpg
+│   │   │   ├── BILINGUAL FULL LENGTH VERSION  sans bg-01.jpg
+│   │   │   ├── BILINGUAL FULL LENGTH VERSION white  bg-01.jpg
+│   │   │   ├── BILINGUAL _SQUARE_NIC_Logo_blue_bg-01.jpg
+│   │   │   ├── BILINGUAL _SQUARE_NIC_Logo_white_bg-01.jpg
+│   │   │   ├── ICONIC_SQUARE_NIC_Logo_blue_bg-01.jpg
+│   │   │   ├── ICONIC_SQUARE_NIC_Logo_white_bg-01.jpg
+│   │   │   ├── NIC_Logo1-01.jpg
+│   │   │   ├── NIC logo 1 Bilingual Blue 1-01.jpg
+│   │   │   ├── NIC logo 1 Bilingual sans.jpg
+│   │   │   ├── NIC logo 1 Bilingual white 1-01.jpg
+│   │   │   ├── Nic_logo2-01.jpg
+│   │   │   └── Nic_logo3-01.jpg
+│   │   ├── NIC-Logo-white.png
+│   │   ├── open-book.png
+│   │   └── open-eye.png
+│   ├── shared
+│   │   ├── nav.js
+│   │   ├── translations.js
+│   │   └── zone.js
+│   └── signup
+│       └── login
+│           ├── login.html
+│           ├── login.js
+│           ├── login_styles.css
+│           └── terms.html
+├── README.md
+├── routes
+│   ├── acquiredRoutes.js
+│   ├── despatchRoutes.js
+│   └── userRoutes.js
+├── schemas
+│   ├── acquiredSchemas.js
+│   ├── apiSchemas.js
+│   ├── despatchSchemas.js
+│   └── userSchemas.js
+├── server.js
+├── server.log
+├── setup-firewall.sh
+├── test_db.js
+├── test-pin.js
+├── tests
+│   └── schemas.test.js
+├── test_stats_auth.js
+├── Translator
+│   ├── app.py
+│   ├── Dockerfile
+│   ├── gitattributes
+│   ├── README.md
+│   └── requirements.txt
+└── utils
+    ├── auth.js
+    ├── db.js
+    ├── helpers.js
+    ├── initDatabase.js
+    ├── logger.js
+    └── safeHttpClient.js
 ```
 
 ---
