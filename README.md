@@ -331,6 +331,7 @@ npm install @dotenvx/dotenvx --save
 npm install connect-pg-simple
 npm install pino
 npm install pino-pretty
+npm install joi
 ```
 
 **3. Create the PostgreSQL database**
