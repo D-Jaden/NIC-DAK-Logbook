@@ -8,7 +8,7 @@ import { stateOptionsHTML } from '../shared/zone.js';
 const TOKEN = () => localStorage.getItem('dak_token');
 const AUTH = () => ({ 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + TOKEN() });
 
-const TAB_MAP = { entry: 0, dashboard: 1, search: 2, reports: 3 };
+const TAB_MAP = { entry: 0, dashboard: 1, search: 2, pending: 3, reports: 4 };
 let allRows = [];      // cached loaded data
 let copyCount = 2;     // tracks dynamic copy entries
 
@@ -82,6 +82,15 @@ window.submitEntry = async function (isDraft = false) {
         }
     }
 
+    const letterDateVal = document.getElementById('letterDate')?.value;
+    const despatchDateVal = document.getElementById('despatchDate')?.value;
+    if (letterDateVal && despatchDateVal) {
+        if (new Date(letterDateVal) > new Date(despatchDateVal)) {
+            showToast('Date of Letter cannot be greater than Date of Despatch', 'error');
+            return;
+        }
+    }
+
     const btn = document.getElementById('submitBtn');
     btn.disabled = true; btn.textContent = currentEditId ? 'Updating…' : 'Saving…';
     try {
@@ -114,7 +123,7 @@ window.submitEntry = async function (isDraft = false) {
     } catch (e) {
         showToast('Network error: ' + e.message, 'error');
     } finally {
-        btn.disabled = false; if (!currentEditId) btn.textContent = 'Save & Submit';
+        btn.disabled = false; btn.textContent = currentEditId ? 'Update Entry' : 'Save & Submit';
     }
 };
 
@@ -185,9 +194,19 @@ function formatDateForAPI(isoDate) {
 document.addEventListener('DOMContentLoaded', function () {
     const logoutBtn = document.querySelector('.logout-btn');
     if (logoutBtn) {
-        logoutBtn.addEventListener('click', function (e) {
+        logoutBtn.addEventListener('click', async function (e) {
             e.preventDefault();
             if (confirm('Are you sure you want to logout? Remember To Save')) {
+                const token = localStorage.getItem('dak_token');
+                if (token) {
+                    try {
+                        await fetch('/users/logout', {
+                            method: 'POST',
+                            headers: { 'Authorization': `Bearer ${token}` }
+                        });
+                    } catch(e) {}
+                }
+                localStorage.removeItem('dak_token');
                 window.location.href = '../signup/login/login.html';
             }
         });
@@ -340,9 +359,9 @@ window.editEntry = function (id) {
     document.getElementById('despatchDate').value = (row.despatchDate || '').split('/').reverse().join('-');
     document.getElementById('letterNo').value = row.letterNo || '';
     document.getElementById('subjectEn').value = row.subject || '';
-    document.getElementById('subjectHi').value = row.subjectHindi || '';
+    document.getElementById('subjectHi').textContent = row.subjectHindi || 'यहाँ अनुवाद स्वतः दिखेगा…';
     document.getElementById('sentToName').value = row.sentToName || '';
-    document.getElementById('sentToNameHi').value = row.sentToNameHi || '';
+    document.getElementById('sentToNameHi').textContent = row.sentToNameHi || 'प्राप्तकर्ता का नाम…';
     let addrStr = row.sentToAddress || '';
     if (addrStr.includes('#META#')) {
         const parts = addrStr.split('#META#');
@@ -353,12 +372,12 @@ window.editEntry = function (id) {
             document.getElementById('sentToState').value = meta.state || '';
             document.getElementById('sentToCity').value = meta.city || '';
             document.getElementById('sentToDistrict').value = meta.district || '';
-        } catch(e) {}
+        } catch (e) { }
     } else {
         document.getElementById('sentToAddr').value = addrStr;
     }
 
-    document.getElementById('sentToAddrHi').value = row.sentToAddressHi || '';
+    document.getElementById('sentToAddrHi').textContent = row.sentToAddressHi || 'पूर्ण पता…';
     document.getElementById('sentToZone').value = row.zone ? `${row.zone} Zone` : '';
 
     const sentByParts = (row.sentBy || '').split(' | ');
@@ -371,7 +390,7 @@ window.editEntry = function (id) {
     document.getElementById('sentByDsgnHi').textContent = sentByHiParts[1] || 'पदनाम…';
     document.getElementById('sentByDeptHi').textContent = sentByHiParts[2] || 'विभाग / शाखा…';
 
-    for (let i=1; i<=2; i++) {
+    for (let i = 1; i <= 2; i++) {
         const el = document.getElementById(`c${i}name`);
         if (el) {
             el.value = '';
@@ -388,17 +407,17 @@ window.editEntry = function (id) {
             copies.forEach((c, idx) => {
                 const n = idx + 1;
                 const nameEl = document.getElementById(`c${n}name`);
-                if(nameEl) {
-                   nameEl.value = c.name || '';
-                   document.getElementById(`c${n}office`).value = c.office || '';
-                   document.getElementById(`c${n}city`).value = c.city || '';
-                   document.getElementById(`c${n}district`).value = c.district || '';
-                   document.getElementById(`c${n}pin`).value = c.pin || '';
-                   document.getElementById(`c${n}state`).value = c.state ? `${c.state}|${c.zone}` : '';
+                if (nameEl) {
+                    nameEl.value = c.name || '';
+                    document.getElementById(`c${n}office`).value = c.office || '';
+                    document.getElementById(`c${n}city`).value = c.city || '';
+                    document.getElementById(`c${n}district`).value = c.district || '';
+                    document.getElementById(`c${n}pin`).value = c.pin || '';
+                    document.getElementById(`c${n}state`).value = c.state ? `${c.state}|${c.zone}` : '';
                 }
             });
         }
-    } catch(e) {}
+    } catch (e) { }
 
     const modes = (row.deliveryMethod || '').split(', ');
     document.querySelectorAll('#modeRow .mode-opt').forEach(el => {
@@ -496,20 +515,27 @@ window.loadReports = async function () {
     container.innerHTML = `
         <div id="reportsPDFContainer" style="background:#fff; padding:20px; font-family:'Times New Roman', Times, serif; color:#000;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom: 1px solid #000; padding-bottom: 10px;">
-                <img src="/images/digital-india.png" alt="Govt Logo" style="height:55px;" />
+                <div style="display:flex; gap:10px; align-items:center;">
+                    <img src="/images/digital-india.png" alt="Govt Logo" style="height:55px;" />
+                </div>
                 <div style="text-align:center; flex:1;">
-                    <h2 style="margin:0 0 3px 0; font-family:'Times New Roman', Times, serif; font-size:13px; font-weight:bold;">National Informatics Centre / राष्ट्रीय सूचना विज्ञान केंद्र</h2>
-                    <h3 style="margin:0 0 8px 0; font-size:10px; font-weight:normal;">Meghalaya State Centre, Shillong - 793003 / मेघालय राज्य केंद्र, शिलांग - 793003</h3>
-                    <h4 style="margin:0; font-size:12px; font-weight:bold; text-decoration:underline;">DAK Despatch Register - Analytics Report</h4>
-                    <p style="margin:4px 0 0 0; font-size:10px;">Total Records: <strong>${filteredRows.length}</strong> | Filter: ${range}</p>
+                    <h2 style="margin:0 0 3px 0; font-family:'Times New Roman', Times, serif; font-size:14px; font-weight:bold;">Government of India / भारत सरकार</h2>
+                    <h3 style="margin:0 0 3px 0; font-family:'Times New Roman', Times, serif; font-size:12px; font-weight:bold;">Ministry Of Electronics And Information Technology / इलेक्ट्रॉनिक्स और सूचना प्रौद्योगिकी मंत्रालय</h3>
+                    <h4 style="margin:0 0 3px 0; font-family:'Times New Roman', Times, serif; font-size:12px; font-weight:bold;">National Informatics Centre / राष्ट्रीय सूचना विज्ञान केंद्र</h4>
+                    <h5 style="margin:0 0 8px 0; font-size:10px; font-weight:bold;">Meghalaya State Centre, Shillong - 793003 / मेघालय राज्य केंद्र, शिलांग - 793003</h5>
+                    <h6 style="margin:0; font-size:12px; font-weight:bold; text-decoration:underline;">DAK Despatch Register - Analytics Report</h6>
+                    <p style="margin:4px 0 0 0; font-size:10px;">Total Records: <strong>${filteredRows.length}</strong> | Filter: ${range} | Exported On: ${new Date().toLocaleString('en-IN')}</p>
                 </div>
                 <img src="/images/NIC Logo JPG/BILINGUAL _SQUARE_NIC_Logo_white_bg-01.jpg" alt="NIC Logo" style="height:55px;" />
             </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px;">
+                <div class="card" style="border:1px solid #ccc; box-shadow:none;"><div class="card-header"><span class="card-title-en">Zones</span></div><div class="card-body" style="height:350px"><canvas id="chartZones"></canvas></div></div>
+                <div class="card" style="border:1px solid #ccc; box-shadow:none;"><div class="card-header"><span class="card-title-en">Languages</span></div><div class="card-body" style="height:350px"><canvas id="chartLangs"></canvas></div></div>
+            </div>
+            <div class="html2pdf__page-break"></div>
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
-                <div class="card" style="border:1px solid #ccc; box-shadow:none;"><div class="card-header"><span class="card-title-en">Zones</span></div><div class="card-body"><canvas id="chartZones"></canvas></div></div>
-                <div class="card" style="border:1px solid #ccc; box-shadow:none;"><div class="card-header"><span class="card-title-en">Languages</span></div><div class="card-body"><canvas id="chartLangs"></canvas></div></div>
-                <div class="card" style="border:1px solid #ccc; box-shadow:none;"><div class="card-header"><span class="card-title-en">Delivery Methods</span></div><div class="card-body"><canvas id="chartMethods"></canvas></div></div>
-                <div class="card" style="border:1px solid #ccc; box-shadow:none;"><div class="card-header"><span class="card-title-en">Priority</span></div><div class="card-body"><canvas id="chartPriority"></canvas></div></div>
+                <div class="card" style="border:1px solid #ccc; box-shadow:none;"><div class="card-header"><span class="card-title-en">Delivery Methods</span></div><div class="card-body" style="height:350px"><canvas id="chartMethods"></canvas></div></div>
+                <div class="card" style="border:1px solid #ccc; box-shadow:none;"><div class="card-header"><span class="card-title-en">Priority</span></div><div class="card-body" style="height:350px"><canvas id="chartPriority"></canvas></div></div>
             </div>
         </div>
     `;
@@ -852,8 +878,8 @@ window.exportToPDF = function (filteredRows) {
         ['Sent To (name|address|zone)<br><span style="font-family:\'Noto Sans Devanagari\',sans-serif;font-size:8px;font-weight:normal;color:#333">प्रेषित (नाम|पता|क्षेत्र)</span>', 'sentToDetails', '16%', 'left'],
         ['Sent By (name|desg)<br><span style="font-family:\'Noto Sans Devanagari\',sans-serif;font-size:8px;font-weight:normal;color:#333">प्रेषक (नाम|पद)</span>', 'sentBy', '10%', 'left'],
         ['Subject<br><span style="font-family:\'Noto Sans Devanagari\',sans-serif;font-size:8px;font-weight:normal;color:#333">विषय</span>', 'subjectDetails', '24%', 'left'],
-        ['Priority<br><span style="font-family:\'Noto Sans Devanagari\',sans-serif;font-size:8px;font-weight:normal;color:#333">प्राथमिकता</span>', 'priority', '5%', 'left'],
-        ['Language<br><span style="font-family:\'Noto Sans Devanagari\',sans-serif;font-size:8px;font-weight:normal;color:#333">भाषा</span>', 'letterLanguage', '8%', 'left']
+        ['Priority<br><span style="font-family:\'Noto Sans Devanagari\',sans-serif;font-size:8px;font-weight:normal;color:#333">प्राथमिकता</span>', 'priority', '5%', 'center'],
+        ['Language<br><span style="font-family:\'Noto Sans Devanagari\',sans-serif;font-size:8px;font-weight:normal;color:#333">भाषा</span>', 'letterLanguage', '8%', 'center']
     ];
 
     function esc(v) {
@@ -927,8 +953,10 @@ window.exportToPDF = function (filteredRows) {
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 15px; border-bottom: 1px solid #000; padding-bottom: 10px;">
         <img src="/images/NIC Logo JPG/BILINGUAL _SQUARE_NIC_Logo_white_bg-01.jpg" alt="NIC Logo" style="height:55px;" />
         <div style="text-align:center; flex:1;">
+            <h2 style="margin:0 0 3px 0; font-family:'Times New Roman', Times, serif; font-size:14px; font-weight:bold;">Government of India / भारत सरकार</h2>
+            <h3 style="margin:0 0 3px 0; font-family:'Times New Roman', Times, serif; font-size:12px; font-weight:bold;">Ministry Of Electronics And Information Technology / इलेक्ट्रॉनिक्स और सूचना प्रौद्योगिकी मंत्रालय</h3>
             <h2 style="margin:0 0 3px 0; font-family:'Times New Roman', Times, serif; font-size:20px; font-weight:bold;">National Informatics Centre / राष्ट्रीय सूचना विज्ञान केंद्र</h2>
-            <h3 style="margin:0; font-family:'Times New Roman', Times, serif; font-size:15px; font-weight:normal;">Meghalaya State Centre, Shillong - 793003 / मेघालय राज्य केंद्र, शिलांग - 793003</h3>
+            <h3 style="margin:0; font-family:'Times New Roman', Times, serif; font-size:15px; font-weight:bold;">Meghalaya State Centre, Shillong - 793003 / मेघालय राज्य केंद्र, शिलांग - 793003</h3>
         </div>
         <img src="/images/digital-india.png" alt="Govt Logo" style="height:55px;" />
       </div>
