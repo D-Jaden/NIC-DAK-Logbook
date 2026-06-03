@@ -1,9 +1,7 @@
 // ─────────────────────────────────────────────
-//  acquired/main.js  — Entry point
-//  Talks to /api/acquired/* routes
+//  despatch/main.js  — Entry point
+//  Talks to /api/despatch/* routes
 // ─────────────────────────────────────────────
-
-// add a monthly and yearly reports button to the report section and pdf print btn
 
 import { stateOptionsHTML } from '../shared/zone.js';
 
@@ -11,9 +9,10 @@ const TOKEN = () => localStorage.getItem('dak_token');
 const AUTH = () => ({ 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + TOKEN() });
 
 const TAB_MAP = { entry: 0, dashboard: 1, search: 2, pending: 3, reports: 4 };
-let allRows = [];
+let allRows = [];      // cached loaded data
+let copyCount = 2;     // tracks dynamic copy entries
 
-// ── Navigation ────────────────────────────────────────────────────────────────
+// ── Page navigation ──────────────────────────────────────────────────────────
 window.showPage = function (name) {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
@@ -24,21 +23,23 @@ window.showPage = function (name) {
     window.scrollTo({ top: 0, behavior: 'smooth' });
     if (name === 'dashboard') loadDashboard();
     if (name === 'search') loadSearchTable();
-    if (name === 'pending') renderPendingTable();
     if (name === 'reports') loadReports();
 };
 
 // ── Init ─────────────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
+    // Populate state dropdowns
+    ['c1state', 'c2state', 'sentToState'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.innerHTML = stateOptionsHTML();
+    });
+    // Default dates to today
     const today = new Date().toISOString().split('T')[0];
-    ['acquiredDate', 'letterDate'].forEach(id => {
+    ['despatchDate', 'letterDate'].forEach(id => {
         const el = document.getElementById(id);
         if (el && !el.value) el.value = today;
     });
-
-    const stateSel = document.getElementById('addrState');
-    if (stateSel) stateSel.innerHTML = stateOptionsHTML();
-
+    // Auto serial display
     const sn = document.getElementById('headerSerial');
     if (sn) sn.textContent = 'NEW';
     fetchNextSerial();
@@ -46,7 +47,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 async function fetchNextSerial() {
     try {
-        const res = await fetch('/api/acquired/next-serial', { headers: AUTH() });
+        const res = await fetch('/api/despatch/next-serial', { headers: AUTH() });
         const json = await res.json();
         if (json.success) {
             const sn = document.getElementById('headerSerial');
@@ -57,46 +58,130 @@ async function fetchNextSerial() {
     }
 }
 
+let currentEditId = null;
+
 // ── Save entry ────────────────────────────────────────────────────────────────
-window.saveDraft = function () {
-    submitEntry(true);
+window.submitEntry = async function (isDraft = false) {
+    if (isDraft && isDraft.type) isDraft = false; // Ignore event object
+
+    if (!isDraft) {
+        const requiredIds = [
+            'despatchDate', 'letterNo', 'letterDate', 'subjectEn',
+            'sentByName', 'sentByDsgn', 'sentByDept',
+            'sentToName', 'sentToPin', 'sentToState', 'sentToCity', 'sentToDistrict', 'sentToAddr'
+        ];
+
+        const emptyFields = requiredIds.filter(id => {
+            const el = document.getElementById(id);
+            return el && !el.value.trim();
+        });
+
+        if (emptyFields.length > 0) {
+            showToast('Please fill all fields (except remarks/copy) before saving.', 'error');
+            return;
+        }
+    }
+
+    const letterDateVal = document.getElementById('letterDate')?.value;
+    const despatchDateVal = document.getElementById('despatchDate')?.value;
+    if (letterDateVal && despatchDateVal) {
+        if (new Date(letterDateVal) > new Date(despatchDateVal)) {
+            showToast('Date of Letter cannot be greater than Date of Despatch', 'error');
+            return;
+        }
+    }
+
+    const btn = document.getElementById('submitBtn');
+    btn.disabled = true; btn.textContent = currentEditId ? 'Updating…' : 'Saving…';
+    try {
+        const payload = buildPayload();
+        payload.status = isDraft ? 'draft' : 'submitted';
+        let endpoint = '/api/despatch/save';
+        let body = { data: [payload] };
+
+        if (currentEditId) {
+            endpoint = '/api/despatch/save-changes';
+            payload.id = currentEditId;
+            body = { changedRows: [payload], newRows: [] };
+        }
+
+        const res = await fetch(endpoint, { method: 'POST', headers: AUTH(), body: JSON.stringify(body) });
+        const json = await res.json();
+        if (json.success) {
+            showToast(currentEditId ? 'Entry updated successfully ✓' : (isDraft ? 'Draft saved ✓' : 'Entry saved successfully ✓'), 'success');
+            clearForm();
+            currentEditId = null;
+            btn.textContent = 'Save & Submit';
+            await loadData();
+            if (isDraft) {
+                showPage('pending');
+            } else {
+                showPage('dashboard');
+            }
+        }
+        else showToast(json.error || 'Save failed', 'error');
+    } catch (e) {
+        showToast('Network error: ' + e.message, 'error');
+    } finally {
+        btn.disabled = false; btn.textContent = currentEditId ? 'Update Entry' : 'Save & Submit';
+    }
 };
 
-window.forwardToSection = function () {
-    showToast('Forward to section — connect to your section workflow API', 'info');
+window.saveDraft = async function () {
+    await submitEntry(true);
 };
 
 function buildPayload() {
     const modes = [...document.querySelectorAll('#modeRow .mode-opt.selected')].map(el => el.dataset.mode);
-    const stateVal = document.getElementById('addrState')?.value || '';
-    const stateParts = stateVal.split('|');
-    const city = document.getElementById('addrCity')?.value || '';
-    const district = document.getElementById('addrDistrict')?.value || '';
-    const block = document.getElementById('addrBlock')?.value || '';
-    const stateName = stateParts[0] || '';
-    const pincode = document.getElementById('addrPin')?.value || '';
-    const address = [city, district, block, stateName, pincode].filter(Boolean).join(', ') + '#META#' + JSON.stringify({ city, district, block, state: stateName, pin: pincode });
-
+    const copies = [];
+    document.querySelectorAll('[id^="copy-entry-"]').forEach(entry => {
+        const n = entry.id.replace('copy-entry-', '');
+        const stateEl = document.getElementById('c' + n + 'state');
+        const stateVal = stateEl?.value || '';
+        const parts = stateVal.split('|');
+        copies.push({
+            name: document.getElementById('c' + n + 'name')?.value || '',
+            office: document.getElementById('c' + n + 'office')?.value || '',
+            city: document.getElementById('c' + n + 'city')?.value || '',
+            district: document.getElementById('c' + n + 'district')?.value || '',
+            state: parts[0] || '',
+            zone: parts[1] || '',
+            pin: document.getElementById('c' + n + 'pin')?.value || '',
+        });
+    });
     return {
-        serialNo: null,
+        serialNo: null,   // auto-assigned by DB
         letterDate: formatDateForAPI(document.getElementById('letterDate')?.value),
-        acquiredOn: formatDateForAPI(document.getElementById('acquiredDate')?.value),
-        officeName: document.getElementById('officeName')?.value || '',
-        officeNameHindi: document.getElementById('officeNameHi')?.textContent || '',
-        specificPerson: document.getElementById('specificPerson')?.value || '',
-        specificPersonHindi: document.getElementById('specificPersonHi')?.textContent || '',
+        despatchDate: formatDateForAPI(document.getElementById('despatchDate')?.value),
         letterNo: document.getElementById('letterNo')?.value || '',
+        modes,
+        // Sent By
+        sentByName: document.getElementById('sentByName')?.value || '',
+        sentByDesignation: document.getElementById('sentByDsgn')?.value || '',
+        sentByDepartment: document.getElementById('sentByDept')?.value || '',
+        sentByNameHi: document.getElementById('sentByNameHi')?.textContent || '',
+        sentByDesignationHi: document.getElementById('sentByDsgnHi')?.textContent || '',
+        sentByDepartmentHi: document.getElementById('sentByDeptHi')?.textContent || '',
+        // Sent To
+        sentToName: document.getElementById('sentToName')?.value || '',
+        sentToNameHi: document.getElementById('sentToNameHi')?.textContent || '',
+        sentToAddress: (document.getElementById('sentToAddr')?.value || '') + '#META#' + JSON.stringify({
+            pin: document.getElementById('sentToPin')?.value || '',
+            state: document.getElementById('sentToState')?.value || '',
+            city: document.getElementById('sentToCity')?.value || '',
+            district: document.getElementById('sentToDistrict')?.value || ''
+        }),
+        sentToAddressHi: document.getElementById('sentToAddrHi')?.textContent || '',
+        sentToZone: document.getElementById('sentToZone')?.value || '',
+        // Subject
         subject: document.getElementById('subjectEn')?.value || '',
         subjectHindi: document.getElementById('subjectHi')?.textContent || '',
+        // Copy
+        copies,
+        // Meta
         letterLanguage: document.getElementById('langValue')?.value || 'hi',
-        zone: stateParts[1] || '',
         priority: document.getElementById('priorityValue')?.value || 'priority',
-        modes,
-        acquisitionMethod: modes.join(', '),
-        address,
-        addressHindi: '',
-        receivedBy: [document.getElementById('recByName')?.value, document.getElementById('recByDsgn')?.value, document.getElementById('recByDept')?.value].filter(Boolean).join(' | '),
-        receivedByHindi: [document.getElementById('recByNameHi')?.textContent, document.getElementById('recByDsgnHi')?.textContent, document.getElementById('recByDeptHi')?.textContent].filter(Boolean).join(' | ')
+        zone: document.getElementById('sentToZone')?.value?.replace(' Zone', '') || '',
     };
 }
 
@@ -109,9 +194,19 @@ function formatDateForAPI(isoDate) {
 document.addEventListener('DOMContentLoaded', function () {
     const logoutBtn = document.querySelector('.logout-btn');
     if (logoutBtn) {
-        logoutBtn.addEventListener('click', function (e) {
+        logoutBtn.addEventListener('click', async function (e) {
             e.preventDefault();
             if (confirm('Are you sure you want to logout? Remember To Save')) {
+                const token = localStorage.getItem('dak_token');
+                if (token) {
+                    try {
+                        await fetch('/users/logout', {
+                            method: 'POST',
+                            headers: { 'Authorization': `Bearer ${token}` }
+                        });
+                    } catch(e) {}
+                }
+                localStorage.removeItem('dak_token');
                 window.location.href = '../signup/login/login.html';
             }
         });
@@ -121,30 +216,31 @@ document.addEventListener('DOMContentLoaded', function () {
 // ── Load data ─────────────────────────────────────────────────────────────────
 window.loadData = async function () {
     try {
-        const res = await fetch('/api/acquired/load', { headers: AUTH() });
+        const res = await fetch('/api/despatch/load', { headers: AUTH() });
         const json = await res.json();
         if (json.success) {
             allRows = json.data || [];
             const submittedRows = allRows.filter(r => r.status === 'submitted');
             const draftRows = allRows.filter(r => r.status === 'draft');
             showToast(`Loaded ${submittedRows.length} records, ${draftRows.length} drafts`, 'info');
-            renderPendingTable();
+            renderPendingTable(draftRows);
             showPage('search');
-        }
-        else showToast(json.error || 'Load failed', 'error');
+        } else showToast(json.error || 'Load failed', 'error');
     } catch (e) { showToast('Network error', 'error'); }
 };
 
 // ── Dashboard ─────────────────────────────────────────────────────────────────
 async function loadDashboard() {
     try {
-        const res = await fetch('/api/acquired/stats', { headers: AUTH() });
+        const res = await fetch('/api/despatch/stats', { headers: AUTH() });
         const json = await res.json();
         if (!json.success) return;
+        document.getElementById('statTotal')?.setAttribute('innerText', json.total);
         document.getElementById('statTotal').textContent = String(json.total).padStart(3, '0');
         document.getElementById('statZones').textContent = json.byZone?.length || 0;
-        // Load recent
-        const res2 = await fetch('/api/acquired/load', { headers: AUTH() });
+        document.getElementById('statLangs').textContent = json.byLanguage?.length || 0;
+        // Load recent entries for the table
+        const res2 = await fetch('/api/despatch/load', { headers: AUTH() });
         const json2 = await res2.json();
         if (json2.success) {
             allRows = json2.data || [];
@@ -152,34 +248,33 @@ async function loadDashboard() {
             renderRecentTable(submittedRows.slice(-10).reverse());
 
             // Priority counts
-            document.getElementById('statImmediate').textContent = submittedRows.filter(r => r.priority === 'immediate').length;
-            document.getElementById('statPriority').textContent = submittedRows.filter(r => r.priority === 'priority').length;
-
-            // Pending forward counts
-            const statPending = document.getElementById('statPending');
-            if (statPending) statPending.textContent = allRows.filter(r => r.status === 'draft').length;
+            const statImm = document.getElementById('statImmediate');
+            if (statImm) statImm.textContent = submittedRows.filter(r => r.priority === 'immediate').length;
+            const statPri = document.getElementById('statPriority');
+            if (statPri) statPri.textContent = submittedRows.filter(r => r.priority === 'priority').length;
         }
     } catch (e) { console.error('[dashboard]', e); }
 }
 
 function renderRecentTable(rows) {
-    const c = document.getElementById('recentTableBody');
-    if (!rows.length) { c.innerHTML = '<p style="padding:20px;color:var(--text3);font-size:13px">No entries yet.</p>'; return; }
-    c.innerHTML = `<table><thead><tr><th>S.No.</th><th>Date</th><th>Letter No.</th><th>Subject</th><th>From / Zone</th><th>Mode</th></tr></thead><tbody>
+    const container = document.getElementById('recentTableBody');
+    if (!rows.length) { container.innerHTML = '<p style="padding:20px;color:var(--text3);font-size:13px">No entries yet.</p>'; return; }
+    container.innerHTML = `<table><thead><tr><th>S.No.</th><th>Date</th><th>Letter No.</th><th>Subject</th><th>Sent To</th><th>Mode(s)</th></tr></thead><tbody>
     ${rows.map(r => `<tr>
         <td class="td-serial">${r.serialNo || '—'}</td>
         <td style="font-size:12px;white-space:nowrap">${r.letterDate || '—'}</td>
         <td style="font-size:11.5px;color:var(--text2)">${r.letterNo || '—'}</td>
         <td><div class="td-subject-en">${r.subject || '—'}</div><span class="td-subject-hi">${r.subjectHindi || ''}</span></td>
-        <td style="font-size:12px">${r.officeName || '—'}<br><span class="zone-pill">${r.zone || ''}</span></td>
-        <td><div class="mode-tags">${(r.acquisitionMethod || '').split(', ').filter(Boolean).map(m => `<span class="mode-tag">${m}</span>`).join('')}</div></td>
-    </tr>`).join('')}</tbody></table>`;
+        <td style="font-size:12px">${r.sentToName || '—'}</td>
+        <td><div class="mode-tags">${(r.deliveryMethod || '').split(', ').filter(Boolean).map(m => `<span class="mode-tag">${m}</span>`).join('')}</div></td>
+    </tr>`).join('')}
+    </tbody></table>`;
 }
 
 // ── Search ────────────────────────────────────────────────────────────────────
 async function loadSearchTable() {
     if (!allRows.length) {
-        const res = await fetch('/api/acquired/load', { headers: AUTH() }).catch(() => null);
+        const res = await fetch('/api/despatch/load', { headers: AUTH() }).catch(() => null);
         if (res?.ok) { const j = await res.json(); if (j.success) allRows = j.data; }
     }
     renderSearchTable(allRows.filter(r => r.status === 'submitted'));
@@ -190,15 +285,14 @@ window.filterTable = function (q) {
     const zone = document.getElementById('filterZone')?.value || '';
     const prio = document.getElementById('filterPriority')?.value || '';
     const mode = document.getElementById('filterMode')?.value || '';
-    const lang = document.getElementById('filterLang')?.value || '';
     const from = document.getElementById('filterFrom')?.value || '';
     const to = document.getElementById('filterTo')?.value || '';
 
     let rows = allRows.filter(r => r.status === 'submitted');
-    if (query) rows = rows.filter(r => [r.subject, r.letterNo, r.officeName, r.specificPerson].some(f => (f || '').toLowerCase().includes(query)));
-    if (zone) rows = rows.filter(r => (r.zone || '').toLowerCase().includes(zone.toLowerCase()));
-    if (mode) rows = rows.filter(r => (r.acquisitionMethod || '').toLowerCase().includes(mode));
-    if (lang) rows = rows.filter(r => (r.letterLanguage || '') === lang);
+    if (query) rows = rows.filter(r => [r.subject, r.letterNo, r.sentToName, r.sentBy].some(f => (f || '').toLowerCase().includes(query)));
+    if (zone) rows = rows.filter(r => (r.sentToZone || '').includes(zone));
+    if (prio) rows = rows.filter(r => (r.priority || '') === prio);
+    if (mode) rows = rows.filter(r => (r.deliveryMethod || '').toLowerCase().includes(mode));
     if (from || to) {
         const fromTime = from ? new Date(from).getTime() : 0;
         const toTime = to ? new Date(to).getTime() : Infinity;
@@ -214,17 +308,16 @@ window.filterTable = function (q) {
 
 function renderSearchTable(rows) {
     document.getElementById('searchResultCount').textContent = `${rows.length} Results`;
-    const c = document.getElementById('searchTableBody');
-    if (!rows.length) { c.innerHTML = '<p style="padding:20px;color:var(--text3);font-size:13px">No matching records.</p>'; return; }
-    c.innerHTML = `<div class="table-responsive"><table><thead><tr><th>S.No.</th><th>Date</th><th>Letter No.</th><th>Subject</th><th>From</th><th>Zone</th><th>Mode</th><th>Lang</th><th>Actions</th></tr></thead><tbody>
+    const container = document.getElementById('searchTableBody');
+    if (!rows.length) { container.innerHTML = '<p style="padding:20px;color:var(--text3);font-size:13px">No matching records.</p>'; return; }
+    container.innerHTML = `<div class="table-responsive"><table><thead><tr><th>S.No.</th><th>Date</th><th>Letter No.</th><th>Subject</th><th>Sent To / Zone</th><th>Mode(s)</th><th>Lang</th><th>Actions</th></tr></thead><tbody>
     ${rows.map(r => `<tr>
         <td class="td-serial">${r.serialNo || '—'}</td>
         <td style="font-size:12px;white-space:nowrap">${r.letterDate || '—'}</td>
         <td style="font-size:11.5px;color:var(--text2)">${r.letterNo || '—'}</td>
         <td><div class="td-subject-en">${r.subject || '—'}</div><span class="td-subject-hi">${r.subjectHindi || ''}</span></td>
-        <td style="font-size:12px">${r.officeName || '—'}</td>
-        <td><span class="zone-pill">${r.zone || '—'}</span></td>
-        <td><div class="mode-tags">${(r.acquisitionMethod || '').split(', ').filter(Boolean).map(m => `<span class="mode-tag">${m}</span>`).join('')}</div></td>
+        <td style="font-size:12px">${r.sentToName || '—'}<br><span style="color:var(--text3);font-size:11px">${r.sentToZone || ''}</span></td>
+        <td><div class="mode-tags">${(r.deliveryMethod || '').split(', ').filter(Boolean).map(m => `<span class="mode-tag">${m}</span>`).join('')}</div></td>
         <td style="font-size:12px">${r.letterLanguage || '—'}</td>
         <td>
             <div class="btn-group" style="gap:4px">
@@ -232,12 +325,30 @@ function renderSearchTable(rows) {
                 <button class="btn btn-danger btn-sm" onclick="deleteEntry(${r.id})">Delete</button>
             </div>
         </td>
-    </tr>`).join('')}</tbody></table></div>`;
+    </tr>`).join('')}
+    </tbody></table></div>`;
+}
+
+window.renderPendingTable = function (rows) {
+    const container = document.getElementById('pendingTableBody');
+    if (!container) return;
+    if (!rows || !rows.length) { container.innerHTML = '<p style="padding:20px;color:var(--text3);font-size:13px">No pending drafts.</p>'; return; }
+    container.innerHTML = `<div class="table-responsive"><table><thead><tr><th>Date</th><th>Subject</th><th>Sent To</th><th>Actions</th></tr></thead><tbody>
+    ${rows.map(r => `<tr>
+        <td style="font-size:12px;white-space:nowrap">${r.letterDate || '—'}</td>
+        <td><div class="td-subject-en">${r.subject || '—'}</div><span class="td-subject-hi">${r.subjectHindi || ''}</span></td>
+        <td style="font-size:12px">${r.sentToName || '—'}<br><span style="color:var(--text3);font-size:11px">${r.sentToZone || ''}</span></td>
+        <td>
+            <div class="btn-group" style="gap:4px">
+                <button class="btn btn-secondary btn-sm" onclick="editEntry(${r.id})">Edit</button>
+                <button class="btn btn-danger btn-sm" onclick="deleteEntry(${r.id})">Delete</button>
+            </div>
+        </td>
+    </tr>`).join('')}
+    </tbody></table></div>`;
 }
 
 // ── Edit & Delete ─────────────────────────────────────────────────────────────
-let currentEditId = null;
-
 window.editEntry = function (id) {
     const row = allRows.find(r => r.id === id);
     if (!row) return;
@@ -245,51 +356,80 @@ window.editEntry = function (id) {
 
     // Populate form
     document.getElementById('letterDate').value = (row.letterDate || '').split('/').reverse().join('-');
-    document.getElementById('acquiredDate').value = (row.acquiredOn || '').split('/').reverse().join('-');
+    document.getElementById('despatchDate').value = (row.despatchDate || '').split('/').reverse().join('-');
     document.getElementById('letterNo').value = row.letterNo || '';
     document.getElementById('subjectEn').value = row.subject || '';
-    document.getElementById('subjectHi').textContent = row.subjectHindi || '—';
-    document.getElementById('officeName').value = row.officeName || '';
-    document.getElementById('officeNameHi').textContent = row.officeNameHindi || '—';
-    document.getElementById('specificPerson').value = row.specificPerson || '';
-    document.getElementById('specificPersonHi').textContent = row.specificPersonHindi || '—';
+    document.getElementById('subjectHi').textContent = row.subjectHindi || 'यहाँ अनुवाद स्वतः दिखेगा…';
+    document.getElementById('sentToName').value = row.sentToName || '';
+    document.getElementById('sentToNameHi').textContent = row.sentToNameHi || 'प्राप्तकर्ता का नाम…';
+    let addrStr = row.sentToAddress || '';
+    if (addrStr.includes('#META#')) {
+        const parts = addrStr.split('#META#');
+        document.getElementById('sentToAddr').value = parts[0];
+        try {
+            const meta = JSON.parse(parts[1]);
+            document.getElementById('sentToPin').value = meta.pin || '';
+            document.getElementById('sentToState').value = meta.state || '';
+            document.getElementById('sentToCity').value = meta.city || '';
+            document.getElementById('sentToDistrict').value = meta.district || '';
+        } catch (e) { }
+    } else {
+        document.getElementById('sentToAddr').value = addrStr;
+    }
 
-    const modes = (row.acquisitionMethod || '').split(', ');
+    document.getElementById('sentToAddrHi').textContent = row.sentToAddressHi || 'पूर्ण पता…';
+    document.getElementById('sentToZone').value = row.zone ? `${row.zone} Zone` : '';
+
+    const sentByParts = (row.sentBy || '').split(' | ');
+    document.getElementById('sentByName').value = sentByParts[0] || '';
+    document.getElementById('sentByDsgn').value = sentByParts[1] || '';
+    document.getElementById('sentByDept').value = sentByParts[2] || '';
+
+    const sentByHiParts = (row.sentByHindi || '').split(' | ');
+    document.getElementById('sentByNameHi').textContent = sentByHiParts[0] || 'अधिकारी का नाम…';
+    document.getElementById('sentByDsgnHi').textContent = sentByHiParts[1] || 'पदनाम…';
+    document.getElementById('sentByDeptHi').textContent = sentByHiParts[2] || 'विभाग / शाखा…';
+
+    for (let i = 1; i <= 2; i++) {
+        const el = document.getElementById(`c${i}name`);
+        if (el) {
+            el.value = '';
+            document.getElementById(`c${i}office`).value = '';
+            document.getElementById(`c${i}city`).value = '';
+            document.getElementById(`c${i}district`).value = '';
+            document.getElementById(`c${i}pin`).value = '';
+            document.getElementById(`c${i}state`).value = '';
+        }
+    }
+    try {
+        if (row.copySentTo) {
+            const copies = JSON.parse(row.copySentTo);
+            copies.forEach((c, idx) => {
+                const n = idx + 1;
+                const nameEl = document.getElementById(`c${n}name`);
+                if (nameEl) {
+                    nameEl.value = c.name || '';
+                    document.getElementById(`c${n}office`).value = c.office || '';
+                    document.getElementById(`c${n}city`).value = c.city || '';
+                    document.getElementById(`c${n}district`).value = c.district || '';
+                    document.getElementById(`c${n}pin`).value = c.pin || '';
+                    document.getElementById(`c${n}state`).value = c.state ? `${c.state}|${c.zone}` : '';
+                }
+            });
+        }
+    } catch (e) { }
+
+    const modes = (row.deliveryMethod || '').split(', ');
     document.querySelectorAll('#modeRow .mode-opt').forEach(el => {
         if (modes.includes(el.dataset.mode)) el.classList.add('selected');
         else el.classList.remove('selected');
     });
 
-    document.querySelectorAll('#langRow .lang-opt').forEach(el => {
+    document.querySelectorAll('#langRow .mode-opt').forEach(el => {
         if (el.dataset.lang === row.letterLanguage) el.classList.add('selected');
         else el.classList.remove('selected');
     });
     document.getElementById('langValue').value = row.letterLanguage || 'hi';
-
-    let addrStr = row.address || '';
-    if (addrStr.includes('#META#')) {
-        const parts = addrStr.split('#META#');
-        try {
-            const meta = JSON.parse(parts[1]);
-            document.getElementById('addrPin').value = meta.pin || '';
-            document.getElementById('addrCity').value = meta.city || '';
-            document.getElementById('addrDistrict').value = meta.district || '';
-            document.getElementById('addrBlock').value = meta.block || '';
-            document.getElementById('addrState').value = meta.state && row.zone ? `${meta.state}|${row.zone}` : (row.zone ? `${row.zone}|${row.zone}` : '');
-        } catch(e) {}
-    } else {
-        document.getElementById('addrState').value = row.zone ? `${row.zone}|${row.zone}` : '';
-    }
-
-    const recByParts = (row.receivedBy || '').split(' | ');
-    document.getElementById('recByName').value = recByParts[0] || '';
-    document.getElementById('recByDsgn').value = recByParts[1] || '';
-    document.getElementById('recByDept').value = recByParts[2] || '';
-
-    const recByHiParts = (row.receivedByHindi || '').split(' | ');
-    document.getElementById('recByNameHi').textContent = recByHiParts[0] || 'अधिकारी का नाम…';
-    document.getElementById('recByDsgnHi').textContent = recByHiParts[1] || 'पदनाम…';
-    document.getElementById('recByDeptHi').textContent = recByHiParts[2] || 'विभाग / शाखा…';
 
     const btn = document.getElementById('submitBtn');
     btn.textContent = 'Update Entry';
@@ -300,7 +440,7 @@ window.editEntry = function (id) {
 window.deleteEntry = async function (id) {
     if (!confirm('Are you sure you want to delete this entry? This cannot be undone.')) return;
     try {
-        const res = await fetch(`/api/acquired/delete/${id}`, { method: 'DELETE', headers: AUTH() });
+        const res = await fetch(`/api/despatch/delete/${id}`, { method: 'DELETE', headers: AUTH() });
         const json = await res.json();
         if (json.success) {
             showToast('Entry deleted', 'success');
@@ -310,80 +450,6 @@ window.deleteEntry = async function (id) {
         }
     } catch (e) {
         showToast('Network error', 'error');
-    }
-};
-
-window.submitEntry = async function (isDraft = false) {
-    if (isDraft && isDraft.type) isDraft = false; // Ignore event object
-
-    if (!isDraft) {
-        const requiredIds = [
-            'acquiredDate', 'letterDate', 'letterNo', 'subjectEn',
-            'officeName', 'specificPerson',
-            'addrPin', 'addrCity', 'addrDistrict', 'addrState',
-            'recByName', 'recByDsgn', 'recByDept'
-        ];
-
-        const missing = requiredIds.some(id => {
-            const el = document.getElementById(id);
-            return el && !el.value.trim();
-        });
-
-        // Wait, for officeName and specificPerson, we just need AT LEAST ONE.
-        // Let's refine it:
-        const office = document.getElementById('officeName')?.value.trim();
-        const person = document.getElementById('specificPerson')?.value.trim();
-
-        const otherRequired = [
-            'acquiredDate', 'letterDate', 'letterNo', 'subjectEn',
-            'addrPin', 'addrCity', 'addrDistrict', 'addrState',
-            'recByName', 'recByDsgn', 'recByDept'
-        ];
-
-        const otherMissing = otherRequired.some(id => {
-            const el = document.getElementById(id);
-            return el && !el.value.trim();
-        });
-
-        if (otherMissing || (!office && !person)) {
-            showToast('Please fill all fields (except remarks/copy) before saving.', 'error');
-            return;
-        }
-    }
-
-    const btn = document.getElementById('submitBtn');
-    btn.disabled = true; btn.textContent = currentEditId ? 'Updating…' : 'Saving…';
-    try {
-        const payload = buildPayload();
-        payload.status = isDraft ? 'draft' : 'submitted';
-        let endpoint = '/api/acquired/save';
-        let body = { data: [payload] };
-
-        if (currentEditId) {
-            endpoint = '/api/acquired/save-changes';
-            payload.id = currentEditId;
-            body = { changedRows: [payload], newRows: [] };
-        }
-
-        const res = await fetch(endpoint, { method: 'POST', headers: AUTH(), body: JSON.stringify(body) });
-        const json = await res.json();
-        if (json.success) {
-            showToast(currentEditId ? 'Entry updated successfully ✓' : (isDraft ? 'Draft saved ✓' : 'Entry saved successfully ✓'), 'success');
-            clearForm();
-            currentEditId = null;
-            btn.textContent = 'Save & Forward';
-            await loadData();
-            if (isDraft) {
-                showPage('pending');
-            } else {
-                showPage('dashboard');
-            }
-        }
-        else showToast(json.error || 'Save failed', 'error');
-    } catch (e) {
-        showToast('Network error: ' + e.message, 'error');
-    } finally {
-        btn.disabled = false; if (!currentEditId) btn.textContent = 'Save & Forward';
     }
 };
 
@@ -415,8 +481,8 @@ window.loadReports = async function () {
         if (monthVal) {
             const [y, m] = monthVal.split('-');
             filteredRows = allRows.filter(r => {
-                if (!r.acquiredOn) return false;
-                const d = parseIndianDate(r.acquiredOn);
+                if (!r.despatchDate) return false;
+                const d = parseIndianDate(r.despatchDate);
                 if (isNaN(d.getTime())) return false;
                 return d.getFullYear() === parseInt(y) && (d.getMonth() + 1) === parseInt(m);
             });
@@ -424,68 +490,76 @@ window.loadReports = async function () {
     } else if (range === '6months') {
         const sixMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 6, now.getDate()).getTime();
         filteredRows = allRows.filter(r => {
-            if (!r.acquiredOn) return false;
-            return parseIndianDate(r.acquiredOn).getTime() >= sixMonthsAgo;
+            if (!r.despatchDate) return false;
+            return parseIndianDate(r.despatchDate).getTime() >= sixMonthsAgo;
         });
     } else if (range === 'year') {
         const currentYear = now.getFullYear();
         filteredRows = allRows.filter(r => {
-            if (!r.acquiredOn) return false;
-            return parseIndianDate(r.acquiredOn).getFullYear() === currentYear;
+            if (!r.despatchDate) return false;
+            return parseIndianDate(r.despatchDate).getFullYear() === currentYear;
         });
     } else if (range === 'custom') {
         const from = document.getElementById('reportFrom')?.value;
         const to = document.getElementById('reportTo')?.value;
         const fromTime = from ? new Date(from).getTime() : 0;
-        const toTime = to ? new Date(to).getTime() + 86400000 : Infinity; // add 1 day to include end date
+        const toTime = to ? new Date(to).getTime() + 86400000 : Infinity; // add 1 day
         filteredRows = allRows.filter(r => {
-            if (!r.acquiredOn) return false;
-            const t = parseIndianDate(r.acquiredOn).getTime();
+            if (!r.despatchDate) return false;
+            const t = parseIndianDate(r.despatchDate).getTime();
             return t >= fromTime && t <= toTime;
         });
     }
 
-    const c = document.getElementById('reportsContent');
-    c.innerHTML = `
+    const container = document.getElementById('reportsContent');
+    container.innerHTML = `
         <div id="reportsPDFContainer" style="background:#fff; padding:20px; font-family:'Times New Roman', Times, serif; color:#000;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom: 1px solid #000; padding-bottom: 10px;">
-                <img src="/images/digital-india.png" alt="Govt Logo" style="height:55px;" />
+                <div style="display:flex; gap:10px; align-items:center;">
+                    <img src="/images/digital-india.png" alt="Govt Logo" style="height:55px;" />
+                </div>
                 <div style="text-align:center; flex:1;">
-                    <h2 style="margin:0 0 3px 0; font-family:'Times New Roman', Times, serif; font-size:13px; font-weight:bold;">National Informatics Centre / राष्ट्रीय सूचना विज्ञान केंद्र</h2>
-                    <h3 style="margin:0 0 8px 0; font-size:10px; font-weight:normal;">Meghalaya State Centre, Shillong - 793003 / मेघालय राज्य केंद्र, शिलांग - 793003</h3>
-                    <h4 style="margin:0; font-size:12px; font-weight:bold; text-decoration:underline;">DAK Acquired Register - Analytics Report</h4>
-                    <p style="margin:4px 0 0 0; font-size:10px;">Total Records: <strong>${filteredRows.length}</strong> | Filter: ${range}</p>
+                    <h2 style="margin:0 0 3px 0; font-family:'Times New Roman', Times, serif; font-size:14px; font-weight:bold;">Government of India / भारत सरकार</h2>
+                    <h3 style="margin:0 0 3px 0; font-family:'Times New Roman', Times, serif; font-size:12px; font-weight:bold;">Ministry Of Electronics And Information Technology / इलेक्ट्रॉनिक्स और सूचना प्रौद्योगिकी मंत्रालय</h3>
+                    <h4 style="margin:0 0 3px 0; font-family:'Times New Roman', Times, serif; font-size:12px; font-weight:bold;">National Informatics Centre / राष्ट्रीय सूचना विज्ञान केंद्र</h4>
+                    <h5 style="margin:0 0 8px 0; font-size:10px; font-weight:bold;">Meghalaya State Centre, Shillong - 793003 / मेघालय राज्य केंद्र, शिलांग - 793003</h5>
+                    <h6 style="margin:0; font-size:12px; font-weight:bold; text-decoration:underline;">DAK Despatch Register - Analytics Report</h6>
+                    <p style="margin:4px 0 0 0; font-size:10px;">Total Records: <strong>${filteredRows.length}</strong> | Filter: ${range} | Exported On: ${new Date().toLocaleString('en-IN')}</p>
                 </div>
                 <img src="/images/NIC Logo JPG/BILINGUAL _SQUARE_NIC_Logo_white_bg-01.jpg" alt="NIC Logo" style="height:55px;" />
             </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px;">
+                <div class="card" style="border:1px solid #ccc; box-shadow:none;"><div class="card-header"><span class="card-title-en">Zones</span></div><div class="card-body" style="height:350px"><canvas id="chartZones"></canvas></div></div>
+                <div class="card" style="border:1px solid #ccc; box-shadow:none;"><div class="card-header"><span class="card-title-en">Languages</span></div><div class="card-body" style="height:350px"><canvas id="chartLangs"></canvas></div></div>
+            </div>
+            <div class="html2pdf__page-break"></div>
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
-                <div class="card" style="border:1px solid #155bffff; box-shadow:none;"><div class="card-header"><span class="card-title-en">Zones</span></div><div class="card-body"><canvas id="chartZones"></canvas></div></div>
-                <div class="card" style="border:1px solid #155bffff; box-shadow:none;"><div class="card-header"><span class="card-title-en">Languages</span></div><div class="card-body"><canvas id="chartLangs"></canvas></div></div>
-                <div class="card" style="border:1px solid #155bffff; box-shadow:none;"><div class="card-header"><span class="card-title-en">Methods of Receipt</span></div><div class="card-body"><canvas id="chartMethods"></canvas></div></div>
-                <div class="card" style="border:1px solid #155bffff; box-shadow:none;"><div class="card-header"><span class="card-title-en">Priority</span></div><div class="card-body"><canvas id="chartPriority"></canvas></div></div>
+                <div class="card" style="border:1px solid #ccc; box-shadow:none;"><div class="card-header"><span class="card-title-en">Delivery Methods</span></div><div class="card-body" style="height:350px"><canvas id="chartMethods"></canvas></div></div>
+                <div class="card" style="border:1px solid #ccc; box-shadow:none;"><div class="card-header"><span class="card-title-en">Priority</span></div><div class="card-body" style="height:350px"><canvas id="chartPriority"></canvas></div></div>
             </div>
         </div>
     `;
 
-    chartInstances.forEach(ch => ch.destroy());
+    chartInstances.forEach(c => c.destroy());
     chartInstances = [];
 
     // Aggregations
     const zones = {}, langs = {}, methods = {}, priorities = {};
     filteredRows.forEach(r => {
-        if (r.zone) zones[r.zone] = (zones[r.zone] || 0) + 1;
+        if (r.sentToZone) zones[r.sentToZone] = (zones[r.sentToZone] || 0) + 1;
 
         let l = r.letterLanguage;
         l = l === 'en' ? 'English' : l === 'hi' ? 'Hindi' : l === 'bi' ? 'Bilingual' : (l || 'Unknown');
         langs[l] = (langs[l] || 0) + 1;
 
-        if (r.priority) priorities[r.priority] = (priorities[r.priority] || 0) + 1;
-
-        (r.acquisitionMethod || '').split(', ').forEach(m => {
+        (r.deliveryMethod || '').split(', ').forEach(m => {
             if (m) methods[m] = (methods[m] || 0) + 1;
         });
+        const p = r.priority || 'Routine';
+        priorities[p] = (priorities[p] || 0) + 1;
     });
 
+    // Calculate totals for charts
     const totalZones = Object.values(zones).reduce((a, b) => a + b, 0);
     const totalLangs = Object.values(langs).reduce((a, b) => a + b, 0);
     const totalMethods = Object.values(methods).reduce((a, b) => a + b, 0);
@@ -495,7 +569,7 @@ window.loadReports = async function () {
         <div style="margin-top:20px; padding:15px; background:#f9f9f9; border-top:2px solid #ccc; font-size:12px; display:flex; gap:20px; justify-content:space-between; border-radius:5px;">
             <div style="flex:1;"><strong style="font-size:13px; color:#1a2e44; display:block; margin-bottom:5px;">Total Records: ${filteredRows.length}</strong></div>
             <div style="flex:1;"><strong style="color:#1a2e44;">Languages</strong><br>${Object.entries(langs).map(([k, v]) => `${k}: ${v}`).join('<br>')}<hr style="margin:4px 0; border:none; border-top:1px solid #ddd;"><strong>Total: ${totalLangs}</strong></div>
-            <div style="flex:1;"><strong style="color:#1a2e44;">Zones</strong><br>${Object.entries(zones).map(([k, v]) => `${k}: ${v}`).join('<br>')}<hr style="margin:4px 0; border:none; border-top:1px solid #ddd;"><strong>Total: ${totalZones}</strong></div>
+            <div style="flex:1;"><strong style="color:#1a2e44;">Zones Sent To</strong><br>${Object.entries(zones).map(([k, v]) => `${k}: ${v}`).join('<br>')}<hr style="margin:4px 0; border:none; border-top:1px solid #ddd;"><strong>Total: ${totalZones}</strong></div>
             <div style="flex:1;"><strong style="color:#1a2e44;">Methods</strong><br>${Object.entries(methods).map(([k, v]) => `${k}: ${v}`).join('<br>')}<hr style="margin:4px 0; border:none; border-top:1px solid #ddd;"><strong>Total: ${totalMethods}</strong></div>
             <div style="flex:1;"><strong style="color:#1a2e44;">Priority</strong><br>${Object.entries(priorities).map(([k, v]) => `${k}: ${v}`).join('<br>')}<hr style="margin:4px 0; border:none; border-top:1px solid #ddd;"><strong>Total: ${totalPriorities}</strong></div>
         </div>
@@ -520,9 +594,9 @@ window.loadReports = async function () {
         }));
     };
 
-    createChart('chartZones', 'pie', zones, 'Zones');
+    createChart('chartZones', 'pie', zones, 'Zones Sent To');
     createChart('chartLangs', 'doughnut', langs, 'Languages');
-    createChart('chartMethods', 'bar', methods, 'Methods');
+    createChart('chartMethods', 'bar', methods, 'Delivery Methods');
     createChart('chartPriority', 'pie', priorities, 'Priority');
 }
 
@@ -533,8 +607,8 @@ window.exportReportsPDF = function () {
     setTimeout(() => {
         const opt = {
             margin: 15,
-            filename: 'acquired_reports_charts.pdf',
-            image: { type: 'jpeg', quality: 0.99 },
+            filename: 'despatch_reports_charts.pdf',
+            image: { type: 'jpeg', quality: 0.98 },
             html2canvas: { scale: 2 },
             jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape', compress: true }
         };
@@ -543,7 +617,7 @@ window.exportReportsPDF = function () {
             for (let i = 1; i <= totalPages; i++) {
                 pdf.setPage(i);
                 pdf.setFont('times', 'normal');
-                pdf.setFontSize(9);
+                pdf.setFontSize(10);
                 pdf.setTextColor(100);
                 pdf.text('Page ' + i + ' of ' + totalPages, pdf.internal.pageSize.getWidth() / 2, pdf.internal.pageSize.getHeight() - 5, { align: 'center' });
             }
@@ -551,95 +625,10 @@ window.exportReportsPDF = function () {
     }, 1500); // Small delay to ensure charts are fully rendered
 }
 
-// ── Pincode API ───────────────────────────────────────────────────────────────────
-function renderPendingTable() {
-    // Pending = entries loaded but not yet "forwarded" (status === 'draft')
-    const pending = allRows.filter(r => r.status === 'draft');
-    const c = document.getElementById('pendingTableBody');
-    if (!c) return;
-    if (!pending.length) { c.innerHTML = '<p style="padding:20px;color:var(--text3);font-size:13px">No pending letters.</p>'; return; }
-    c.innerHTML = `<table><thead><tr><th>Date</th><th>Letter No.</th><th>Subject</th><th>From / Zone</th><th>Priority</th><th>Action</th></tr></thead><tbody>
-    ${pending.slice(0, 20).map(r => `<tr>
-        <td style="font-size:12px;white-space:nowrap">${r.letterDate || '—'}</td>
-        <td style="font-size:11.5px;color:var(--text2)">${r.letterNo || '—'}</td>
-        <td><div class="td-subject-en">${r.subject || '—'}</div></td>
-        <td style="font-size:12px">${r.officeName || '—'}<br><span class="zone-pill">${r.zone || ''}</span></td>
-        <td><span class="forward-badge">Pending</span></td>
-        <td>
-            <div class="btn-group" style="gap:4px">
-                <button class="btn btn-secondary btn-sm" onclick="editEntry(${r.id})">Edit</button>
-                <button class="btn btn-danger btn-sm" onclick="deleteEntry(${r.id})">Delete</button>
-            </div>
-        </td>
-    </tr>`).join('')}</tbody></table>`;
-}
-
-// ── Zone auto-detect ──────────────────────────────────────────────────────────
-const stateZoneHindi = {
-    A: ['उत्तर क्षेत्र', '#1565C0'],
-    B: ['दक्षिण क्षेत्र', '#E65100'],
-    C: ['पूर्व क्षेत्र', '#2E7D32'],
-};
-
-window.onStateChange = function () {
-    const sel = document.getElementById('addrState');
-    const parts = (sel?.value || '').split('|');
-    const zone = parts[1] || '';
-    const disp = document.getElementById('zoneDisplay');
-    if (!zone) { disp?.classList.add('hidden'); return; }
-    const data = stateZoneHindi[zone];
-    document.getElementById('zoneLabel').textContent = zone + ' Zone';
-    document.getElementById('zoneHi').textContent = data ? data[0] : '';
-    disp?.classList.remove('hidden');
-};
-
-window.onAddressChange = function () { /* hook for future geocoding */ };
-
-window.onPincodeInput = async function (el) {
-    el.value = el.value.replace(/\D/g, '');
-    if (el.value.length === 6) {
-        el.style.borderColor = 'var(--inward)';
-        try {
-            const res = await fetch(`/api/pincode/${el.value}`);
-            const data = await res.json();
-            if (data && data[0] && data[0].Status === 'Success') {
-                const postOffice = data[0].PostOffice[0];
-                const state = postOffice.State;
-                const district = postOffice.District;
-                const city = postOffice.Block !== 'NA' ? postOffice.Block : (postOffice.Region !== 'NA' ? postOffice.Region : district);
-                const block = postOffice.Block !== 'NA' ? postOffice.Block : '';
-
-                const cityEl = document.getElementById('addrCity');
-                const distEl = document.getElementById('addrDistrict');
-                const blockEl = document.getElementById('addrBlock');
-                if (cityEl && !cityEl.value) cityEl.value = city;
-                if (distEl && !distEl.value) distEl.value = district;
-                if (blockEl && !blockEl.value) blockEl.value = block;
-
-                const stateSelect = document.getElementById('addrState');
-                if (stateSelect && !stateSelect.value) {
-                    const options = Array.from(stateSelect.options);
-                    const matchedOption = options.find(opt => {
-                        const optStateName = opt.value.split('|')[0];
-                        return optStateName.toLowerCase() === state.toLowerCase() || optStateName.toLowerCase().includes(state.toLowerCase());
-                    });
-                    if (matchedOption) {
-                        stateSelect.value = matchedOption.value;
-                        if (window.onStateChange) window.onStateChange();
-                    }
-                }
-            }
-        } catch (e) {
-            console.error('Pincode fetch error:', e);
-        }
-    } else {
-        el.style.borderColor = '';
-    }
-};
-
-// ── Translation ───────────────────────────────────────────────────────────────
+// ── Utility: translation ──────────────────────────────────────────────────────
 // Translation logic has been moved to /shared/translations.js
-// ── Mode / Priority / Lang toggles ────────────────────────────────────────────
+
+// ── Utility: mode toggle ──────────────────────────────────────────────────────
 window.toggleMode = function (el) {
     const row = document.getElementById('modeRow');
     const sel = row.querySelectorAll('.mode-opt.selected');
@@ -650,29 +639,160 @@ window.toggleMode = function (el) {
     }
     const n = row.querySelectorAll('.mode-opt.selected').length;
     const cnt = document.getElementById('modeCount');
-    if (cnt) { cnt.textContent = `${n} of 3 selected — maximum 3 modes`; cnt.style.color = n === 3 ? 'var(--tertiary)' : 'var(--text3)'; }
+    if (cnt) { cnt.textContent = `${n} of 3 selected — maximum 3 modes allowed`; cnt.style.color = n === 3 ? 'var(--tertiary)' : 'var(--text3)'; }
 };
 
+// ── Utility: priority / lang ──────────────────────────────────────────────────
 window.selectPriority = function (el, type) {
     document.querySelectorAll('.priority-opt').forEach(p => p.classList.remove('sel-immediate', 'sel-priority'));
     el.classList.add('sel-' + type);
     const h = document.getElementById('priorityValue'); if (h) h.value = type;
 };
-
 window.selectLang = function (el) {
-    document.querySelectorAll('#langRow .lang-opt').forEach(o => o.classList.remove('selected'));
+    document.querySelectorAll('#langRow .mode-opt').forEach(o => o.classList.remove('selected'));
     el.classList.add('selected');
     const h = document.getElementById('langValue'); if (h) h.value = el.dataset.lang || '';
 };
 
-// ── Utility ───────────────────────────────────────────────────────────────────
+// ── Utility: copy recipients ──────────────────────────────────────────────────
+const zoneHindiMap = {
+    A: ['उत्तर क्षेत्र', 'A Zone'],
+    B: ['दक्षिण क्षेत्र', 'B Zone'],
+    C: ['पूर्व क्षेत्र', 'C Zone'],
+};
+
+window.onSentToStateChange = function () {
+    const stateVal = document.getElementById('sentToState')?.value || '';
+    if (!stateVal) return;
+    const parts = stateVal.split('|');
+    const zone = parts[1] || '';
+    const zoneSelect = document.getElementById('sentToZone');
+    if (zone && zoneSelect) {
+        zoneSelect.value = zone;
+        if (window.triggerTranslate) window.triggerTranslate('sentToZone', 'sentToZoneHi');
+    }
+};
+
+window.onSentToPin = async function (el) {
+    el.value = el.value.replace(/\D/g, '');
+    if (el.value.length === 6) {
+        try {
+            const res = await fetch(`/api/pincode/${el.value}`);
+            const data = await res.json();
+            if (data && data[0] && data[0].Status === 'Success') {
+                const postOffice = data[0].PostOffice[0];
+                const state = postOffice.State;
+                const district = postOffice.District;
+                const city = postOffice.Block !== 'NA' ? postOffice.Block : (postOffice.Region !== 'NA' ? postOffice.Region : district);
+
+                const cityEl = document.getElementById('sentToCity');
+                const distEl = document.getElementById('sentToDistrict');
+                if (cityEl && !cityEl.value) cityEl.value = city;
+                if (distEl && !distEl.value) distEl.value = district;
+
+                const stateSelect = document.getElementById('sentToState');
+                if (stateSelect && !stateSelect.value) {
+                    const options = Array.from(stateSelect.options);
+                    const matchedOption = options.find(opt => {
+                        const optStateName = opt.value.split('|')[0];
+                        return optStateName.toLowerCase() === state.toLowerCase() || optStateName.toLowerCase().includes(state.toLowerCase());
+                    });
+                    if (matchedOption) {
+                        stateSelect.value = matchedOption.value;
+                        if (window.onSentToStateChange) window.onSentToStateChange();
+                    }
+                }
+            }
+        } catch (e) {
+            console.error('Pincode fetch error:', e);
+        }
+    }
+};
+
+window.onCopyStateChange = function (n) {
+    const sel = document.getElementById('c' + n + 'state');
+    const parts = (sel?.value || '').split('|');
+    const zone = parts[1] || '';
+    const tag = document.getElementById('c' + n + 'zone');
+    const lbl = document.getElementById('c' + n + 'zoneLabel');
+    const hi = document.getElementById('c' + n + 'zoneHi');
+    const data = zoneHindiMap[zone];
+    if (data && tag && lbl && hi) {
+        lbl.textContent = data[1]; hi.textContent = ' — ' + data[0];
+        tag.classList.add('visible');
+    } else if (tag) tag.classList.remove('visible');
+};
+
+window.onCopyPin = async function (el, n) {
+    el.value = el.value.replace(/\D/g, '');
+    if (el.value.length === 6) {
+        try {
+            const res = await fetch(`/api/pincode/${el.value}`);
+            const data = await res.json();
+            if (data && data[0] && data[0].Status === 'Success') {
+                const postOffice = data[0].PostOffice[0];
+                const state = postOffice.State;
+                const district = postOffice.District;
+                const city = postOffice.Block !== 'NA' ? postOffice.Block : (postOffice.Region !== 'NA' ? postOffice.Region : district);
+
+                const cityEl = document.getElementById('c' + n + 'city');
+                const distEl = document.getElementById('c' + n + 'district');
+                if (cityEl) cityEl.value = city;
+                if (distEl) distEl.value = district;
+
+                const stateSelect = document.getElementById('c' + n + 'state');
+                if (stateSelect) {
+                    const options = Array.from(stateSelect.options);
+                    const matchedOption = options.find(opt => {
+                        const optStateName = opt.value.split('|')[0];
+                        return optStateName.toLowerCase() === state.toLowerCase() || optStateName.toLowerCase().includes(state.toLowerCase());
+                    });
+                    if (matchedOption) {
+                        stateSelect.value = matchedOption.value;
+                        if (window.onCopyStateChange) window.onCopyStateChange(n);
+                    }
+                }
+            }
+        } catch (e) {
+            console.error('Pincode fetch error:', e);
+        }
+    }
+};
+
+window.addCopyEntry = function () {
+    if (copyCount >= 8) { showToast('Maximum 8 copy recipients', 'info'); return; }
+    copyCount++;
+    const n = copyCount;
+    const grid = document.getElementById('copyGrid');
+    const div = document.createElement('div');
+    div.className = 'copy-entry'; div.id = 'copy-entry-' + n;
+    div.innerHTML = `
+    <div class="copy-entry-header">
+      <span class="copy-entry-no">Copy #${n}</span>
+      <span class="copy-zone-tag" id="c${n}zone"><span class="zdot"></span><span id="c${n}zoneLabel">—</span><span class="zhi" id="c${n}zoneHi"></span></span>
+    </div>
+    <div class="field" style="margin-bottom:7px"><span class="field-label">Name <span class="field-label-hi">/ नाम</span></span><input type="text" id="c${n}name" placeholder="Name…" oninput="triggerTranslate('c${n}name','c${n}nameHi')"></div>
+    <div class="field" style="margin-bottom:7px"><span class="field-label">Office / Room No.</span><input type="text" id="c${n}office" placeholder="e.g. Room 201"></div>
+    <div class="copy-addr-row">
+      <div class="field"><span class="field-label" style="font-size:10px">Pincode</span><input type="text" id="c${n}pin" placeholder="6-digit" maxlength="6" oninput="onCopyPin(this, ${n})"></div>
+      <div class="field"><span class="field-label" style="font-size:10px">State <span class="field-label-hi">/ राज्य</span></span><select id="c${n}state" onchange="onCopyStateChange(${n})">${stateOptionsHTML()}</select></div>
+    </div>
+    <div class="copy-addr-row">
+      <div class="field"><span class="field-label" style="font-size:10px">City <span class="field-label-hi">/ शहर</span></span><input type="text" id="c${n}city" placeholder="City…"></div>
+      <div class="field"><span class="field-label" style="font-size:10px">District <span class="field-label-hi">/ जिला</span></span><input type="text" id="c${n}district" placeholder="District…"></div>
+    </div>
+    <div class="field-hindi" id="c${n}nameHi" style="margin-top:6px">नाम • कार्यालय • पता</div>`;
+    grid.appendChild(div);
+    div.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+};
+
+// ── Utility: form helpers ─────────────────────────────────────────────────────
 window.clearForm = function () {
-    ['letterNo', 'subjectEn', 'officeName', 'specificPerson', 'addrCity', 'addrDistrict', 'addrBlock', 'addrPin', 'recByName', 'recByDsgn', 'recByDept', 'remarksEn']
-        .forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
-    ['subjectHi', 'officeNameHi', 'specificPersonHi', 'recByNameHi', 'recByDsgnHi', 'recByDeptHi', 'remarksHi']
+    ['letterNo', 'subjectEn', 'sentByName', 'sentByDsgn', 'sentByDept',
+        'sentToName', 'sentToAddr', 'remarksEn'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+    ['subjectHi', 'sentByNameHi', 'sentByDsgnHi', 'sentByDeptHi', 'sentToNameHi', 'sentToAddrHi', 'sentToZoneHi', 'remarksHi']
         .forEach(id => { const el = document.getElementById(id); if (el) el.textContent = '—'; });
-    document.getElementById('zoneDisplay')?.classList.add('hidden');
-    document.querySelectorAll('#modeRow .mode-opt').forEach((el, i) => el.classList.toggle('selected', i === 0));
+    document.querySelectorAll('#modeRow .mode-opt').forEach((el, i) => { el.classList.toggle('selected', i === 0); });
     showToast('Form cleared', 'info');
 };
 
@@ -697,8 +817,8 @@ window.executeExportPDF = function () {
         if (monthVal) {
             const [y, m] = monthVal.split('-');
             filteredRows = allRows.filter(r => {
-                if (!r.acquiredOn) return false;
-                const d = parseIndianDate(r.acquiredOn);
+                if (!r.despatchDate) return false;
+                const d = parseIndianDate(r.despatchDate);
                 if (isNaN(d.getTime())) return false;
                 return d.getFullYear() === parseInt(y) && (d.getMonth() + 1) === parseInt(m);
             });
@@ -706,14 +826,14 @@ window.executeExportPDF = function () {
     } else if (range === '6months') {
         const sixMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 6, now.getDate()).getTime();
         filteredRows = allRows.filter(r => {
-            if (!r.acquiredOn) return false;
-            return parseIndianDate(r.acquiredOn).getTime() >= sixMonthsAgo;
+            if (!r.despatchDate) return false;
+            return parseIndianDate(r.despatchDate).getTime() >= sixMonthsAgo;
         });
     } else if (range === 'year') {
         const currentYear = now.getFullYear();
         filteredRows = allRows.filter(r => {
-            if (!r.acquiredOn) return false;
-            return parseIndianDate(r.acquiredOn).getFullYear() === currentYear;
+            if (!r.despatchDate) return false;
+            return parseIndianDate(r.despatchDate).getFullYear() === currentYear;
         });
     } else if (range === 'custom') {
         const from = document.getElementById('tabularExportFrom')?.value;
@@ -721,8 +841,8 @@ window.executeExportPDF = function () {
         const fromTime = from ? new Date(from).getTime() : 0;
         const toTime = to ? new Date(to).getTime() + 86400000 : Infinity;
         filteredRows = allRows.filter(r => {
-            if (!r.acquiredOn) return false;
-            const t = parseIndianDate(r.acquiredOn).getTime();
+            if (!r.despatchDate) return false;
+            const t = parseIndianDate(r.despatchDate).getTime();
             return t >= fromTime && t <= toTime;
         });
     }
@@ -751,14 +871,15 @@ window.exportToPDF = function (filteredRows) {
     // ── 1. Column definitions ──────────────────────────────────────────────
     // [header label , data key , width , align ]
     const cols = [
-        ['No.<br><span style="font-family:\'Noto Sans Devanagari\',sans-serif;font-size:6px;font-weight:normal;color:#333">क्र.सं.</span>', 'serialNo', '2%', 'center'],
-        ['Date of Receipt<br><span style="font-family:\'Noto Sans Devanagari\',sans-serif;font-size:4px;font-weight:normal;color:#333">प्राप्ति तिथि</span>', 'acquiredOn', '10%', 'center'],
-        ['Letter No. & Date<br><span style="font-family:\'Noto Sans Devanagari\',sans-serif;font-size:10px;font-weight:normal;color:#333">पत्र संख्या एवं तिथि</span>', 'letterNoDate', '10%', 'left'],
-        ['Mode<br><span style="font-family:\'Noto Sans Devanagari\',sans-serif;font-size:10px;font-weight:normal;color:#333">माध्यम</span>', 'acquisitionMethod', '6%', 'left'],
-        ['Received From (name|address|zone)<br><span style="font-family:\'Noto Sans Devanagari\',sans-serif;font-size:4px;font-weight:normal;color:#333">प्राप्तकर्ता (नाम|पता|क्षेत्र)</span>', 'sentByDetails', '18%', 'left'],
-        ['Subject<br><span style="font-family:\'Noto Sans Devanagari\',sans-serif;font-size:10px;font-weight:normal;color:#333">विषय</span>', 'subjectDetails', '24%', 'left'],
-        ['Priority<br><span style="font-family:\'Noto Sans Devanagari\',sans-serif;font-size:10px;font-weight:normal;color:#333">प्राथमिकता</span>', 'priority', '5%', 'centre'],
-        ['Language<br><span style="font-family:\'Noto Sans Devanagari\',sans-serif;font-size:10px;font-weight:normal;color:#333">भाषा</span>', 'letterLanguage', '8%', 'centre']
+        ['No.<br><span style="font-family:\'Noto Sans Devanagari\',sans-serif;font-size:8px;font-weight:normal;color:#333">क्र.सं.</span>', 'serialNo', '2%', 'center'],
+        ['Date of Despatch<br><span style="font-family:\'Noto Sans Devanagari\',sans-serif;font-size:8px;font-weight:normal;color:#333">प्रेषण की तिथि</span>', 'despatchDate', '10%', 'center'],
+        ['Letter No. & Date<br><span style="font-family:\'Noto Sans Devanagari\',sans-serif;font-size:8px;font-weight:normal;color:#333">पत्र संख्या एवं तिथि</span>', 'letterNoDate', '12%', 'left'],
+        ['Mode<br><span style="font-family:\'Noto Sans Devanagari\',sans-serif;font-size:8px;font-weight:normal;color:#333">माध्यम</span>', 'deliveryMethod', '6%', 'left'],
+        ['Sent To (name|address|zone)<br><span style="font-family:\'Noto Sans Devanagari\',sans-serif;font-size:8px;font-weight:normal;color:#333">प्रेषित (नाम|पता|क्षेत्र)</span>', 'sentToDetails', '16%', 'left'],
+        ['Sent By (name|desg)<br><span style="font-family:\'Noto Sans Devanagari\',sans-serif;font-size:8px;font-weight:normal;color:#333">प्रेषक (नाम|पद)</span>', 'sentBy', '10%', 'left'],
+        ['Subject<br><span style="font-family:\'Noto Sans Devanagari\',sans-serif;font-size:8px;font-weight:normal;color:#333">विषय</span>', 'subjectDetails', '24%', 'left'],
+        ['Priority<br><span style="font-family:\'Noto Sans Devanagari\',sans-serif;font-size:8px;font-weight:normal;color:#333">प्राथमिकता</span>', 'priority', '5%', 'center'],
+        ['Language<br><span style="font-family:\'Noto Sans Devanagari\',sans-serif;font-size:8px;font-weight:normal;color:#333">भाषा</span>', 'letterLanguage', '8%', 'center']
     ];
 
     function esc(v) {
@@ -768,7 +889,7 @@ window.exportToPDF = function (filteredRows) {
     // ── 2. Build thead ─────────────────────────────────────────────────────
     let thead = '<thead><tr>';
     cols.forEach(([label, , w]) => {
-        thead += `<th style="width:${w}">${label}</th>`;
+        thead += `<th style="width:${w}">${label}</th>`; // Removed esc() so HTML renders correctly
     });
     thead += '</tr></thead>';
 
@@ -781,23 +902,21 @@ window.exportToPDF = function (filteredRows) {
         // Prepare combined fields
         const letterNoDate = [row.letterNo, row.letterDate].filter(Boolean).join(' - ');
 
-        // Sent By block
-        const nameParts = [row.officeName, row.specificPerson].filter(Boolean).join(' - ');
-        const sentByParts = [
-            nameParts ? `<b>${esc(nameParts)}</b>` : '',
-            row.address ? esc(row.address.split('#META#')[0]) : '',
-            row.zone ? `Zone: ${esc(row.zone)}` : ''
+        // Sent To block
+        const sentToParts = [
+            row.sentToName ? `<b>${esc(row.sentToName)}</b>` : '',
+            row.sentToAddress ? esc(row.sentToAddress.split('#META#')[0]) : '',
+            row.sentToZone ? `Zone: ${esc(row.sentToZone)}` : ''
         ].filter(Boolean);
-        let sentByDetails = sentByParts.join('<br>');
+        let sentToDetails = sentToParts.join('<br>');
 
-        // Hindi companion for Sent By
-        const namePartsHi = [row.officeNameHindi, row.specificPersonHindi].filter(Boolean).join(' - ');
-        const sentByHiParts = [
-            namePartsHi ? `<b>${esc(namePartsHi)}</b>` : '',
-            row.addressHindi ? esc(row.addressHindi) : ''
+        // Hindi companion for Sent To
+        const sentToHiParts = [
+            row.sentToNameHi ? `<b>${esc(row.sentToNameHi)}</b>` : '',
+            row.sentToAddressHi ? esc(row.sentToAddressHi) : ''
         ].filter(Boolean);
-        if (sentByHiParts.length > 0) {
-            sentByDetails += `<div style="font-family:'Noto Sans Devanagari',sans-serif;font-size:8.5px;color:#222;margin-top:3px;padding-top:2px;border-top:1px solid #e0e0e0">${sentByHiParts.join('<br>')}</div>`;
+        if (sentToHiParts.length > 0) {
+            sentToDetails += `<div style="font-family:'Noto Sans Devanagari',sans-serif;font-size:8.5px;color:#222;margin-top:3px;padding-top:2px;border-top:1px solid #e0e0e0">${sentToHiParts.join('<br>')}</div>`;
         }
 
         // Subject details
@@ -809,7 +928,7 @@ window.exportToPDF = function (filteredRows) {
         cols.forEach(([, key, , align]) => {
             let val = '';
             if (key === 'letterNoDate') val = esc(letterNoDate);
-            else if (key === 'sentByDetails') val = sentByDetails;
+            else if (key === 'sentToDetails') val = sentToDetails; // Already escaped HTML
             else if (key === 'subjectDetails') val = subjectDetails;
             else if (key === 'letterLanguage') {
                 const l = row[key] || '';
@@ -817,7 +936,13 @@ window.exportToPDF = function (filteredRows) {
             }
             else val = esc(row[key] || '');
 
-            tbody += `<td style="text-align:${align};vertical-align:top">${val}</td>`;
+            // Add Hindi companions for other fields if applicable
+            let extra = '';
+            if (key === 'sentBy' && row.sentByHi) {
+                extra = `<div style="font-family:'Noto Sans Devanagari',sans-serif;font-size:8.5px;color:#222;margin-top:3px;padding-top:2px;border-top:1px solid #e0e0e0">${esc(row.sentByHi)}</div>`;
+            }
+
+            tbody += `<td style="text-align:${align};vertical-align:top">${val}${extra}</td>`;
         });
         tbody += '</tr>';
     });
@@ -825,11 +950,13 @@ window.exportToPDF = function (filteredRows) {
 
     // ── 4. Assemble HTML string ────────────────────────────────────────────
     const headerHtml = `
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 15px; border-bottom: 0.5px solid #000; padding-bottom: 10px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 15px; border-bottom: 1px solid #000; padding-bottom: 10px;">
         <img src="/images/NIC Logo JPG/BILINGUAL _SQUARE_NIC_Logo_white_bg-01.jpg" alt="NIC Logo" style="height:55px;" />
         <div style="text-align:center; flex:1;">
-            <h2 style="margin:0 0 3px 0; font-family:'Times New Roman', Times, serif; font-size:18px; font-weight:bold;">National Informatics Centre / राष्ट्रीय सूचना विज्ञान केंद्र</h2>
-            <h3 style="margin:0; font-family:'Times New Roman', Times, serif; font-size:15px; font-weight:normal;">Meghalaya State Centre, Shillong - 793003 / मेघालय राज्य केंद्र, शिलांग - 793003</h3>
+            <h2 style="margin:0 0 3px 0; font-family:'Times New Roman', Times, serif; font-size:14px; font-weight:bold;">Government of India / भारत सरकार</h2>
+            <h3 style="margin:0 0 3px 0; font-family:'Times New Roman', Times, serif; font-size:12px; font-weight:bold;">Ministry Of Electronics And Information Technology / इलेक्ट्रॉनिक्स और सूचना प्रौद्योगिकी मंत्रालय</h3>
+            <h2 style="margin:0 0 3px 0; font-family:'Times New Roman', Times, serif; font-size:20px; font-weight:bold;">National Informatics Centre / राष्ट्रीय सूचना विज्ञान केंद्र</h2>
+            <h3 style="margin:0; font-family:'Times New Roman', Times, serif; font-size:15px; font-weight:bold;">Meghalaya State Centre, Shillong - 793003 / मेघालय राज्य केंद्र, शिलांग - 793003</h3>
         </div>
         <img src="/images/digital-india.png" alt="Govt Logo" style="height:55px;" />
       </div>
@@ -838,8 +965,8 @@ window.exportToPDF = function (filteredRows) {
     const p_langs = {}, p_zones = {}, p_methods = {}, p_priorities = {};
     exportData.forEach(r => {
         let l = r.letterLanguage; l = l === 'en' ? 'English' : l === 'hi' ? 'Hindi' : l === 'bi' ? 'Bilingual' : (l || 'Unknown'); p_langs[l] = (p_langs[l] || 0) + 1;
-        if (r.zone) p_zones[r.zone] = (p_zones[r.zone] || 0) + 1;
-        (r.acquisitionMethod || '').split(', ').forEach(m => { if (m) p_methods[m] = (p_methods[m] || 0) + 1; });
+        if (r.sentToZone) p_zones[r.sentToZone] = (p_zones[r.sentToZone] || 0) + 1;
+        (r.deliveryMethod || '').split(', ').forEach(m => { if (m) p_methods[m] = (p_methods[m] || 0) + 1; });
         if (r.priority) p_priorities[r.priority] = (p_priorities[r.priority] || 0) + 1;
     });
     const t_langs = Object.values(p_langs).reduce((a, b) => a + b, 0);
@@ -850,14 +977,15 @@ window.exportToPDF = function (filteredRows) {
     const htmlContent = `
         <div style="font-family: 'Times New Roman', Times, serif; padding: 5mm; background: white; width: 267mm; color: #000;">
             <style>
-                .pdf-print-area table { width: 100%; border-collapse: collapse; table-layout: fixed; border: 0.5px solid #000; }
+                .pdf-print-area table { width: 100%; border-collapse: collapse; table-layout: fixed; border: 1px solid #000; }
                 .pdf-print-area th { 
                     background-color: #f0f0f0 !important; color: #000 !important; 
-                    padding: 4px; font-size: 9px; border: 1px solid #000; 
+                    padding: 2px 3px; font-size: 8px; border: 1px solid #000; 
                     text-align: center; word-wrap: break-word; font-weight: bold;
+                    line-height: 1.15;
                 }
                 .pdf-print-area td { 
-                    border: 0.5px solid #000; padding: 4px; font-size: 9px; color: #000 !important; 
+                    border: 1px solid #000; padding: 4px; font-size: 9px; color: #000 !important; 
                     line-height: 1.3; word-wrap: break-word; vertical-align: top; 
                     white-space: normal; overflow-wrap: break-word; 
                 }
@@ -866,7 +994,7 @@ window.exportToPDF = function (filteredRows) {
                 .pdf-print-area tr:nth-child(even) td { background-color: #fafafa !important; }
             </style>
             ${headerHtml}
-            <h2 style="text-align: center; font-family: 'Times New Roman', Times, serif; font-size: 12px; font-weight: bold; margin: 0 0 5px; text-decoration: underline;">DAK Acquired Register</h2>
+            <h2 style="text-align: center; font-family: 'Times New Roman', Times, serif; font-size: 12px; font-weight: bold; margin: 0 0 5px; text-decoration: underline;">DAK Despatch Register</h2>
             <div style="text-align: center; font-size: 9px; margin-bottom: 10px; color: #0059ffff;">Printed on ${new Date().toLocaleDateString('en-IN')} &nbsp;|&nbsp; ${exportData.length} record(s)</div>
             <div class="pdf-print-area">
                 <table>${thead}${tbody}</table>
@@ -882,11 +1010,11 @@ window.exportToPDF = function (filteredRows) {
                     ${Object.entries(p_langs).map(([k, v]) => `${k}: ${v}`).join('<br>')}<hr style="margin:4px 0; border:none; border-top:1px solid #ddd;"><strong>Total: ${t_langs}</strong>
                 </div>
                 <div style="flex:1;">
-                    <strong style="color:#1a2e44;">Zones</strong><br>
+                    <strong style="color:#1a2e44;">Zones Sent To</strong><br>
                     ${Object.entries(p_zones).map(([k, v]) => `${k}: ${v}`).join('<br>')}<hr style="margin:4px 0; border:none; border-top:1px solid #ddd;"><strong>Total: ${t_zones}</strong>
                 </div>
                 <div style="flex:1;">
-                    <strong style="color:#1a2e44;">Methods</strong><br>
+                    <strong style="color:#1a2e44;">Delivery Methods</strong><br>
                     ${Object.entries(p_methods).map(([k, v]) => `${k}: ${v}`).join('<br>')}<hr style="margin:4px 0; border:none; border-top:1px solid #ddd;"><strong>Total: ${t_methods}</strong>
                 </div>
                 <div style="flex:1;">
@@ -899,7 +1027,7 @@ window.exportToPDF = function (filteredRows) {
 
     const opt = {
         margin: [15, 15, 15, 15],
-        filename: `DAK_Acquired_${new Date().toISOString().split('T')[0]}.pdf`,
+        filename: `DAK_Despatch_${new Date().toISOString().split('T')[0]}.pdf`,
         image: { type: 'jpeg', quality: 0.98 },
         html2canvas: { scale: 2, useCORS: true, logging: false, scrollX: 0, scrollY: 0 },
         jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape', compress: true },
@@ -929,10 +1057,13 @@ window.handleQuickSearch = function (v) {
 };
 
 function showToast(msg, type = 'info') {
-    const t = document.createElement('div'); t.className = 'toast toast-' + type; t.textContent = msg;
-    document.body.appendChild(t); setTimeout(() => t.remove(), 3500);
+    const t = document.createElement('div');
+    t.className = 'toast toast-' + type; t.textContent = msg;
+    document.body.appendChild(t);
+    setTimeout(() => t.remove(), 3500);
 }
 
+// CSS animations
 const s = document.createElement('style');
-s.textContent = '@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}';
+s.textContent = `@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}`;
 document.head.appendChild(s);
