@@ -1,8 +1,9 @@
 const { isURLWhitelisted, getWhitelistedAPI } = require('../config/whitelistedAPIs');
+const logger = require('./logger');
 
 async function safeFetch(apiType, options = {}) {
   const whitelist = getWhitelistedAPI(apiType);
-  
+
   if (!whitelist) {
     throw new Error(`API type "${apiType}" not whitelisted`);
   }
@@ -11,12 +12,12 @@ async function safeFetch(apiType, options = {}) {
 
   // THIS IS THE KEY CHECK
   if (process.env.ENFORCE_WHITELIST === 'true') {
-      if (!isURLWhitelisted(targetURL, apiType)) {
-        throw new Error(`URL "${targetURL}" not whitelisted for ${apiType}`);
-      }
+    if (!isURLWhitelisted(targetURL, apiType)) {
+      throw new Error(`URL "${targetURL}" not whitelisted for ${apiType}`);
+    }
   }
 
-  console.log(`[EXTERNAL-REQUEST] ${new Date().toISOString()} | API: ${apiType} | URL: ${targetURL}`);
+  logger.info({ apiType, targetURL }, '[EXTERNAL-REQUEST] API call initiated');
 
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), whitelist.timeout);
@@ -35,7 +36,7 @@ async function safeFetch(apiType, options = {}) {
     return await response.json();
 
   } catch (error) {
-    console.error(`[EXTERNAL-ERROR] ${apiType}:`, error.message);
+    logger.error(error, `[EXTERNAL-ERROR] ${apiType} fetch failed`);
     throw error;
   }
 }

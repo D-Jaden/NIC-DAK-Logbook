@@ -62,6 +62,16 @@ document.querySelector('.switch input').addEventListener('change', (e) => {
 
 //-----------------------------AUTHENTICATION IN LOGIN (UPDATED)------------------------------//
 
+const loginBtnElement = document.querySelector('.log-btn button');
+if (loginBtnElement) loginBtnElement.disabled = true; // Initially disabled
+
+LphoneNumber.addEventListener('input', () => {
+    const isValid = /^\d{10,15}$/.test(LphoneNumber.value.trim());
+    if (loginBtnElement) {
+        loginBtnElement.disabled = !isValid;
+    }
+});
+
 async function comparePhoneNo() {
     const phoneNumber = document.getElementById('loginphoneNo').value;
     if (!validNumber(phoneNumber)) {
@@ -130,6 +140,13 @@ function generateCaptcha() {
     }
     document.getElementById('captcha-text').textContent = captcha;
 }
+document.getElementById('refreshCaptcha').addEventListener('click', function () {
+    generateCaptcha();
+    document.getElementById('captchaInput').value = '';   // clear old input too
+});
+
+// Generate on page load
+generateCaptcha();
 
 window.onload = generateCaptcha;
 

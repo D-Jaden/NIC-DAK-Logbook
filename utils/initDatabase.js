@@ -1,4 +1,5 @@
 const pool = require('./db');
+const logger = require('./logger');
 
 async function initDatabase() {
     try {
@@ -9,6 +10,14 @@ async function initDatabase() {
                 first_name VARCHAR(255) NOT NULL,
                 last_name  VARCHAR(255) NOT NULL,
                 phone_no   VARCHAR(15)  NOT NULL
+            );
+        `);
+        await pool.query(`
+            CREATE TABLE IF NOT EXISTS user_sessions (
+                sid      VARCHAR NOT NULL,
+                sess     JSON NOT NULL,
+                expire   TIMESTAMP NOT NULL,
+                PRIMARY KEY (sid)
             );
         `);
 
@@ -160,9 +169,9 @@ async function initDatabase() {
         await pool.query(`ALTER TABLE despatch ADD COLUMN IF NOT EXISTS status VARCHAR(20) DEFAULT 'submitted';`);
         await pool.query(`ALTER TABLE despatch ADD COLUMN IF NOT EXISTS priority VARCHAR(50) DEFAULT 'priority';`);
 
-        console.log('Database initialised successfully.');
+        logger.info('Database initialised successfully.');
     } catch (error) {
-        console.error('Database initialisation failed:', error);
+        logger.error(error, 'Database initialisation failed');
         throw error;
     }
 }

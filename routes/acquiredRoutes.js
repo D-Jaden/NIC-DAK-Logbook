@@ -5,6 +5,9 @@
 require('@dotenvx/dotenvx').config();
 const express = require('express');
 const router  = express.Router();
+const validate = require('../middleware/validate');
+const { saveAcquiredSchema } = require('../schemas/acquiredSchemas');
+const logger = require('../utils/logger');
 const pool    = require('../utils/db.js');
 const { authenticateJWT } = require('../utils/auth');
 
@@ -17,13 +20,13 @@ router.get('/next-serial', authenticateJWT, async (req, res) => {
         const nextSerial = parseInt(maxRes.rows[0].max_sn) + 1;
         res.json({ success: true, nextSerial });
     } catch (e) {
-        console.error('Error fetching next serial:', e);
+        logger.error(e, 'Error fetching next serial:');
         res.status(500).json({ success: false, error: e.message });
     }
 });
 
 // ── POST /api/acquired/save ───────────────────────────────────────────────────
-router.post('/save', authenticateJWT, async (req, res) => {
+router.post('/save', authenticateJWT, validate(saveAcquiredSchema), async (req, res) => {
     const client = await pool.connect();
     try {
         const { data } = req.body;
@@ -84,7 +87,7 @@ router.post('/save', authenticateJWT, async (req, res) => {
 
     } catch (error) {
         await client.query('ROLLBACK');
-        console.error('[acquired /save]', error);
+        logger.error(error, '[acquired /save]');
         res.status(500).json({ success: false, error: 'Database error: ' + error.message });
     } finally {
         client.release();
@@ -139,13 +142,13 @@ router.get('/load', authenticateJWT, async (req, res) => {
         res.json({ success: true, data, message: `Loaded ${result.rows.length} records` });
 
     } catch (error) {
-        console.error('[acquired /load]', error);
+        logger.error(error, '[acquired /load]');
         res.status(500).json({ success: false, error: 'Database error: ' + error.message });
     }
 });
 
 // ── POST /api/acquired/save-changes ──────────────────────────────────────────
-router.post('/save-changes', authenticateJWT, async (req, res) => {
+router.post('/save-changes', authenticateJWT, validate(saveAcquiredSchema), async (req, res) => {
     const client = await pool.connect();
     try {
         const { changedRows = [], newRows = [] } = req.body;
@@ -251,7 +254,7 @@ router.post('/save-changes', authenticateJWT, async (req, res) => {
 
     } catch (error) {
         await client.query('ROLLBACK');
-        console.error('[acquired /save-changes]', error);
+        logger.error(error, '[acquired /save-changes]');
         res.status(500).json({ success: false, error: 'Database error: ' + error.message });
     } finally {
         client.release();
@@ -267,7 +270,7 @@ router.delete('/delete/:id', authenticateJWT, async (req, res) => {
         if (result.rowCount === 0) return res.status(404).json({ success: false, error: 'Record not found' });
         res.json({ success: true, message: 'Record deleted successfully' });
     } catch (error) {
-        console.error('[acquired /delete]', error);
+        logger.error(error, '[acquired /delete]');
         res.status(500).json({ success: false, error: 'Database error: ' + error.message });
     }
 });
@@ -312,7 +315,7 @@ router.get('/stats', authenticateJWT, async (req, res) => {
         });
 
     } catch (error) {
-        console.error('[acquired /stats]', error);
+        logger.error(error, '[acquired /stats]');
         res.status(500).json({ success: false, error: 'Failed to fetch statistics' });
     }
 });

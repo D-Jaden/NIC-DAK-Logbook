@@ -1,10 +1,25 @@
+/* =====================================================================
+   NIC DAK LOGBOOK — Login Page Styles
+   Font: Plus Jakarta Sans (applied globally)
+   ===================================================================== */
+
+/* ---- GLOBAL FONT RESET ---- */
+*, *::before, *::after {
+    font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    box-sizing: border-box;
+}
+
 body {
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
     margin: 0;
-    font-family: Arial, sans-serif;
+    font-family: 'Plus Jakarta Sans', Arial, sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6, p, a, span, label, button, input, b, strong {
+    font-family: 'Plus Jakarta Sans', Arial, sans-serif;
 }
 
 .container {
@@ -16,13 +31,12 @@ body {
     margin: 0 auto;
     padding: 20px;
     box-sizing: border-box;
-    overflow: hidden; 
+    overflow: hidden;
 }
 
 
-
 /*==============================================================================*/
-/*FLIP CONTAINER*/
+/* FLIP CONTAINER — UNCHANGED */
 /*==============================================================================*/
 
 .flip-container {
@@ -30,6 +44,7 @@ body {
     width: 100%;
     min-height: 500px;
 }
+
 .flipper {
     position: relative;
     width: 100%;
@@ -37,30 +52,46 @@ body {
     transform-style: preserve-3d;
     transition: transform 0.5s;
 }
-.front, .back {
+
+.front,
+.back {
     position: absolute;
     width: 100%;
     height: 100%;
     backface-visibility: hidden;
 }
+
 .front {
     transform: rotateY(0deg);
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
 }
+
+/* FIXED: back face now properly centers the signup card */
 .back {
     transform: rotateY(180deg);
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
 }
+
 .flip-container.flipped .flipper {
     transform: rotateY(180deg);
 }
 
-/*---------------------------------TOP COLUMN----------------------------------------------------*/
+
+/*==============================================================================*/
+/* TOP COLUMN — UNCHANGED */
+/*==============================================================================*/
+
 .horizontal-column {
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
-    background-color: #2c3e50 ;
-    height: 10vh; 
+    background-color: #2c3e50;
+    height: 10vh;
     min-height: 60px;
     display: flex;
     align-items: center;
@@ -76,56 +107,65 @@ body {
 
 .rak h1 {
     color: white;
-    font-size: 2.5vw; 
+    font-size: 2.5vw;
     margin: 0;
     white-space: nowrap;
+    font-weight: 800;
+    letter-spacing: 0.05em;
 }
 
 .digital-india-logo img,
 .nic-logo img {
-    height: 8vh; 
+    height: 8vh;
     max-height: 65px;
     width: auto;
-    max-width: 20vw; 
+    max-width: 20vw;
 }
 
-.digital-india-logo {
-    flex: 0;
-}
+.digital-india-logo { flex: 0; }
+.nic-logo { flex: 0; }
 
-.nic-logo {
-    flex: 0;
-}
 
-/*---------------------------------INTRO----------------------------------------------------*/
+/*==============================================================================*/
+/* INTRO — UNCHANGED */
+/*==============================================================================*/
 
 .intro {
-    margin-top: 1vh; 
+    margin-top: 1vh;
     text-align: center;
 }
 
 .intro h2 {
-    color: #2c3e50 ;
-    font-size: 2vw; 
+    color: #2c3e50;
+    font-size: 2vw;
     margin: 1rem 0;
+    font-weight: 700;
 }
 
-/*---------------------------------SIGNUP/LOGIN---------------------------------------------*/
+
+/*==============================================================================*/
+/* HEAD (LOG IN / SIGN UP labels) — UNCHANGED */
+/*==============================================================================*/
 
 .head {
     display: flex;
     justify-content: center;
-    gap: 3vw; 
-    font-size: 1.8rem; 
+    gap: 3vw;
+    font-size: 1.8rem;
     margin: 1rem 0;
 }
 
 .head b {
-    color: #2c3e50 ;
+    color: #2c3e50;
     cursor: pointer;
+    font-weight: 700;
+    letter-spacing: 0.04em;
 }
 
-/*---------------------------------TOGGLE BUTTON--------------------------------------------*/
+
+/*==============================================================================*/
+/* TOGGLE BUTTON — UNCHANGED */
+/*==============================================================================*/
 
 .toggle-container {
     display: flex;
@@ -149,11 +189,8 @@ body {
 .slider {
     position: absolute;
     cursor: pointer;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: #2c3e50 ;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: #2c3e50;
     transition: 0.3s;
     border-radius: 34px;
 }
@@ -170,369 +207,583 @@ body {
     border-radius: 50%;
 }
 
-input:checked + .slider {
-    background-color:#2c3e50 ;
-}
-
-input:checked + .slider:before {
-    transform: translateX(26px);
-}
+input:checked + .slider { background-color: #2c3e50; }
+input:checked + .slider:before { transform: translateX(26px); }
 
 
-/*---------------------------------LOGIN BOX------------------------------------------------*/
+/*==============================================================================*/
+/* LOGIN CARD */
+/*==============================================================================*/
+
 .login-box {
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 110%;
-    max-width: 700px;
-    margin: 1em auto;
-    margin-top: 0;
+    width: 100%;
+    max-width: 440px;   /* match register-box */
+    margin: 1em auto 0;
     min-height: 300px;
-    display: flex;
     flex-direction: column;
 }
 
 .outer-box {
-    position: relative;
-    right:2rem;
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: flex-start;
     justify-content: center;
-    padding: 15px;
-    width: 180%;
+    padding: 32px 28px;
+    width: 100%;
+    max-width: 400px;
     min-height: 250px;
-    max-width: 330px;
-    border-radius: 10px;
-    border: 1px solid #2c3e50 ;
-    backdrop-filter: blur(10px);
-    background: white;
-    box-sizing: border-box; 
+    border-radius: 16px;
+    border: 1px solid #e2e8f0;
+    background: #ffffff;
+    box-shadow: 0 4px 24px rgba(26, 60, 110, 0.10), 0 1px 4px rgba(26, 60, 110, 0.06);
+    box-sizing: border-box;
 }
 
+/* CENTERED: Secure Log In */
 .outer-box h2 {
-    color: #2c3e50 ;
-    font-size: 1.8rem;
-    margin-bottom: 1rem;
+    width: 100%;
     text-align: center;
+    color: #1a2e44;
+    font-size: 1.5rem;
+    font-weight: 800;
+    margin-bottom: 6px;
+    letter-spacing: -0.02em;
 }
 
+/* CENTERED: blue underline */
+.card-underline {
+    display: block;
+    width: 36px;
+    height: 3px;
+    background: #2563eb;
+    border-radius: 2px;
+    margin: 0 auto 22px;
+}
+
+/* Field labels */
+.field-label {
+    display: block;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 7px;
+}
+
+/* Generic input-box wrapper */
 .input-box {
     position: relative;
     width: 100%;
-    margin: 0.5rem 0;
-}
-.input-box input {
-    width: 100%;
-    height:40px;
-    outline: none;
-    border-radius: 10px;
-    padding: 8px 15px 8px 35px;
-    background: #2c3e50 ;
-    border: 1px solid #2c3e50 ;
-    box-sizing: border-box;
-    color: white;
-    font-size: 1rem;
+    margin: 0.4rem 0;
 }
 
-.input-box i {
-    font-size: 1.2rem;
-    color: #ffffff;
-    position: absolute;
-    top: 50%;
-    left: 10px;
-    transform: translateY(-50%);
+/* Phone prefix row (login) */
+.prefix-input-box {
+    display: flex;
+    align-items: center;
+    background: #f8fafc;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 10px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+    width: 100%;
 }
-.input-box ::placeholder{
-    color:white;
-    opacity:2;
+
+.prefix-input-box:focus-within {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.10);
 }
-.input-box box-icon {
-    width:20px;
-    position: absolute;
-    left: 10px; 
-    top: 50%; 
-    transform: translateY(-50%); 
-    z-index: 1; 
+
+.phone-prefix {
+    padding: 0 12px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #1a2e44;
+    background: #eef2f9;
+    height: 42px;
+    display: flex;
+    align-items: center;
+    border-right: 1.5px solid #e2e8f0;
+    flex-shrink: 0;
 }
+
+.prefix-input-box input {
+    flex: 1;
+    height: 42px;
+    border: none;
+    outline: none;
+    padding: 0 14px;
+    background: transparent;
+    font-size: 0.9rem;
+    color: #1a2e44;
+}
+
+.prefix-input-box input::placeholder { color: #94a3b8; }
+
 .below {
     display: flex;
     justify-content: center;
     width: 100%;
-    margin-top: 1rem; /* Added spacing above the button */
+    margin-top: 1.2rem;
 }
 
+/* LOGIN button — no arrow */
 .log-btn button {
-    background-color: #2c3e50 ;
-    border: 1px solid #2c3e50 ;
+    background-color: #1a2e44;
+    border: none;
     border-radius: 10px;
-    width: 120px; 
-    max-width: 300px;  
-    height: 40px;
+    width: 100%;
+    max-width: 300px;
+    height: 44px;
     color: #ffffff;
     cursor: pointer;
-    font-size: 1rem;
-    transition: transform 150ms, box-shadow 150ms;
+    font-size: 0.9rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    transition: transform 150ms, background-color 150ms, box-shadow 150ms;
     display: flex;
     justify-content: center;
     align-items: center;
 }
+
 .log-btn button:hover {
     transform: translateY(-2px);
-    background-color: #2e5071;
+    background-color: #2563eb;
+    box-shadow: 0 4px 16px rgba(37, 99, 235, 0.30);
 }
+
 .log-btn button:disabled {
-    background-color: #072d53; 
+    background-color: #94a3b8;
     cursor: not-allowed;
     opacity: 0.6;
 }
 
 .log-btn button:hover:not(:disabled) {
-    background-color: #2e5071; 
+    background-color: #2563eb;
 }
 
 
-/*---------------------------------REGISTER BOX---------------------------------------------*/
+/*==============================================================================*/
+/* REGISTER CARD — FIXED CENTERING */
+/*==============================================================================*/
 
 .register-box {
     display: flex;
     justify-content: center;
     align-items: center;
     width: 100%;
-    max-width: 80%;
-    margin: 1rem auto; 
-    margin-top: 0;
-    min-height: 80%; 
+    max-width: 440px;           /* Fixed: was 80% which caused drift */
+    margin: 1rem auto 0;
+    min-height: 80%;
     backface-visibility: hidden;
-    display: flex;
-    flex-direction: column; 
+    flex-direction: column;
 }
+
 .reg-box {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    justify-content:flex-start; 
-    padding: 3%; 
-    width: 110%;
-    max-width: 130%;
-    border-radius: 10px;
-    border: 1px solid #2c3e50 ;
-    backdrop-filter: blur(10px);
-    background: white;
-    box-sizing: border-box; 
+    align-items: flex-start;
+    justify-content: flex-start;
+    padding: 28px 28px 24px;
+    width: 100%;                /* Fixed: was 110% */
+    border-radius: 16px;
+    border: 1px solid #e2e8f0;
+    background: #ffffff;
+    box-shadow: 0 4px 24px rgba(26, 60, 110, 0.10), 0 1px 4px rgba(26, 60, 110, 0.06);
+    box-sizing: border-box;
 }
+
+/* CENTERED: Sign Up */
 .reg-box h2 {
-    color: #2c3e50 ;
-    font-size: 1.8vw;
-    margin-bottom: 5%; 
+    width: 100%;
     text-align: center;
+    color: #1a2e44;
+    font-size: 1.5rem;
+    font-weight: 800;
+    margin-bottom: 4px;
+    letter-spacing: -0.02em;
 }
-.captcha-area {
-    display: none;
-}
-#captcha-text {
+
+/* CENTERED: Create your administrative account */
+.reg-subtitle {
+    width: 100%;
     text-align: center;
-    border-radius: 0 10px 10px 0; 
-    z-index: 2; 
+    font-size: 0.82rem;
+    color: #64748b;
+    margin: 0 0 20px 0;
+    font-weight: 400;
+}
+
+/* Two-column name row */
+.name-row {
+    display: flex;
+    gap: 12px;
+    width: 100%;
+    margin-bottom: 4px;
+}
+
+.half-input-box {
+    flex: 1;
+    min-width: 0;
+    margin-bottom: 10px;
+}
+
+.full-input-box {
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+/* Input inner wrapper (icon + field) */
+.input-inner {
+    position: relative;
     display: flex;
     align-items: center;
-    position: absolute;
-    top: -4px;
-    right: -7px;
-    flex: 0 0 25%; 
-    width: 25%; 
-    height: 100%; 
-    padding: 5px;
-    color: rgb(0, 0, 0);
-    font-size: 0.9vw;
+    background: #f8fafc;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 10px;
+    overflow: hidden;
+    transition: border-color 0.2s;
 }
+
+.input-inner:focus-within {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.10);
+}
+
+.input-inner i, .input-inner box-icon {
+    font-size: 1.05rem;
+    color: #94a3b8;
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 1;
+    pointer-events: none;
+}
+
+.input-inner input {
+    width: 100%;
+    height: 42px;
+    border: none;
+    outline: none;
+    padding: 0 14px 0 36px;
+    background: transparent;
+    font-size: 0.88rem;
+    color: #1a2e44;
+    box-sizing: border-box;
+}
+
+.input-inner input::placeholder { color: #94a3b8; }
+
+#message {
+    font-size: 0.72rem;
+    color: #dc2626;
+    position: absolute;
+    bottom: -16px;
+    left: 0;
+}
+
+
+/*==============================================================================*/
+/* CAPTCHA — WITH REFRESH BUTTON */
+/*==============================================================================*/
+
+.captcha-area { display: none; }
 
 .cap-in {
     position: relative;
-    top:-14px;
     width: 100%;
-    margin: 0.75rem 0;
     display: flex;
-    align-items: center;
+    align-items: stretch;
+    background: #f8fafc;
+    border: 1.5px solid #e2e8f0;
     border-radius: 10px;
-    background: #2c3e50 ;
-    border: 1px solid #2c3e50 ;
-    box-sizing: border-box;
     overflow: hidden;
+    box-sizing: border-box;
+    transition: border-color 0.2s;
+    min-height: 42px;
 }
 
+.cap-in:focus-within {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.10);
+}
+
+/* Shield icon */
+.cap-in > i, .cap-in > box-icon {
+    font-size: 1.05rem;
+    color: #94a3b8;
+    position: absolute;
+    top: 50%;
+    left: 12px;
+    transform: translateY(-50%);
+    z-index: 1;
+    pointer-events: none;
+}
 
 .cap-in input {
     flex: 1;
     outline: none;
     border: none;
-    padding: 8px 15px 8px 35px;
+    padding: 10px 14px 10px 36px;
     background: transparent;
-    color: white;
-    font-size: 1rem;
+    color: #1a2e44;
+    font-size: 0.88rem;
     box-sizing: border-box;
-    position: relative; 
-    z-index: 1; 
+    z-index: 1;
 }
 
-.captcha-image {
-    flex: 0 0 25%; 
-    padding: 5px;
+.cap-in input::placeholder { color: #94a3b8; }
+
+/* Right section: captcha text + refresh button */
+.captcha-right {
+    display: flex;
+    align-items: stretch;
+    border-left: 1.5px solid #e2e8f0;
+    background: #eef2f9;
+    flex-shrink: 0;
 }
 
-.captcha-image img {
-    width: 10%; 
-    height: 30px;
-    border-radius: 0 10px 10px 0; 
-    background: #008080;
+/* Captcha display text */
+#captcha-text {
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
+    font-family: 'Courier New', 'Courier', monospace;
+    font-size: 0.92rem;
+    font-weight: 700;
+    color: #1a2e44;
+    letter-spacing: 0.22em;
+    user-select: none;
+    min-width: 70px;
+    justify-content: center;
+    /* Override old absolute positioning */
+    position: static;
+    top: auto; right: auto; bottom: auto;
+    width: auto;
+    height: auto;
+    background: transparent;
     border: none;
-    box-sizing: border-box;
 }
 
-.cap-in i {
-    font-size: 1.1rem;
-    color: #ffffff;
-    position: absolute;
-    top: 50%;
-    left: 10px;
-    transform: translateY(-50%);
+/* Refresh icon button */
+.captcha-refresh-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    border-left: 1.5px solid #e2e8f0;
+    padding: 0 10px;
+    cursor: pointer;
+    color: #64748b;
+    transition: color 0.2s, background 0.2s;
+    flex-shrink: 0;
 }
+
+.captcha-refresh-btn:hover {
+    color: #2563eb;
+    background: rgba(37, 99, 235, 0.08);
+}
+
+/* Override bx icon inside button so it doesn't get the .cap-in > i absolute rule */
+.captcha-refresh-btn i, .captcha-refresh-btn box-icon {
+    font-size: 1.1rem;
+    position: static !important;
+    transform: none !important;
+    top: auto !important;
+    left: auto !important;
+    color: inherit;
+    transition: transform 0.35s ease;
+}
+
+.captcha-refresh-btn:hover i, .captcha-refresh-btn:hover box-icon {
+    transform: rotate(180deg) !important;
+}
+
+
+/*==============================================================================*/
+/* CHECKBOX */
+/*==============================================================================*/
 
 .checkbox {
     width: 100%;
-    font-size: 1.2rem;
-    position: relative;
-    justify-content: flex-start;
-    bottom: 19px;
-    left: 2px;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin: 8px 0 4px;
+    position: static;
+    bottom: auto;
+    left: auto;
 }
 
-.checkbox i {
-    color: #000000;
-    position: relative;
-    top: 50%;
-    right: 10px;
-    transform: translateY(-50%);
+.checkbox input[type="checkbox"] {
+    width: 15px;
+    height: 15px;
+    min-width: 15px;
+    margin-top: 3px;
+    accent-color: #2563eb;
+    cursor: pointer;
+    flex-shrink: 0;
 }
 
-.reload {
-    display: none;
+.checkbox label {
+    font-size: 0.82rem;
+    color: #475569;
+    cursor: pointer;
+    line-height: 1.5;
 }
+
+.checkbox label a {
+    color: #2563eb;
+    text-decoration: underline;
+    font-weight: 600;
+}
+
+.checkbox label a:hover { color: #1d4ed8; }
+.reload { display: none; }
+
+
+/*==============================================================================*/
+/* SIGN UP BUTTON */
+/*==============================================================================*/
+
 .reg-btn {
     width: 100%;
     display: flex;
     justify-content: center;
-    margin-top: 1rem;
+    margin-top: 14px;
 }
 
 .reg-btn button {
-    background-color: #2c3e50 ;
-    border: 1px solid #2c3e50 ;
+    background-color: #1a2e44;
+    border: none;
     border-radius: 10px;
-    width: 110%; 
-    max-width: 260px; 
-    height: 40px;
+    width: 100%;
+    height: 44px;
     color: #ffffff;
     cursor: pointer;
-    font-size: 1rem;
-    transition: transform 150ms, box-shadow 150ms;
+    font-size: 0.9rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    transition: transform 150ms, background-color 150ms, box-shadow 150ms;
     display: flex;
     justify-content: center;
     align-items: center;
+    gap: 8px;
 }
 
 .reg-btn button:hover {
     transform: translateY(-2px);
-    background-color: #2e5071;
+    background-color: #2563eb;
+    box-shadow: 0 4px 16px rgba(37, 99, 235, 0.30);
 }
+
 .reg-btn button:disabled {
-    background-color: #072d53; 
+    background-color: #94a3b8;
     cursor: not-allowed;
     opacity: 0.6;
+    transform: none;
+    box-shadow: none;
 }
 
 .reg-btn button:hover:not(:disabled) {
-    background-color: #2e5071; 
+    background-color: #2563eb;
 }
 
-/*-------------------------------------------BOTTOM ROW-----------------------------------------------------*/
+
+/*==============================================================================*/
+/* BOTTOM BAR — UNCHANGED */
+/*==============================================================================*/
+
 .bottom-column {
     position: fixed;
     bottom: 0;
     left: 0;
     right: 0;
-    background-color: #1e2a37 ;
-    height: 7%; 
+    background-color: #1e2a37;
+    height: 7%;
     min-height: 5%;
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 0 2vw;
 }
-/*----------------------------------------------------------------------------------------------------------*/
-/*---------------------------------RESPONSIVENESS MEDIA QUERIES---------------------------------------------*/
 
-/*---------------------------------------------BOXES--------------------------------------------------------*/
+.bottom-column h3 {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: white;
+    text-align: center;
+}
+
+
+/*==============================================================================*/
+/* MEDIA QUERIES */
+/*==============================================================================*/
+
 @media (max-width: 768px) {
-    .login-box, .register-box {
+
+    .login-box,
+    .register-box {
         max-width: 500px;
         padding: 0 10px;
         position: relative;
     }
 
-    .outer-box, .reg-box {
-        width: 350px;
-        max-width: 500px;
-        padding: 10px;
-        justify-content: center;
-        align-items: center;
-    }
-    .reg-box{
-        justify-content: center;
-    }
-    .outer-box{
+    .outer-box {
         position: relative;
-        left:0em;
+        left: 0;
+        right: 0;
         width: 300px;
+        max-width: 340px;
+        padding: 20px 16px;
     }
 
-    .reg-box{
-        position: relative;
-        left:0;
+    .reg-box {
+        width: 100%;
+        max-width: 360px;
+        padding: 20px 16px;
     }
-    .outer-box h2, .reg-box h2 {
-        font-size: 1.8rem;
+
+    .outer-box h2,
+    .reg-box h2 {
+        font-size: 1.4rem;
+    }
+
+    .name-row {
+        flex-direction: column;
+        gap: 0;
+    }
+
+    .half-input-box {
+        width: 100%;
     }
 
     .reg-btn button {
         width: 100%;
-        max-width: 300px;
-        font-size: 0.8rem;
-        height: 40px;
-        justify-content: center;
-    }
-    .log-btn{
-        width: 100px;
-        max-width: 300px;
-        font-size: 0.8rem;
-        height: 40px;
-        position: relative;
-        justify-content: center;
-        left: -0.4rem;
-        
-    }
-}
-/*-----------------------------------------HORIZONTAL COLUMN----------------------------------*/
-@media (max-width: 768px) {
-    .horizontal-column .bottom-column {
-        height: 8vh;
-        min-height: 50px;
+        font-size: 0.85rem;
+        height: 42px;
     }
 
-    .rak h1 {
-        font-size: 4vw;
+    .log-btn {
+        width: 100%;
+        justify-content: center;
     }
+
+    .log-btn button {
+        width: 100%;
+        max-width: 300px;
+        font-size: 0.85rem;
+        height: 42px;
+    }
+
+    /* Horizontal column */
+    .rak h1 { font-size: 4vw; }
 
     .digital-india-logo img,
     .nic-logo img {
@@ -540,9 +791,7 @@ input:checked + .slider:before {
         max-width: 25vw;
     }
 
-    .intro h2 {
-        font-size: 5vw;
-    }
+    .intro h2 { font-size: 5vw; }
 
     .head {
         font-size: 1.6rem;
@@ -560,22 +809,15 @@ input:checked + .slider:before {
         left: 4px;
         bottom: 4px;
     }
-    .cap-in b{
-        position:relative;
-        right:5.1rem;
+
+    input:checked + .slider:before { transform: translateX(22px); }
+
+    .checkbox label { font-size: 0.8rem; }
+
+    .bottom-column h3 {
+        font-size: 11px;
+        text-align: center;
     }
-    #captcha-text {
-        font-size: 1.25rem;
-    }
-    input:checked + .slider:before {
-        transform: translateX(22px);
-    }
-    .checkbox label{
-        font-size: 1rem;
-    }
-    .bottom-column h3{
-        align-items: center;
-        justify-content: center;
-        font-size: 12px;
-    }
+
+    #captcha-text { font-size: 0.85rem; }
 }

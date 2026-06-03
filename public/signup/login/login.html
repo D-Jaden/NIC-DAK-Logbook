@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,18 +7,18 @@
     <link rel="stylesheet" href="/signup/login/login_styles.css">
 
     <!-----------ICON PACKAGE----------------->
-    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
-    <script src="https://unpkg.com/boxicons@2.1.4/dist/boxicons.js"></script>
+    <link href='/boxicons/css/boxicons.min.css' rel='stylesheet'>
+    <script src="/boxicons/dist/boxicons.js"></script>
 
     <!-----------ICON IMAGE----------------->
-    <link rel = "shortcut icon" href = "/images/NIC Logo JPG/BILINGUAL _SQUARE_NIC_Logo_white_bg-01.jpg" type="image/x-icon">
+    <link rel="shortcut icon" href="/images/NIC Logo JPG/BILINGUAL _SQUARE_NIC_Logo_white_bg-01.jpg" type="image/x-icon">
     <title>LogIn</title>
 </head>
 
 <body style="background-color: #f2f5ff">
     <div class="container">
-        <!------------------------------------TOP COLUMN---------------------------------------->
 
+        <!------------------------------------TOP COLUMN---------------------------------------->
         <div class="horizontal-column" id="hrz-clmn">
             <div class="digital-india-logo">
                 <img src="/images/digital-india.png" alt="Digital India Logo">
@@ -31,7 +32,6 @@
         </div>
 
         <!------------------------------------INTRO--------------------------------------------->
-
         <div class="intro">
             <h2>Welcome To NIC Meghalaya</h2>
         </div>
@@ -51,79 +51,119 @@
 
         <div class="flip-container" id="flipContainer">
             <div class="flipper">
+
+                <!--------------------------------------LOGIN CARD--------------------------------------->
                 <div class="front">
-                    <!--------------------------------------LOGIN BOX--------------------------------------->
                     <div class="login-box" id="login-box">
-                        <form id="form" action="/">
+                        <form id="loginForm" action="/">
                             <div class="outer-box">
-                                <h2>Log In</h2>
-                                <div class="input-box">
-                                    <input type="text" id="loginphoneNo" name="phone-number" placeholder="Phone Number" onkeyup="validNumber(this.value)" onkeypress="return (event.charCode > 47 && event.charCode < 58)" autocomplete="off">
-                                    <i class='bx bx-phone'></i>
+                                <h2>Secure Log In</h2>
+                                <span class="card-underline"></span>
+
+                                <label class="field-label">Phone Number</label>
+                                <div class="input-box prefix-input-box">
+                                    <span class="phone-prefix"><box-icon name='phone' color='#94a3b8' size='20px' style='margin-right: 6px;'></box-icon>+91</span>
+                                    <input
+                                        type="text"
+                                        id="loginphoneNo"
+                                        name="phone-number"
+                                        placeholder="Enter your registered number"
+                                        onkeyup="validNumber(this.value)"
+                                        onkeypress="return (event.charCode > 47 && event.charCode < 58)"
+                                        autocomplete="off"
+                                        maxlength="10">
                                 </div>
 
                                 <div class="below">
                                     <div class="log-btn">
-                                        <button role="button" onclick = "comparePhoneNo()">LOG IN</button>
+                                        <button role="button" onclick="comparePhoneNo()">LOG IN</button>
                                     </div>
                                 </div>
                             </div>
                         </form>
                     </div>
                 </div>
-              
-           
+
+                <!------------------------------------------------REGISTER CARD----------------------------------------------->
                 <div class="back">
-                    <!------------------------------------------------REGISTER----------------------------------------------->
                     <div class="register-box" id="register-box">
-                        <form id="form">
+                        <form id="signupForm">
                             <div class="reg-box">
                                 <h2>Sign Up</h2>
-                                <div class="input-box">
-                                    <input type="text" id="Fname" name="name" placeholder="First Name" onkeypress="return (event.charCode > 64 && event.charCode < 91) || (event.charCode > 96 && event.charCode < 123)" autocomplete="off" required>
-                                    <box-icon name='face' color='#ffffff'></box-icon>
-                                </div>
-                                <div class="input-box">
-                                    <input type="text" id="Lname" name="name" placeholder="Last Name" onkeypress="return (event.charCode > 64 && event.charCode < 91) || (event.charCode > 96 && event.charCode < 123)"autocomplete="off" required>
-                                    <box-icon name='face' color='#ffffff'></box-icon>
-                                </div>
-                                <div class="input-box">
-                                    <input type="text" id="registerphoneNo" name="phone-number" placeholder="Phone Number" onkeypress="return (event.charCode > 47 && event.charCode < 58)" autocomplete="off" required>
-                                    <span id = "message"></span>
-                                    <i class='bx bx-phone'></i>
-                                </div>
-                            
-                                <div class="input-box">
-                                    <div class="cap-in">
-                                        <i class='bx bx-ghost'></i>
-                                        <input type="text" id="captchaInput" placeholder="Enter Captcha" required>
-                                        <img src="/images/captcha.png" alt="Captcha" class="captcha-image" width = "30" height = "30">
-                                        <b><div id="captcha-text" class="captcha-image"></div></b>
+                                <p class="reg-subtitle">Create your administrative account</p>
+
+                                <div class="name-row">
+                                    <div class="half-input-box">
+                                        <label class="field-label">First Name</label>
+                                        <div class="input-inner">
+                                            <box-icon name='user' color='#94a3b8' size='20px'></box-icon>
+                                            <input type="text" id="Fname" name="name" placeholder="Enter first name"
+                                                onkeypress="return (event.charCode > 64 && event.charCode < 91) || (event.charCode > 96 && event.charCode < 123)"
+                                                autocomplete="off" required>
+                                        </div>
+                                    </div>
+                                    <div class="half-input-box">
+                                        <label class="field-label">Last Name</label>
+                                        <div class="input-inner">
+                                            <box-icon name='user' color='#94a3b8' size='20px'></box-icon>
+                                            <input type="text" id="Lname" name="name" placeholder="Enter last name"
+                                                onkeypress="return (event.charCode > 64 && event.charCode < 91) || (event.charCode > 96 && event.charCode < 123)"
+                                                autocomplete="off" required>
+                                        </div>
                                     </div>
                                 </div>
-                            
-                                <div class = "checkbox">
-                                    <input type = "checkbox" id ="agreement">
-                                    <label for="agreement"><b>I Agree To The <a href="/signup/login/terms.html" target="_blank" style="color: #2c3e50; text-decoration: underline;">Terms & Conditions</a></b></label>
+
+                                <div class="full-input-box">
+                                    <label class="field-label">Phone Number</label>
+                                    <div class="input-inner">
+                                        <box-icon name='phone' color='#94a3b8' size='20px'></box-icon>
+                                        <input type="text" id="registerphoneNo" name="phone-number"
+                                            placeholder="10-digit mobile number"
+                                            onkeypress="return (event.charCode > 47 && event.charCode < 58)"
+                                            autocomplete="off" required maxlength="10">
+                                        <span id="message"></span>
+                                    </div>
                                 </div>
-                            
+
+                                <div class="full-input-box">
+                                    <label class="field-label">Verification</label>
+                                    <div class="cap-in">
+                                        <box-icon name='ghost' color='#94a3b8' size='20px'></box-icon>
+                                        <input type="text" id="captchaInput" placeholder="Enter Captcha" required maxlength="6">
+                                        <div class="captcha-right">
+                                            <span id="captcha-text"></span>
+                                            <button type="button" class="captcha-refresh-btn" id="refreshCaptcha" title="Refresh Captcha">
+                                                <box-icon name='refresh' color='#64748b' size='22px' class="refresh-icon"></box-icon>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="checkbox">
+                                    <input type="checkbox" id="agreement">
+                                    <label for="agreement">I Agree To The
+                                        <a href="/signup/login/terms.html" target="_blank">Terms &amp; Conditions</a>
+                                    </label>
+                                </div>
+
                                 <div class="below">
                                     <div class="reg-btn">
-                                        <button type = "submit" id="signupButton" disabled>SIGN UP</button>
+                                        <button type="submit" id="signupButton" disabled>SIGN UP </button>
                                     </div>
                                 </div>
                             </div>
                         </form>
                     </div>
                 </div>
-             </div>
-        </div> 
-        <!--------------------------------------------------BOTTOM BAR------------------------------------------------->
 
-        <div class = "bottom-column">
-            <h3 style ="color: white;">Copyright © 2025, Designed, Developed & Hosted By National Informatics Center, Meghalaya State Center Shillong</h3>
+            </div>
         </div>
-        
+
+        <!--------------------------------------------------BOTTOM BAR------------------------------------------------->
+        <div class="bottom-column">
+            <h3 style="color: white;">Copyright © 2025-2026, Designed, Developed & Hosted By National Informatics Center, Meghalaya State Center Shillong</h3>
+        </div>
+
     </div>
 </body>
 <script src="/signup/login/login.js"></script>

@@ -8,6 +8,7 @@
 
 require('@dotenvx/dotenvx').config();
 const { Pool } = require('pg');
+const logger = require('./logger');
 const pool = new Pool({
   user: process.env.DB_USER,
   host: process.env.DB_HOST,
@@ -26,10 +27,10 @@ const pool = new Pool({
 (async () => {
   try {
     const client = await pool.connect();
-    console.log('Connected to the database successfully!');
+    logger.info('Connected to the database successfully!');
     client.release(); 
   } catch (err) {
-    console.error('Error connecting to the database:', err.stack);
+    logger.error(err, 'Error connecting to the database');
   }
 })();
 

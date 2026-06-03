@@ -9,10 +9,13 @@
 require('@dotenvx/dotenvx').config();
 const express = require('express');
 const router = express.Router();
+const logger = require('../utils/logger');
 const JWT = require('jsonwebtoken');
 const JWT_SECRET = process.env.JWT_SECRET;
 const pool = require('/home/jaden-d-syiem/DAK Register /utils/db.js');
 const argon2 = require('argon2');
+const validate = require('../middleware/validate');
+const { loginSchema, registerSchema } = require('../schemas/userSchemas');
 
 //=====================
 //JWT AUTHENTICATION
@@ -36,10 +39,10 @@ function authenticateJWT(req, res, next) {
 //PHONE NO VERIFICATION
 //============================
 
-router.post("/login", async (req, res) => {
+router.post("/login", validate(loginSchema), async (req, res) => {
   const { phone_no } = req.body;
   
-  console.log('Login request received for:', phone_no);
+  logger.info({ phone_no }, 'Login request received for:');
   try {
     const result = await pool.query('SELECT * FROM users WHERE phone_no = $1', [phone_no]);
     
@@ -65,7 +68,7 @@ router.post("/login", async (req, res) => {
       res.status(404).json({ success: false, error: 'User not found' });
     }
   } catch (err) {
-    console.error('Database query error:', err);
+    logger.error(err, 'Database query error:');
     res.status(500).json({ success: false, error: 'Server error' });
   }
 });
@@ -74,8 +77,10 @@ router.post("/login", async (req, res) => {
 //REGISTRATION
 //============================
 
-router.post("/register", async (req, res) => {
+router.post("/register", validate(registerSchema), async (req, res) => {
   const { first_name, last_name, phone_no } = req.body;
+  
+  logger.info({ phone_no, first_name, last_name }, 'Registration request received for:');
   
   // Validate input
   if (!first_name || !last_name || !phone_no) {
@@ -121,6 +126,8 @@ router.post("/register", async (req, res) => {
     const token = JWT.sign({ user_id: userId }, JWT_SECRET, { expiresIn: '1d' });
     req.session.token = token;
 
+    logger.info({ user_id: userId, phone_no }, 'User registered successfully');
+
     // Send single response
     res.json({ 
       success: true,
@@ -131,12 +138,29 @@ router.post("/register", async (req, res) => {
     });
     
   } catch (err) {
-    console.error('Registration error:', err);
+    logger.error(err, 'Registration error:');
     res.status(500).json({ 
       success: false, 
       error: 'Database error: ' + err.message
     });
   }
+});
+
+//============================
+//LOGOUT
+//============================
+
+router.post("/logout", authenticateJWT, async (req, res) => {
+  const userId = req.user?.user_id;
+  
+  req.session.destroy((err) => {
+    if (err) {
+      logger.error(err, 'Failed to destroy session during logout');
+      return res.status(500).json({ success: false, error: 'Could not log out' });
+    }
+    logger.info({ user_id: userId }, 'User logged out successfully');
+    res.json({ success: true, message: 'Logged out successfully' });
+  });
 });
 
 module.exports = router;

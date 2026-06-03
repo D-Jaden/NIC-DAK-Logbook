@@ -5,6 +5,9 @@
 require('@dotenvx/dotenvx').config();
 const express = require('express');
 const router  = express.Router();
+const validate = require('../middleware/validate');
+const { saveDespatchSchema } = require('../schemas/despatchSchemas');
+const logger = require('../utils/logger');
 const pool    = require('../utils/db.js');
 const { authenticateJWT } = require('../utils/auth');
 
@@ -20,13 +23,13 @@ router.get('/next-serial', authenticateJWT, async (req, res) => {
         const nextSerial = parseInt(maxRes.rows[0].max_sn) + 1;
         res.json({ success: true, nextSerial });
     } catch (e) {
-        console.error('Error fetching next serial:', e);
+        logger.error(e, 'Error fetching next serial:');
         res.status(500).json({ success: false, error: e.message });
     }
 });
 
 // ── POST /api/despatch/save ───────────────────────────────────────────────────
-router.post('/save', authenticateJWT, async (req, res) => {
+router.post('/save', authenticateJWT, validate(saveDespatchSchema), async (req, res) => {
     const client = await pool.connect();
     try {
         const { data } = req.body;
@@ -102,7 +105,7 @@ router.post('/save', authenticateJWT, async (req, res) => {
 
     } catch (error) {
         await client.query('ROLLBACK');
-        console.error('[despatch /save]', error);
+        logger.error(error, '[despatch /save]');
         res.status(500).json({ success: false, error: 'Database error: ' + error.message });
     } finally {
         client.release();
@@ -164,13 +167,13 @@ router.get('/load', authenticateJWT, async (req, res) => {
         res.json({ success: true, data, message: `Loaded ${result.rows.length} records` });
 
     } catch (error) {
-        console.error('[despatch /load]', error);
+        logger.error(error, '[despatch /load]');
         res.status(500).json({ success: false, error: 'Database error: ' + error.message });
     }
 });
 
 // ── POST /api/despatch/save-changes ──────────────────────────────────────────
-router.post('/save-changes', authenticateJWT, async (req, res) => {
+router.post('/save-changes', authenticateJWT, validate(saveDespatchSchema), async (req, res) => {
     const client = await pool.connect();
     try {
         const { changedRows = [], newRows = [] } = req.body;
@@ -287,7 +290,7 @@ router.post('/save-changes', authenticateJWT, async (req, res) => {
 
     } catch (error) {
         await client.query('ROLLBACK');
-        console.error('[despatch /save-changes]', error);
+        logger.error(error, '[despatch /save-changes]');
         res.status(500).json({ success: false, error: 'Database error: ' + error.message });
     } finally {
         client.release();
@@ -303,7 +306,7 @@ router.delete('/delete/:id', authenticateJWT, async (req, res) => {
         if (result.rowCount === 0) return res.status(404).json({ success: false, error: 'Record not found' });
         res.json({ success: true, message: 'Record deleted successfully' });
     } catch (error) {
-        console.error('[despatch /delete]', error);
+        logger.error(error, '[despatch /delete]');
         res.status(500).json({ success: false, error: 'Database error: ' + error.message });
     }
 });
@@ -344,7 +347,7 @@ router.get('/stats', authenticateJWT, async (req, res) => {
         });
 
     } catch (error) {
-        console.error('[despatch /stats]', error);
+        logger.error(error, '[despatch /stats]');
         res.status(500).json({ success: false, error: 'Database error: ' + error.message });
     }
 });

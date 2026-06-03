@@ -4,65 +4,129 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="login_styles.css">
-    <link rel="shortcut icon" href="images/NIC Logo JPG/BILINGUAL _SQUARE_NIC_Logo_white_bg-01.jpg" type="image/x-icon">
-    <title>Terms & Conditions</title>
+    <link rel="shortcut icon" href="/images/NIC Logo JPG/BILINGUAL _SQUARE_NIC_Logo_white_bg-01.jpg" type="image/x-icon">
+    <title>Terms & Conditions - NIC DAK Logbook</title>
     <style>
         .terms-container {
-            max-width: 700px;
+            max-width: 900px;
             margin: 120px auto 120px; 
-            padding: 15px;
+            padding: 30px;
             border-radius: 10px;
-            border: 1px solid #2c3e50;
+            border: 1px solid #004a85;
             backdrop-filter: blur(10px);
             background: white;
             box-sizing: border-box;
-            min-height: calc(100vh - 160px); 
+            min-height: calc(100vh - 160px);
         }
         .terms-container h1 {
-            color: #2c3e50;
-            font-size: 1.9rem;
-            margin-bottom: 1rem;
+            color: #1a3c6e;
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
             text-align: center;
+            font-weight: 700;
         }
         .terms-container h2 {
-            color: #2c3e50;
-            font-size: 1.6rem;
-            margin: 1rem 0 0.5rem;
-        }
-        .terms-container p, .terms-container ul {
-            color: #333;
+            color: #2563eb;
             font-size: 1.4rem;
-            line-height: 1.6;
-            margin: 0.5rem 0;
+            margin: 2rem 0 1rem;
+            border-bottom: 2px solid #2563eb;
+            padding-bottom: 0.5rem;
+        }
+        .terms-container h3 {
+            color: #1a3c6e;
+            font-size: 1.1rem;
+            margin: 1.5rem 0 0.7rem;
+            font-weight: 600;
+        }
+        .terms-container p, .terms-container ul, .terms-container li {
+            color: #333;
+            font-size: 1rem;
+            line-height: 1.8;
+            margin: 0.7rem 0;
         }
         .terms-container ul {
-            padding-left: 20px;
+            padding-left: 25px;
+            list-style-type: disc;
+        }
+        .terms-container li {
+            margin: 0.5rem 0;
+        }
+        .terms-container strong {
+            color: #1a3c6e;
+            font-weight: 600;
+        }
+        .intro-text {
+            background: #f0f4ff;
+            padding: 15px;
+            border-left: 4px solid #2563eb;
+            border-radius: 5px;
+            margin: 1rem 0 1.5rem;
+            color: #333;
+        }
+        .feature-box {
+            background: #f9fafb;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 1rem 0;
+            border: 1px solid #e5e7eb;
+        }
+        .warning-box {
+            background: #fef2f2;
+            padding: 15px;
+            border-left: 4px solid #dc2626;
+            border-radius: 5px;
+            margin: 1rem 0;
+            color: #7f1d1d;
         }
         .back-link {
-            display: block;
+            display: inline-block;
             text-align: center;
-            margin: 1rem 0;
-            color: #2c3e50;
+            margin-top: 2rem;
+            padding: 10px 20px;
+            color: white;
+            background: #2563eb;
             font-weight: bold;
-            text-decoration: underline;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background 0.3s;
         }
         .back-link:hover {
-            color: #2e5071;
+            background: #1d4ed8;
+        }
+        .checkbox-section {
+            background: #f0f4ff;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 2rem 0;
+        }
+        .checkbox-section input[type="checkbox"] {
+            margin-right: 10px;
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+        .checkbox-section label {
+            cursor: pointer;
+            font-size: 1rem;
+            color: #333;
         }
         @media (max-width: 768px) {
             .terms-container {
-                max-width: 500px;
-                padding: 10px;
-                margin: 70px auto 70px; /* Slightly smaller margins for smaller screens */
+                max-width: 100%;
+                padding: 15px;
+                margin: 70px auto 70px;
                 min-height: calc(100vh - 140px);
             }
             .terms-container h1 {
-                font-size: 1.6rem;
+                font-size: 1.5rem;
             }
             .terms-container h2 {
-                font-size: 1.2rem;
+                font-size: 1.1rem;
             }
-            .terms-container p, .terms-container ul {
+            .terms-container h3 {
+                font-size: 0.95rem;
+            }
+            .terms-container p, .terms-container ul, .terms-container li {
                 font-size: 0.9rem;
             }
         }
@@ -73,59 +137,223 @@
         <!-- Top Column -->
         <div class="horizontal-column" id="hrz-clmn">
             <div class="digital-india-logo">
-                <img src="images/digital-india.png" alt="Digital India Logo">
+                <img src="/images/digital-india.png" alt="Digital India Logo">
             </div>
             <div class="rak">
-                <h1>DAK LOGBOOK</h1>
+                <h1>DAK REGISTER</h1>
             </div>
             <div class="nic-logo">
-                <img src="images/NIC-Logo-white.png" alt="NIC Logo">
+                <img src="/images/NIC-Logo-white.png" alt="NIC Logo">
             </div>
         </div>
 
         <!-- Terms Content -->
         <div class="terms-container">
             <h1>Terms & Conditions</h1>
-            <p>Welcome to the DAK Register Web Application, developed and hosted by the National Informatics Centre (NIC), Meghalaya State Center, Shillong. By using this application, you agree to the following terms and conditions:</p>
+            
+            <div class="intro-text">
+                <strong>Welcome to the NIC DAK Logbook</strong> — a bilingual (English/Hindi) web-based system for managing government postal correspondence (Dispatch & Acquired records). Developed and hosted by the National Informatics Centre (NIC), Meghalaya State Center, Shillong.
+                <br><br>
+                <strong>By registering and using this application, you agree to the following terms and conditions.</strong>
+            </div>
 
-            <h2>1. Registration and Account Creation</h2>
-            <p>Users must register by providing accurate first name, last name, and phone number. A CAPTCHA verification is required to prevent automated registrations. Duplicate registrations, including variations in capitalization, are not permitted. The phone number must contain only numerical digits. Your account is personal and should not be shared.</p>
-
-            <h2>2. Login and Data Access</h2>
-            <p>Login requires the registered phone number. Upon successful login, users can access their Dispatch and Acquired logbook tables, with data loaded from a PostgreSQL database specific to their account.</p>
-
-            <h2>3. Logbook Features</h2>
-            <p>The application provides tools for managing Dispatch and Acquired logs, including:</p>
+            <h2>1. Registration & Account Creation</h2>
+            <p>Users must register by providing:</p>
             <ul>
-                <li>Font customization (size, style, bold, underline, italics).</li>
-                <li>Find and replace functionality.</li>
-                <li>View up to 100 rows (default 6 rows).</li>
-                <li>Inbuilt PDF viewer.</li>
-                <li>Column-specific search and filter (ascending/descending).</li>
-                <li>Add rows via button or right-click (above/below existing rows).</li>
-                <li>Delete rows via right-click.</li>
-                <li>Switch between Dispatch and Acquired tables.</li>
+                <li><strong>First Name & Last Name:</strong> Must be valid and accurate</li>
+                <li><strong>Phone Number:</strong> Must be exactly 10 digits, containing only numerical values (0-9)</li>
+                <li><strong>CAPTCHA Verification:</strong> Required to prevent automated/bot registrations</li>
+                <li><strong>Terms Agreement:</strong> You must agree to these Terms & Conditions</li>
             </ul>
-            <p>All data is stored securely in a PostgreSQL database.</p>
+            <p><strong>Important:</strong> Duplicate accounts are strictly prohibited. The system performs case-insensitive name matching and checks for duplicate phone numbers. Each user may have only ONE active account. Attempting to create multiple accounts may result in account suspension.</p>
+            <p>Your account is <strong>personal and non-transferable</strong>. Do not share your login credentials with anyone else.</p>
 
-            <h2>4. Usage Restrictions</h2>
-            <p>The application is intended solely for logging Dispatch and Acquired records. Misuse, such as entering invalid data or attempting to bypass security measures (e.g., CAPTCHA), may result in account suspension. Users must comply with NIC Meghalaya's guidelines and applicable laws.</p>
+            <h2>2. Login & Data Access</h2>
+            <p>To access the application:</p>
+            <ul>
+                <li>Login using your registered <strong>phone number</strong></li>
+                <li>Your data is loaded from a secure PostgreSQL database specific to your account</li>
+                <li>Session tokens expire after 10 hours for security</li>
+            </ul>
+            <p><strong>Security:</strong> Your phone number is encrypted using industry-standard Argon2 hashing. Your credentials are never stored in plain text.</p>
 
-            <h2>5. Data Privacy</h2>
-            <p>Your personal information (first name, last name, phone number) is stored securely in a PostgreSQL database and will not be shared without your consent, except as required by law or for operational purposes by NIC Meghalaya.</p>
+            <h2>3. Application Features & Functionality</h2>
+            
+            <h3>Dispatch Module (Outgoing Mail)</h3>
+            <div class="feature-box">
+                <p>Track outgoing letters/documents sent to recipients:</p>
+                <ul>
+                    <li>Record: Recipient name, designation, address, subject, date, delivery mode</li>
+                    <li>Bilingual support: All fields in English and Hindi (auto-translated)</li>
+                    <li>Track copy recipients</li>
+                    <li>Set priority (Immediate / Priority)</li>
+                    <li>Select delivery mode (Hand, E-mail, E-file, Speed Post, Registered Post)</li>
+                    <li>Save as Draft or Submit for final record</li>
+                </ul>
+            </div>
 
-            <h2>6. Modifications to Terms</h2>
-            <p>NIC Meghalaya reserves the right to update these terms. Continued use of the application constitutes acceptance of any changes. Check this page periodically for updates.</p>
+            <h3>Acquired/Receipt Module (Incoming Mail)</h3>
+            <div class="feature-box">
+                <p>Log incoming letters/documents received from other offices:</p>
+                <ul>
+                    <li>Record: Sender name, designation, subject, date, receipt method</li>
+                    <li>Bilingual support: All fields in English and Hindi (auto-translated)</li>
+                    <li>Track copy recipients</li>
+                    <li>Set priority and receipt method</li>
+                    <li>Save as Draft or Submit for final record</li>
+                </ul>
+            </div>
 
-            <h2>7. Contact Information</h2>
-            <p>For questions or support, contact the National Informatics Centre, Meghalaya State Center, Shillong.</p>
+            <h3> Search & Filtering</h3>
+            <div class="feature-box">
+                <ul>
+                    <li>Multi-dimensional search: Zone, Priority, Delivery Mode, Date Range, Status</li>
+                    <li>Full-text search: By subject, sender, recipient names</li>
+                    <li>Column sorting: Sort by any field (ascending/descending)</li>
+                    <li>Quick filters: Today, This Week, This Month, This Year</li>
+                    <li>View up to 500 rows per page</li>
+                </ul>
+            </div>
 
-            <a href="login.html" class="back-link">Back to Login/Registration</a>
+            <h3>Reports & Export</h3>
+            <div class="feature-box">
+                <ul>
+                    <li>Single-entry PDF export: Print individual letters/documents</li>
+                    <li>Batch reports: Monthly, Quarterly, Annual, Custom Date Range</li>
+                    <li>Statistics: Volume trends, priority distribution, zone-wise breakdown</li>
+                    <li>Audit-ready compliance reports for internal/external stakeholders</li>
+                </ul>
+            </div>
+
+            <h3> Bilingual Support</h3>
+            <div class="feature-box">
+                <ul>
+                    <li>All major fields captured in both English and Hindi</li>
+                    <li>Automatic English → Hindi translation via Python Deep Translator API</li>
+                    <li>Graceful fallback: If translation fails, original text is retained</li>
+                    <li>Respects India's bilingual communication requirements</li>
+                </ul>
+            </div>
+
+            <h3> Smart Features</h3>
+            <div class="feature-box">
+                <ul>
+                    <li><strong>Auto-Increment Serial Numbers:</strong> Each user's entries are numbered automatically (001, 002, 003...)</li>
+                    <li><strong>Pincode Lookup:</strong> Enter a pincode → auto-fill State, City, District</li>
+                    <li><strong>Draft/Pending Workflow:</strong> Save entries as Draft, finalize later</li>
+                    <li><strong>Timestamp Tracking:</strong> All entries record creation/modification time</li>
+                    <li><strong>Audit Trail:</strong> System logs all actions for compliance</li>
+                </ul>
+            </div>
+
+            <h2>4. Data Security & Compliance</h2>
+            <p>Your data is protected by multiple layers of security:</p>
+            <ul>
+                <li><strong>Authentication:</strong> JWT-based session management with 10-hour token expiry</li>
+                <li><strong>Password Protection:</strong> Argon2 hashing (industry-standard, computationally intensive)</li>
+                <li><strong>Data Isolation:</strong> Each user's data is strictly isolated via user_id (per-user serial numbering)</li>
+                <li><strong>Network Security:</strong> All external API calls (translation, pincode) are whitelisted and validated</li>
+                <li><strong>HTTPS/TLS:</strong> All communications are encrypted</li>
+                <li><strong>Database:</strong> PostgreSQL with secure connection pooling</li>
+            </ul>
+            <p><strong>Important:</strong> This application operates in a secure, restricted network environment (DMZ) where only critical APIs are accessible. No unauthorized external traffic is permitted.</p>
+
+            <h2>5. Usage Restrictions & Prohibited Activities</h2>
+            <div class="warning-box">
+                <strong>The following activities are strictly PROHIBITED:</strong>
+                <ul>
+                    <li>Attempting to bypass CAPTCHA verification</li>
+                    <li>Creating duplicate or fraudulent accounts</li>
+                    <li>Entering false or invalid data</li>
+                    <li>Attempting SQL injection or other cyber attacks</li>
+                    <li>Accessing another user's data without authorization</li>
+                    <li>Trying to access unauthorized external websites/APIs</li>
+                    <li>Sharing login credentials with other users</li>
+                    <li>Using the application for purposes other than official correspondence logging</li>
+                    <li>Uploading malicious files or content</li>
+                    <li>Denial-of-Service (DoS) attacks or system abuse</li>
+                </ul>
+            </div>
+            <p><strong>Consequences:</strong> Violation of these restrictions may result in immediate account suspension, data deletion, and legal action as applicable under relevant laws.</p>
+
+            <h2>6. Data Privacy & Storage</h2>
+            <p>Your personal information includes:</p>
+            <ul>
+                <li>First Name & Last Name</li>
+                <li>Phone Number (10 digits only)</li>
+                <li>Dispatch & Acquired records you create</li>
+            </ul>
+            <p><strong>Storage:</strong> All data is stored securely in a PostgreSQL database managed by NIC Meghalaya. Data is not shared with external parties without your consent, except as required by law or for operational purposes.</p>
+            <p><strong>Retention:</strong> Your data is retained as long as your account is active. Upon account deletion (if applicable), data is retained per NIC's archival policies.</p>
+            <p><strong>Compliance:</strong> This application complies with India's data protection guidelines and government information security standards.</p>
+
+            <h2>7. Translation & External APIs</h2>
+            <p>The application uses the following external services:</p>
+            <ul>
+                <li><strong>Python Deep Translator (HuggingFace):</strong> For English → Hindi translation</li>
+                <li><strong>India Post Pincode API:</strong> For address lookup from pincodes</li>
+            </ul>
+            <p><strong>Note:</strong> These are the only external APIs your data is transmitted to. All other network traffic is blocked at the firewall level for security. Data sent to these APIs is limited to the minimum required (text for translation, pincode for address lookup).</p>
+
+            <h2>8. Acceptable Use Policy</h2>
+            <p>This application is provided for <strong>official government use only</strong>. Users agree to:</p>
+            <ul>
+                <li>Use the application solely for logging Dispatch and Acquired records</li>
+                <li>Maintain accurate and truthful data</li>
+                <li>Comply with NIC Meghalaya's guidelines and applicable laws</li>
+                <li>Report any security issues or bugs immediately to NIC support</li>
+                <li>Not attempt to reverse-engineer, decompile, or bypass security measures</li>
+                <li>Not use the application for commercial or unauthorized purposes</li>
+            </ul>
+
+            <h2>9. System Availability & Maintenance</h2>
+            <p>While we strive for 100% uptime, the application may be unavailable for:</p>
+            <ul>
+                <li>Scheduled maintenance and updates</li>
+                <li>Security patches and hotfixes</li>
+                <li>Network issues beyond our control</li>
+            </ul>
+            <p>NIC Meghalaya is not liable for data loss or service interruptions during maintenance windows. Critical updates will be communicated in advance.</p>
+
+            <h2>10. Disclaimer & Liability</h2>
+            <p>The application is provided "as-is" without warranties. NIC Meghalaya is not liable for:</p>
+            <ul>
+                <li>Indirect or consequential damages</li>
+                <li>Loss of data (users should maintain backups)</li>
+                <li>Third-party actions or external API failures</li>
+                <li>Unauthorized access due to user negligence (e.g., sharing credentials)</li>
+            </ul>
+            <p><strong>Your Responsibility:</strong> Maintain secure passwords, do not share credentials, and report suspicious activity immediately.</p>
+
+            <h2>11. Modifications to Terms</h2>
+            <p>NIC Meghalaya reserves the right to modify these terms at any time. Continued use of the application constitutes acceptance of any changes. Please review this page periodically for updates. Significant changes will be communicated via the application.</p>
+
+            <h2>12. Governing Law & Jurisdiction</h2>
+            <p>These Terms & Conditions are governed by the laws of India. Any disputes shall be subject to the jurisdiction of courts in Shillong, Meghalaya.</p>
+
+            <h2>13. Contact & Support</h2>
+            <p>For questions, issues, or support:</p>
+            <ul>
+                <li><strong>Organization:</strong> National Informatics Centre (NIC)</li>
+                <li><strong>Location:</strong> Meghalaya State Center, Shillong</li>
+                <li><strong>Technical Support:</strong> Available during business hours</li>
+            </ul>
+
+            <h2>14. Agreement Acknowledgment</h2>
+            <p>By clicking "I Agree" during registration and using this application, you acknowledge that:</p>
+            <ul>
+                <li>You have read and understood these Terms & Conditions</li>
+                <li>You agree to comply with all terms outlined above</li>
+                <li>You understand the security measures and limitations of the application</li>
+                <li>You accept responsibility for maintaining the confidentiality of your account</li>
+            </ul>
+
+            <a href="login.html" class="back-link">← Back to Login/Registration</a>
         </div>
 
         <!-- Bottom Bar -->
         <div class="bottom-column">
-            <h3 style="color: white;">Copyright © 2025, Designed, Developed & Hosted By National Informatics Center, Meghalaya State Center Shillong</h3>
+            <h3 style="color: white;">Copyright © 2025-2026, Designed, Developed & Hosted By National Informatics Center, Meghalaya State Center Shillong</h3>
         </div>
     </div>
 </body>
