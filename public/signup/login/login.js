@@ -10,7 +10,7 @@ const signupButton = document.getElementById('signupButton');
 
 //----------------------------CONVERSION FROM TEXT TO NO----------------------------//
 
-const validNumber = function(phoneNo) {
+const validNumber = function (phoneNo) {
     if (!/^\d{10,15}$/.test(phoneNo)) {
         document.querySelector("#message").innerHTML = "Not a Valid Number (must be 10-15 digits)";
         console.log("INVALID");
@@ -71,7 +71,7 @@ function checkLockout() {
         if (now < unlockTime) {
             const remainingMins = Math.ceil((unlockTime - now) / 60000);
             disableAuthButtons(`Locked (${remainingMins}m left)`);
-            
+
             if (!lockoutTimer) {
                 lockoutTimer = setInterval(checkLockout, 60000); // Check every minute
             }
@@ -137,7 +137,7 @@ async function comparePhoneNo() {
         alert('Please enter a valid phone number (10-15 digits)');
         return;
     }
-    
+
     // Show loading state
     const loginBtn = document.querySelector('.log-btn button') || document.querySelector('#loginBtn');
     const originalText = loginBtn ? loginBtn.textContent : '';
@@ -145,10 +145,10 @@ async function comparePhoneNo() {
         loginBtn.textContent = 'Logging in...';
         loginBtn.disabled = true;
     }
-    
+
     try {
         console.log('Attempting login with phone:', phoneNumber);
-        
+
         const response = await fetch('/users/login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -172,10 +172,10 @@ async function comparePhoneNo() {
 
         const data = await response.json();
         console.log('Login response:', data);
-        
+
         if (data.success && data.token) {
             console.log('Login successful, HttpOnly cookie set');
-            
+
             alert('Number verified - Welcome back!');
             // Set flag to load data after redirect
             localStorage.setItem('shouldLoadUserData', 'true');
@@ -215,7 +215,7 @@ generateCaptcha();
 
 window.onload = generateCaptcha;
 
-document.getElementById('captchaInput').addEventListener('input', function() {
+document.getElementById('captchaInput').addEventListener('input', function () {
     const userInput = this.value;
     const captchaText = document.getElementById('captcha-text').textContent;
     if (userInput === captchaText) {
@@ -280,8 +280,8 @@ document.querySelector('.reg-btn button').addEventListener('click', async (e) =>
 
     try {
         console.log('Attempting registration:', userData);
-        
-        const response = await fetch('/users/register', { 
+
+        const response = await fetch('/users/register', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(userData)
@@ -307,9 +307,9 @@ document.querySelector('.reg-btn button').addEventListener('click', async (e) =>
 
         if (response.ok && result.success) {
             console.log('Registration successful, HttpOnly cookie set');
-            
+
             alert(`Welcome ${userData.first_name}! Account created successfully.`);
-            
+
             // Clear form
             document.getElementById('Fname').value = '';
             document.getElementById('Lname').value = '';
@@ -318,12 +318,12 @@ document.querySelector('.reg-btn button').addEventListener('click', async (e) =>
             generateCaptcha(); // Reset captcha            
             document.getElementById('agreement').checked = false;
             signupButton.disabled = true;
-            
+
             // Redirect to main page after successful registration
             setTimeout(() => {
                 window.location.href = '/despatch';
             }, 2000);
-            
+
         } else {
             alert(`Error: ${result.error}`);
         }
@@ -339,7 +339,7 @@ document.querySelector('.reg-btn button').addEventListener('click', async (e) =>
 
 //---------------------------------RESPONSIVENESS--------------------------------------------//
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     const loginBox = document.getElementById('login-box');
     const registerBox = document.getElementById('register-box');
     const toggleSwitch = document.querySelector('.switch input');
@@ -347,7 +347,7 @@ document.addEventListener('DOMContentLoaded', function() {
     loginBox.style.display = 'flex';
     registerBox.style.display = 'none';
 
-    toggleSwitch.addEventListener('change', function() {
+    toggleSwitch.addEventListener('change', function () {
         if (this.checked) {
             loginBox.style.display = 'none';
             registerBox.style.display = 'flex';
