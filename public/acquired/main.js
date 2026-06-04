@@ -7,8 +7,42 @@
 
 import { stateOptionsHTML } from '../shared/zone.js';
 
-const TOKEN = () => localStorage.getItem('dak_token');
-const AUTH = () => ({ 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + TOKEN() });
+let accessToken = null;
+const AUTH = () => ({ 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + accessToken });
+
+const originalFetch = window.fetch;
+window.fetch = async function() {
+    let response = await originalFetch.apply(this, arguments);
+    if (response.status === 401) {
+        // Access token expired or missing, try to refresh
+        const refreshRes = await originalFetch('/users/refresh-token', { method: 'POST' });
+        if (refreshRes.ok) {
+            const data = await refreshRes.json();
+            if (data.success && data.token) {
+                accessToken = data.token;
+                // Retry original request
+                const [url, options] = arguments;
+                if (options && options.headers) {
+                    options.headers['Authorization'] = 'Bearer ' + accessToken;
+                }
+                return originalFetch(url, options);
+            }
+        }
+        // If refresh fails, redirect to login
+        window.location.href = '/';
+        return response;
+    }
+    return response;
+};
+
+// Immediately get token on load
+originalFetch('/users/refresh-token', { method: 'POST' }).then(res => res.json()).then(data => {
+    if (data.success && data.token) {
+        accessToken = data.token;
+    } else {
+        window.location.href = '/';
+    }
+}).catch(() => { window.location.href = '/'; });
 
 const TAB_MAP = { entry: 0, dashboard: 1, search: 2, pending: 3, reports: 4 };
 let allRows = [];
@@ -112,17 +146,13 @@ document.addEventListener('DOMContentLoaded', function () {
         logoutBtn.addEventListener('click', async function (e) {
             e.preventDefault();
             if (confirm('Are you sure you want to logout? Remember To Save')) {
-                const token = localStorage.getItem('dak_token');
-                if (token) {
-                    try {
-                        await fetch('/users/logout', {
-                            method: 'POST',
-                            headers: { 'Authorization': `Bearer ${token}` }
-                        });
-                    } catch (e) { }
-                }
-                localStorage.removeItem('dak_token');
-                window.location.href = '../signup/login/login.html';
+                try {
+                    await fetch('/users/logout', {
+                        method: 'POST',
+                        headers: { 'Authorization': `Bearer ${accessToken}` }
+                    });
+                } catch (e) { }
+                window.location.href = '/';
             }
         });
     }

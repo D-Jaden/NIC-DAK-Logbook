@@ -1,8 +1,6 @@
 const pino = require('pino');
 
-// Create a configured Pino logger instance
 const logger = pino({
-    // Configure pino-pretty for human-readable terminal output
     transport: {
         target: 'pino-pretty',
         options: {

@@ -6,7 +6,8 @@ require('@dotenvx/dotenvx').config();
 const logger = require('./utils/logger');
 
 const express = require('express');
-const session = require('express-session');
+const cookieParser = require('cookie-parser');
+const helmet = require('helmet');
 const path = require('path');
 const cors = require('cors');
 
@@ -17,11 +18,10 @@ const acquiredRoutes = require('./routes/acquiredRoutes');
 const validate = require('./middleware/validate');
 const { translateSchema, pincodeSchema } = require('./schemas/apiSchemas');
 
+const { authenticateJWT } = require('./utils/auth');
+
 const app = express();
 const port = process.env.PORT || 3000;
-
-const JWT = require('jsonwebtoken');
-const JWT_SECRET = process.env.JWT_SECRET;
 
 const initDatabase = require('./utils/initDatabase');
 
@@ -30,66 +30,37 @@ const initDatabase = require('./utils/initDatabase');
 //====================================
 
 const pool = require('./utils/db.js');
-const PgSession = require('connect-pg-simple')(session);
 
+app.use(helmet({
+    contentSecurityPolicy: {
+        directives: {
+            defaultSrc: ["'self'"],
+            scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'", "https://unpkg.com", "https://cdn.jsdelivr.net", "https://cdnjs.cloudflare.com"],
+            scriptSrcAttr: ["'unsafe-inline'"],
+            styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "https://unpkg.com", "https://cdn.jsdelivr.net", "https://cdnjs.cloudflare.com"],
+            fontSrc: ["'self'", "https://fonts.gstatic.com", "https://unpkg.com"],
+            imgSrc: ["'self'", "data:", "https://unpkg.com"],
+            connectSrc: ["'self'", "https://unpkg.com", "https://cdn.jsdelivr.net", "https://cdnjs.cloudflare.com"],
+        },
+    },
+}));
+app.use(cookieParser());
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use(session({
-    store: new PgSession({
-        pool: pool,                        // ← reuse it here
-        createTableIfMissing: true,
-        tableName: 'user_sessions'
-    }),
-    secret: process.env.SESSION_SECRET || 'fallback-secret-key',
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-        secure: false,   // set true when HTTPS is enabled
-        maxAge: 1000 * 60 * 60 * 10  // 10 hours
-    }
-}));
-
-// Serve everything in /public as static files
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/boxicons', express.static(path.join(__dirname, 'node_modules/boxicons')));
-
-//====================================
-// AUTH middleware (added)
-//====================================
-
-const authenticateToken = (req, res, next) => {
-    const token = req.session.token;
-
-    if (!token) {
-        // If user tries to access /despatch or /acquired without session
-        return res.redirect('/');
-    }
-
-    try {
-        JWT.verify(token, JWT_SECRET);
-        next();
-    } catch (err) {
-        // Token expired or invalid
-        req.session.destroy();
-        res.redirect('/');
-    }
-};
-
-// Protect the apps
-app.get('/despatch', authenticateToken);
-app.get('/acquired', authenticateToken);
 
 //====================================
 // API ROUTES
 //====================================
 
 app.use('/users', userRoutes);
-app.use('/api/despatch', despatchRoutes);
-app.use('/api/acquired', acquiredRoutes);
+app.use('/api/despatch', authenticateJWT, despatchRoutes);
+app.use('/api/acquired', authenticateJWT, acquiredRoutes);
 
-// ── Translation proxy — forwards to HuggingFace Gradio app ──
+// ── Translation proxy ──
 const { safeFetch } = require('./utils/safeHttpClient');
 const { getWhitelistedAPI } = require('./config/whitelistedAPIs');
 
@@ -104,16 +75,15 @@ app.post('/api/translate', validate(translateSchema), async (req, res) => {
         res.json({ translation: data.translated_text || data.translation || text });
     } catch (err) {
         logger.error('[translate proxy]', err.message);
-        res.json({ translation: text });   // graceful fallback
+        res.json({ translation: text });
     }
 });
 
-// ── Pincode proxy — safe HTTP Client ──
+// ── Pincode proxy ──
 app.get('/api/pincode/:pin', validate(pincodeSchema, 'params'), async (req, res) => {
     const pin = req.params.pin;
     try {
         const baseUrl = getWhitelistedAPI('pincode').url;
-        // Ensure the base URL ends with a slash if needed, or simply append the pin
         const data = await safeFetch('pincode', {
             method: 'GET',
             url: baseUrl.endsWith('/') ? `${baseUrl}${pin}` : `${baseUrl}/${pin}`
@@ -126,20 +96,19 @@ app.get('/api/pincode/:pin', validate(pincodeSchema, 'params'), async (req, res)
 });
 
 //====================================
-// PAGE ROUTES
+// PAGE ROUTES (unprotected — browser can't send Bearer on navigation)
 //====================================
 
-// Root → login page
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'signup', 'login', 'login.html'));
 });
 
-// Despatch app
+// 
+//    client JS redirects to / if API calls return 401
 app.get('/despatch', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'despatch', 'despatch.html'));
 });
 
-// Acquired app
 app.get('/acquired', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'acquired', 'acquired.html'));
 });

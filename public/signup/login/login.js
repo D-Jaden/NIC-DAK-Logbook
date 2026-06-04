@@ -60,6 +60,65 @@ document.querySelector('.switch input').addEventListener('change', (e) => {
     }
 });
 
+//-----------------------------LOCKOUT LOGIC--------------------------------------------------//
+let lockoutTimer = null;
+
+function checkLockout() {
+    const lockTime = localStorage.getItem('auth_lockout_time');
+    if (lockTime) {
+        const unlockTime = parseInt(lockTime);
+        const now = Date.now();
+        if (now < unlockTime) {
+            const remainingMins = Math.ceil((unlockTime - now) / 60000);
+            disableAuthButtons(`Locked (${remainingMins}m left)`);
+            
+            if (!lockoutTimer) {
+                lockoutTimer = setInterval(checkLockout, 60000); // Check every minute
+            }
+            return true;
+        } else {
+            localStorage.removeItem('auth_lockout_time');
+            enableAuthButtons();
+            if (lockoutTimer) {
+                clearInterval(lockoutTimer);
+                lockoutTimer = null;
+            }
+        }
+    }
+    return false;
+}
+
+function disableAuthButtons(text) {
+    const loginBtn = document.querySelector('.log-btn button');
+    const signupBtn = document.querySelector('.reg-btn button');
+    if (loginBtn) {
+        loginBtn.disabled = true;
+        loginBtn.textContent = text;
+    }
+    if (signupBtn) {
+        signupBtn.disabled = true;
+        signupBtn.textContent = text;
+    }
+}
+
+function enableAuthButtons() {
+    const loginBtn = document.querySelector('.log-btn button');
+    const signupBtn = document.querySelector('.reg-btn button');
+    if (loginBtn) {
+        loginBtn.textContent = 'Login';
+        const LphoneNumber = document.getElementById('loginphoneNo');
+        if (LphoneNumber) loginBtn.disabled = !/^\d{10,15}$/.test(LphoneNumber.value.trim());
+    }
+    if (signupBtn) {
+        signupBtn.textContent = 'Signup';
+        if (typeof validateForm === 'function') validateForm();
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    checkLockout();
+});
+
 //-----------------------------AUTHENTICATION IN LOGIN (UPDATED)------------------------------//
 
 const loginBtnElement = document.querySelector('.log-btn button');
@@ -96,6 +155,14 @@ async function comparePhoneNo() {
             body: JSON.stringify({ phone_no: phoneNumber })
         });
 
+        if (response.status === 429) {
+            const unlockTime = Date.now() + (60 * 60 * 1000);
+            localStorage.setItem('auth_lockout_time', unlockTime.toString());
+            checkLockout();
+            alert('Too many attempts. You have been locked out for 1 hour.');
+            return;
+        }
+
         const contentType = response.headers.get('content-type');
         if (!contentType || !contentType.includes('application/json')) {
             const text = await response.text();
@@ -107,9 +174,7 @@ async function comparePhoneNo() {
         console.log('Login response:', data);
         
         if (data.success && data.token) {
-            // STORE THE TOKEN - This was missing!
-            localStorage.setItem('dak_token', data.token);
-            console.log('Token stored successfully');
+            console.log('Login successful, HttpOnly cookie set');
             
             alert('Number verified - Welcome back!');
             // Set flag to load data after redirect
@@ -222,6 +287,14 @@ document.querySelector('.reg-btn button').addEventListener('click', async (e) =>
             body: JSON.stringify(userData)
         });
 
+        if (response.status === 429) {
+            const unlockTime = Date.now() + (60 * 60 * 1000);
+            localStorage.setItem('auth_lockout_time', unlockTime.toString());
+            checkLockout();
+            alert('Too many attempts. You have been locked out for 1 hour.');
+            return;
+        }
+
         const contentType = response.headers.get('content-type');
         if (!contentType || !contentType.includes('application/json')) {
             const text = await response.text();
@@ -233,10 +306,7 @@ document.querySelector('.reg-btn button').addEventListener('click', async (e) =>
         console.log('Registration response:', result);
 
         if (response.ok && result.success) {
-            if (result.token) {
-                localStorage.setItem('dak_token', result.token);
-                console.log('Registration token stored successfully');
-            }
+            console.log('Registration successful, HttpOnly cookie set');
             
             alert(`Welcome ${userData.first_name}! Account created successfully.`);
             

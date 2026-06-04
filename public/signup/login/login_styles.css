@@ -4,7 +4,9 @@
    ===================================================================== */
 
 /* ---- GLOBAL FONT RESET ---- */
-*, *::before, *::after {
+*,
+*::before,
+*::after {
     font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
     box-sizing: border-box;
 }
@@ -15,11 +17,24 @@ body {
     align-items: center;
     min-height: 100vh;
     margin: 0;
-    font-family: 'Plus Jakarta Sans', Arial, sans-serif;
+    font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
-h1, h2, h3, h4, h5, h6, p, a, span, label, button, input, b, strong {
-    font-family: 'Plus Jakarta Sans', Arial, sans-serif;
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+a,
+span,
+label,
+button,
+input,
+b,
+strong {
+    font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 .container {
@@ -122,8 +137,13 @@ h1, h2, h3, h4, h5, h6, p, a, span, label, button, input, b, strong {
     max-width: 20vw;
 }
 
-.digital-india-logo { flex: 0; }
-.nic-logo { flex: 0; }
+.digital-india-logo {
+    flex: 0;
+}
+
+.nic-logo {
+    flex: 0;
+}
 
 
 /*==============================================================================*/
@@ -189,7 +209,10 @@ h1, h2, h3, h4, h5, h6, p, a, span, label, button, input, b, strong {
 .slider {
     position: absolute;
     cursor: pointer;
-    top: 0; left: 0; right: 0; bottom: 0;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
     background-color: #2c3e50;
     transition: 0.3s;
     border-radius: 34px;
@@ -207,8 +230,13 @@ h1, h2, h3, h4, h5, h6, p, a, span, label, button, input, b, strong {
     border-radius: 50%;
 }
 
-input:checked + .slider { background-color: #2c3e50; }
-input:checked + .slider:before { transform: translateX(26px); }
+input:checked+.slider {
+    background-color: #2c3e50;
+}
+
+input:checked+.slider:before {
+    transform: translateX(26px);
+}
 
 
 /*==============================================================================*/
@@ -220,7 +248,8 @@ input:checked + .slider:before { transform: translateX(26px); }
     justify-content: center;
     align-items: center;
     width: 100%;
-    max-width: 440px;   /* match register-box */
+    max-width: 440px;
+    /* match register-box */
     margin: 1em auto 0;
     min-height: 300px;
     flex-direction: column;
@@ -322,7 +351,9 @@ input:checked + .slider:before { transform: translateX(26px); }
     color: #1a2e44;
 }
 
-.prefix-input-box input::placeholder { color: #94a3b8; }
+.prefix-input-box input::placeholder {
+    color: #7495c4;
+}
 
 .below {
     display: flex;
@@ -376,7 +407,8 @@ input:checked + .slider:before { transform: translateX(26px); }
     justify-content: center;
     align-items: center;
     width: 100%;
-    max-width: 440px;           /* Fixed: was 80% which caused drift */
+    max-width: 440px;
+    /* Fixed: was 80% which caused drift */
     margin: 1rem auto 0;
     min-height: 80%;
     backface-visibility: hidden;
@@ -389,7 +421,8 @@ input:checked + .slider:before { transform: translateX(26px); }
     align-items: flex-start;
     justify-content: flex-start;
     padding: 28px 28px 24px;
-    width: 100%;                /* Fixed: was 110% */
+    width: 100%;
+    /* Fixed: was 110% */
     border-radius: 16px;
     border: 1px solid #e2e8f0;
     background: #ffffff;
@@ -454,7 +487,8 @@ input:checked + .slider:before { transform: translateX(26px); }
     box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.10);
 }
 
-.input-inner i, .input-inner box-icon {
+.input-inner i,
+.input-inner box-icon {
     font-size: 1.05rem;
     color: #94a3b8;
     position: absolute;
@@ -477,7 +511,9 @@ input:checked + .slider:before { transform: translateX(26px); }
     box-sizing: border-box;
 }
 
-.input-inner input::placeholder { color: #94a3b8; }
+.input-inner input::placeholder {
+    color: #94a3b8;
+}
 
 #message {
     font-size: 0.72rem;
@@ -492,7 +528,9 @@ input:checked + .slider:before { transform: translateX(26px); }
 /* CAPTCHA — WITH REFRESH BUTTON */
 /*==============================================================================*/
 
-.captcha-area { display: none; }
+.captcha-area {
+    display: none;
+}
 
 .cap-in {
     position: relative;
@@ -514,7 +552,8 @@ input:checked + .slider:before { transform: translateX(26px); }
 }
 
 /* Shield icon */
-.cap-in > i, .cap-in > box-icon {
+.cap-in>i,
+.cap-in>box-icon {
     font-size: 1.05rem;
     color: #94a3b8;
     position: absolute;
@@ -537,7 +576,9 @@ input:checked + .slider:before { transform: translateX(26px); }
     z-index: 1;
 }
 
-.cap-in input::placeholder { color: #94a3b8; }
+.cap-in input::placeholder {
+    color: #94a3b8;
+}
 
 /* Right section: captcha text + refresh button */
 .captcha-right {
@@ -553,7 +594,7 @@ input:checked + .slider:before { transform: translateX(26px); }
     display: flex;
     align-items: center;
     padding: 0 10px;
-    font-family: 'Courier New', 'Courier', monospace;
+    font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 0.92rem;
     font-weight: 700;
     color: #1a2e44;
@@ -563,7 +604,9 @@ input:checked + .slider:before { transform: translateX(26px); }
     justify-content: center;
     /* Override old absolute positioning */
     position: static;
-    top: auto; right: auto; bottom: auto;
+    top: auto;
+    right: auto;
+    bottom: auto;
     width: auto;
     height: auto;
     background: transparent;
@@ -591,7 +634,8 @@ input:checked + .slider:before { transform: translateX(26px); }
 }
 
 /* Override bx icon inside button so it doesn't get the .cap-in > i absolute rule */
-.captcha-refresh-btn i, .captcha-refresh-btn box-icon {
+.captcha-refresh-btn i,
+.captcha-refresh-btn box-icon {
     font-size: 1.1rem;
     position: static !important;
     transform: none !important;
@@ -601,7 +645,8 @@ input:checked + .slider:before { transform: translateX(26px); }
     transition: transform 0.35s ease;
 }
 
-.captcha-refresh-btn:hover i, .captcha-refresh-btn:hover box-icon {
+.captcha-refresh-btn:hover i,
+.captcha-refresh-btn:hover box-icon {
     transform: rotate(180deg) !important;
 }
 
@@ -644,8 +689,13 @@ input:checked + .slider:before { transform: translateX(26px); }
     font-weight: 600;
 }
 
-.checkbox label a:hover { color: #1d4ed8; }
-.reload { display: none; }
+.checkbox label a:hover {
+    color: #1d4ed8;
+}
+
+.reload {
+    display: none;
+}
 
 
 /*==============================================================================*/
@@ -783,7 +833,9 @@ input:checked + .slider:before { transform: translateX(26px); }
     }
 
     /* Horizontal column */
-    .rak h1 { font-size: 4vw; }
+    .rak h1 {
+        font-size: 4vw;
+    }
 
     .digital-india-logo img,
     .nic-logo img {
@@ -791,7 +843,9 @@ input:checked + .slider:before { transform: translateX(26px); }
         max-width: 25vw;
     }
 
-    .intro h2 { font-size: 5vw; }
+    .intro h2 {
+        font-size: 5vw;
+    }
 
     .head {
         font-size: 1.6rem;
@@ -810,14 +864,20 @@ input:checked + .slider:before { transform: translateX(26px); }
         bottom: 4px;
     }
 
-    input:checked + .slider:before { transform: translateX(22px); }
+    input:checked+.slider:before {
+        transform: translateX(22px);
+    }
 
-    .checkbox label { font-size: 0.8rem; }
+    .checkbox label {
+        font-size: 0.8rem;
+    }
 
     .bottom-column h3 {
         font-size: 11px;
         text-align: center;
     }
 
-    #captcha-text { font-size: 0.85rem; }
+    #captcha-text {
+        font-size: 0.85rem;
+    }
 }

@@ -119,7 +119,6 @@ body { font-family: var(--sans); background: var(--neutral); color: var(--text);
 
 /* ── Section header ── */
 .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; }
-.section-titles {}
 .section-title-en { font-size: 18px; font-weight: 600; color: var(--text); letter-spacing: -0.2px; }
 .section-title-hi { font-size: 13px; font-family: var(--deva); color: var(--text3); margin-top: 2px; }
 

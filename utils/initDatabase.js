@@ -12,12 +12,16 @@ async function initDatabase() {
                 phone_no   VARCHAR(15)  NOT NULL
             );
         `);
+
+
+        // ── Refresh Tokens ───────────────────────────────────────────────────────
         await pool.query(`
-            CREATE TABLE IF NOT EXISTS user_sessions (
-                sid      VARCHAR NOT NULL,
-                sess     JSON NOT NULL,
-                expire   TIMESTAMP NOT NULL,
-                PRIMARY KEY (sid)
+            CREATE TABLE IF NOT EXISTS refresh_tokens (
+                id         INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+                token      TEXT NOT NULL,
+                user_id    INTEGER REFERENCES users(user_id) ON DELETE CASCADE,
+                expires_at TIMESTAMP NOT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
         `);
 
