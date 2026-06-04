@@ -419,8 +419,7 @@ window.submitEntry = async function (isDraft = false) {
         if (json.success) {
             showToast(currentEditId ? 'Entry updated successfully ✓' : (isDraft ? 'Draft saved ✓' : 'Entry saved successfully ✓'), 'success');
             clearForm();
-            currentEditId = null;
-            btn.textContent = 'Save & Forward';
+            fetchNextSerial(); // Add this so the UI updates to the next serial!
             await loadData();
             if (isDraft) {
                 showPage('pending');
@@ -723,12 +722,24 @@ window.selectLang = function (el) {
 
 // ── Utility ───────────────────────────────────────────────────────────────────
 window.clearForm = function () {
-    ['letterNo', 'subjectEn', 'officeName', 'specificPerson', 'addrCity', 'addrDistrict', 'addrBlock', 'addrPin', 'recByName', 'recByDsgn', 'recByDept', 'remarksEn']
+    ['letterNo', 'subjectEn', 'officeName', 'specificPerson', 'addrCity', 'addrDistrict', 'addrBlock', 'addrPin', 'addrState', 'recByName', 'recByDsgn', 'recByDept', 'remarksEn']
         .forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
     ['subjectHi', 'officeNameHi', 'specificPersonHi', 'recByNameHi', 'recByDsgnHi', 'recByDeptHi', 'remarksHi']
         .forEach(id => { const el = document.getElementById(id); if (el) el.textContent = '—'; });
+        
+    const today = new Date().toISOString().split('T')[0];
+    ['acquiredDate', 'letterDate'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = today;
+    });
+
     document.getElementById('zoneDisplay')?.classList.add('hidden');
     document.querySelectorAll('#modeRow .mode-opt').forEach((el, i) => el.classList.toggle('selected', i === 0));
+
+    currentEditId = null;
+    const btn = document.getElementById('submitBtn');
+    if (btn) btn.textContent = 'Save & Forward';
+
     showToast('Form cleared', 'info');
 };
 

@@ -187,10 +187,12 @@ async function comparePhoneNo() {
         console.error('Login Error:', error);
         alert(`Login failed: ${error.message}`);
     } finally {
-        // Reset button
-        if (loginBtn) {
-            loginBtn.textContent = originalText || 'Login';
-            loginBtn.disabled = false;
+        // Reset button only if not locked out
+        if (!localStorage.getItem('auth_lockout_time')) {
+            if (loginBtn) {
+                loginBtn.textContent = originalText || 'Login';
+                loginBtn.disabled = false;
+            }
         }
     }
 }
@@ -331,9 +333,11 @@ document.querySelector('.reg-btn button').addEventListener('click', async (e) =>
         console.error('REGISTRATION FAILED:', error);
         alert('Registration failed. Please try again.');
     } finally {
-        // Reset button
-        registerBtn.textContent = originalText;
-        registerBtn.disabled = false;
+        // Reset button only if not locked out
+        if (!localStorage.getItem('auth_lockout_time')) {
+            registerBtn.textContent = originalText;
+            registerBtn.disabled = false;
+        }
     }
 });
 

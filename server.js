@@ -132,6 +132,18 @@ async function startServer() {
         logger.info(`Server started`);
         logger.info(`DAK System running on http://localhost:${port}`);
     });
+
+    // Ping Translation API to keep HuggingFace space awake
+    function pingTranslator() {
+        logger.info('[WAKE-UP PING] Pinging translation API to keep it awake...');
+        safeFetch('translation', { body: { text: "ping" } })
+            .then(() => logger.info('[WAKE-UP PING] Translation API is awake!'))
+            .catch((err) => logger.warn(`[WAKE-UP PING] API ping issue: ${err.message}`));
+    }
+
+    // Ping on startup, then every 24 hours 
+    pingTranslator();
+    setInterval(pingTranslator, 24 * 60 * 60 * 1000);
 }
 
 startServer();

@@ -9,7 +9,7 @@ let accessToken = null;
 const AUTH = () => ({ 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + accessToken });
 
 const originalFetch = window.fetch;
-window.fetch = async function() {
+window.fetch = async function () {
     let response = await originalFetch.apply(this, arguments);
     if (response.status === 401) {
         // Access token expired or missing, try to refresh
@@ -145,8 +145,7 @@ window.submitEntry = async function (isDraft = false) {
         if (json.success) {
             showToast(currentEditId ? 'Entry updated successfully ✓' : (isDraft ? 'Draft saved ✓' : 'Entry saved successfully ✓'), 'success');
             clearForm();
-            currentEditId = null;
-            btn.textContent = 'Save & Submit';
+            fetchNextSerial(); // Add this so the UI updates to the next serial!
             await loadData();
             if (isDraft) {
                 showPage('pending');
@@ -237,8 +236,8 @@ document.addEventListener('DOMContentLoaded', function () {
                         method: 'POST',
                         headers: { 'Authorization': `Bearer ${accessToken}` }
                     });
-                } catch(e) {}
-            
+                } catch (e) { }
+
                 window.location.href = '/';
             }
         });
@@ -821,10 +820,34 @@ window.addCopyEntry = function () {
 // ── Utility: form helpers ─────────────────────────────────────────────────────
 window.clearForm = function () {
     ['letterNo', 'subjectEn', 'sentByName', 'sentByDsgn', 'sentByDept',
-        'sentToName', 'sentToAddr', 'remarksEn'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+        'sentToName', 'sentToAddr', 'sentToPin', 'sentToCity', 'sentToDistrict', 'sentToState', 'sentToZone', 'remarksEn']
+        .forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
     ['subjectHi', 'sentByNameHi', 'sentByDsgnHi', 'sentByDeptHi', 'sentToNameHi', 'sentToAddrHi', 'sentToZoneHi', 'remarksHi']
         .forEach(id => { const el = document.getElementById(id); if (el) el.textContent = '—'; });
+
+    const today = new Date().toISOString().split('T')[0];
+    ['despatchDate', 'letterDate'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = today;
+    });
+
     document.querySelectorAll('#modeRow .mode-opt').forEach((el, i) => { el.classList.toggle('selected', i === 0); });
+
+    for (let i = 1; i <= 8; i++) {
+        ['name', 'office', 'pin', 'city', 'district', 'state'].forEach(f => {
+            const el = document.getElementById(`c${i}${f}`);
+            if (el) el.value = '';
+        });
+        const hiEl = document.getElementById(`c${i}nameHi`);
+        if (hiEl) hiEl.textContent = 'नाम • कार्यालय • पता';
+        const zTag = document.getElementById(`c${i}zone`);
+        if (zTag) zTag.classList.remove('visible');
+    }
+
+    currentEditId = null;
+    const btn = document.getElementById('submitBtn');
+    if (btn) btn.textContent = 'Save & Submit';
+
     showToast('Form cleared', 'info');
 };
 
