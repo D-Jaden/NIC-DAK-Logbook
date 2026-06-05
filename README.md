@@ -392,6 +392,8 @@ npm install connect-pg-simple
 npm install pino
 npm install pino-pretty
 npm install joi
+npm install helmet
+npm install express-rate-limit
 ```
 
 **3. Create the PostgreSQL database**
