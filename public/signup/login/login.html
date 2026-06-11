@@ -71,6 +71,23 @@
                                         autocomplete="off" maxlength="10">
                                 </div>
 
+                                <div class="full-input-box">
+                                    <label class="field-label">Verification</label>
+                                    <div class="cap-in">
+                                        <box-icon name='ghost' color='#94a3b8' size='20px'></box-icon>
+                                        <input type="text" id="loginCaptchaInput" placeholder="Enter Captcha" required
+                                            maxlength="6">
+                                        <div class="captcha-right">
+                                            <span id="login-captcha-text"></span>
+                                            <button type="button" class="captcha-refresh-btn" id="loginRefreshCaptcha"
+                                                title="Refresh Captcha">
+                                                <box-icon name='refresh' color='#64748b' size='22px'
+                                                    class="refresh-icon"></box-icon>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
                                 <div class="below">
                                     <div class="log-btn">
                                         <button role="button" onclick="comparePhoneNo()">LOG IN</button>

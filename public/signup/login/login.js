@@ -124,17 +124,67 @@ document.addEventListener('DOMContentLoaded', () => {
 const loginBtnElement = document.querySelector('.log-btn button');
 if (loginBtnElement) loginBtnElement.disabled = true; // Initially disabled
 
-LphoneNumber.addEventListener('input', () => {
-    const isValid = /^\d{10,15}$/.test(LphoneNumber.value.trim());
+function validateLoginForm() {
+    const isValidPhone = /^\d{10,15}$/.test(LphoneNumber.value.trim());
+    const captchaInput = document.getElementById('loginCaptchaInput');
+    const captchaText = document.getElementById('login-captcha-text');
+    const isCaptchaValid = (captchaInput && captchaText) ? (captchaInput.value === captchaText.textContent) : false;
+    
     if (loginBtnElement) {
-        loginBtnElement.disabled = !isValid;
+        loginBtnElement.disabled = !(isValidPhone && isCaptchaValid);
     }
-});
+}
+
+LphoneNumber.addEventListener('input', validateLoginForm);
+
+//------------------------------LOGIN CAPTCHA GENERATION---------------------------//
+function generateLoginCaptcha() {
+    const characters = '!@#$&*-+AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz0123456789';
+    let captcha = '';
+    for (let i = 0; i < 6; i++) {
+        captcha += characters.charAt(Math.floor(Math.random() * characters.length));
+    }
+    const capText = document.getElementById('login-captcha-text');
+    if (capText) capText.textContent = captcha;
+}
+
+const loginRefreshCaptchaBtn = document.getElementById('loginRefreshCaptcha');
+if (loginRefreshCaptchaBtn) {
+    loginRefreshCaptchaBtn.addEventListener('click', function () {
+        generateLoginCaptcha();
+        document.getElementById('loginCaptchaInput').value = '';
+        validateLoginForm();
+    });
+}
+
+const loginCaptchaInputElem = document.getElementById('loginCaptchaInput');
+if (loginCaptchaInputElem) {
+    loginCaptchaInputElem.addEventListener('input', function () {
+        const userInput = this.value;
+        const captchaText = document.getElementById('login-captcha-text').textContent;
+        if (userInput === captchaText) {
+            this.style.borderColor = '#00ff00';
+        } else {
+            this.style.borderColor = '#ff0000';
+        }
+        validateLoginForm();
+    });
+}
 
 async function comparePhoneNo() {
     const phoneNumber = document.getElementById('loginphoneNo').value;
     if (!validNumber(phoneNumber)) {
         alert('Please enter a valid phone number (10-15 digits)');
+        return;
+    }
+
+    const captchaInput = document.getElementById('loginCaptchaInput').value;
+    const expectedCaptcha = document.getElementById('login-captcha-text').textContent;
+    if (captchaInput !== expectedCaptcha) {
+        alert('Incorrect Captcha! Please try again.');
+        generateLoginCaptcha();
+        document.getElementById('loginCaptchaInput').value = '';
+        validateLoginForm();
         return;
     }
 
@@ -214,8 +264,12 @@ document.getElementById('refreshCaptcha').addEventListener('click', function () 
 
 // Generate on page load
 generateCaptcha();
+generateLoginCaptcha();
 
-window.onload = generateCaptcha;
+window.onload = function() {
+    generateCaptcha();
+    generateLoginCaptcha();
+};
 
 document.getElementById('captchaInput').addEventListener('input', function () {
     const userInput = this.value;
