@@ -197,7 +197,7 @@ async function comparePhoneNo() {
     }
 
     try {
-        console.log('Attempting login with phone:', phoneNumber);
+        console.log('Attempting login with phone:', phoneNumber ? phoneNumber.slice(0, 2).padEnd(phoneNumber.length, '*') : '***');
 
         const response = await fetch('/users/login', {
             method: 'POST',
@@ -221,7 +221,7 @@ async function comparePhoneNo() {
         }
 
         const data = await response.json();
-        console.log('Login response:', data);
+        console.log('Login response:', data.success ? 'Success' : data.error || 'Failed');
 
         if (data.success && data.token) {
             console.log('Login successful, HttpOnly cookie set');
@@ -311,7 +311,7 @@ document.querySelector('.reg-btn button').addEventListener('click', async (e) =>
         phone_no: document.getElementById('registerphoneNo').value.trim(),
         agreed: document.getElementById('agreement').checked
     };
-    console.log("User Data:", userData);
+    console.log("User Data:", { ...userData, phone_no: userData.phone_no ? userData.phone_no.slice(0, 2).padEnd(userData.phone_no.length, '*') : '***' });
 
     if (!userData.first_name || !userData.last_name || !userData.phone_no) {
         alert('Please fill all required fields');
@@ -335,7 +335,7 @@ document.querySelector('.reg-btn button').addEventListener('click', async (e) =>
     registerBtn.disabled = true;
 
     try {
-        console.log('Attempting registration:', userData);
+        console.log('Attempting registration:', { ...userData, phone_no: userData.phone_no ? userData.phone_no.slice(0, 2).padEnd(userData.phone_no.length, '*') : '***' });
 
         const response = await fetch('/users/register', {
             method: 'POST',
@@ -359,7 +359,7 @@ document.querySelector('.reg-btn button').addEventListener('click', async (e) =>
         }
 
         const result = await response.json();
-        console.log('Registration response:', result);
+        console.log('Registration response:', result.success ? 'Success' : result.error || 'Failed');
 
         if (response.ok && result.success) {
             console.log('Registration successful, HttpOnly cookie set');

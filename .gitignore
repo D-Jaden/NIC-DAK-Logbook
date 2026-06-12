@@ -34,3 +34,11 @@ Thumbs.db
 .idea/
 *.swp
 *.swo.history/
+
+.history/
+
+test_bhashini.js
+config/whitelistedAPIs.js
+test_db.js
+test_stats_auth.js
+test-pin.js

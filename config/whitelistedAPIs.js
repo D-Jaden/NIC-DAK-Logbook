@@ -1,9 +1,15 @@
 require('@dotenvx/dotenvx').config();
 
 const WHITELISTED_APIS = {
+  translation_config: {
+    name: 'Bhashini Pipeline Config',
+    url: 'https://meity-auth.ulcacontrib.org/ulca/apis/v0/model/getModelsPipeline',
+    method: 'POST',
+    timeout: 30000
+  },
   translation: {
-    name: 'HuggingFace Translator',
-    url: process.env.HF_TRANSLATE_URL || 'https://d-jaden02-pys-deep-transalator.hf.space/translate',
+    name: 'Bhashini Translator (Anuvaad)',
+    url: 'https://dhruva-api.bhashini.gov.in/services/inference/pipeline',
     method: 'POST',
     timeout: 30000
   },

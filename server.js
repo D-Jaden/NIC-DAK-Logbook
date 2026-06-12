@@ -64,17 +64,51 @@ app.use('/api/acquired', authenticateJWT, acquiredRoutes);
 const { safeFetch } = require('./utils/safeHttpClient');
 const { getWhitelistedAPI } = require('./config/whitelistedAPIs');
 
+let bhashiniServiceId = null;
+
 app.post('/api/translate', validate(translateSchema), async (req, res) => {
     const { text } = req.body;
     if (!text || !text.trim()) return res.json({ translation: '' });
+    
+    if (!bhashiniServiceId) {
+        logger.warn('[translate proxy] Bhashini serviceId not ready. Returning original text.');
+        return res.json({ translation: text });
+    }
+    
     try {
         const data = await safeFetch('translation', {
             method: 'POST',
-            body: { text: text.trim(), src: 'en', tgt: 'hi' }
+            headers: {
+                'Authorization': process.env.INFERENCE_API_KEY
+            },
+            body: {
+                "pipelineTasks": [
+                    {
+                        "taskType": "translation",
+                        "config": {
+                            "language": {
+                                "sourceLanguage": "en",
+                                "targetLanguage": "hi"
+                            },
+                            "serviceId": bhashiniServiceId
+                        }
+                    }
+                ],
+                "inputData": {
+                    "input": [
+                        { "source": text.trim() }
+                    ]
+                }
+            }
         });
-        res.json({ translation: data.translated_text || data.translation || text });
+        
+        let translatedText = text;
+        if (data && data.pipelineResponse && data.pipelineResponse[0] && data.pipelineResponse[0].output && data.pipelineResponse[0].output[0]) {
+            translatedText = data.pipelineResponse[0].output[0].target;
+        }
+        res.json({ translation: translatedText });
     } catch (err) {
-        logger.error('[translate proxy]', err.message);
+        logger.error('[translate proxy] ' + err.message);
         res.json({ translation: text });
     }
 });
@@ -133,17 +167,44 @@ async function startServer() {
         logger.info(`DAK System running on http://localhost:${port}`);
     });
 
-    // Ping Translation API to keep HuggingFace space awake
-    function pingTranslator() {
-        logger.info('[WAKE-UP PING] Pinging translation API to keep it awake...');
-        safeFetch('translation', { body: { text: "ping" } })
-            .then(() => logger.info('[WAKE-UP PING] Translation API is awake!'))
-            .catch((err) => logger.warn(`[WAKE-UP PING] API ping issue: ${err.message}`));
+    // Initialize Bhashini Translation Pipeline
+    async function initTranslator() {
+        logger.info('[BHASHINI INIT] Fetching pipeline configuration...');
+        try {
+            const data = await safeFetch('translation_config', {
+                method: 'POST',
+                headers: {
+                    'userID': process.env.USER_ID,
+                    'ulcaApiKey': process.env.UDYAT_API_KEY
+                },
+                body: {
+                    "pipelineTasks": [
+                        {
+                            "taskType": "translation",
+                            "config": {
+                                "language": { "sourceLanguage": "en", "targetLanguage": "hi" }
+                            }
+                        }
+                    ],
+                    "pipelineRequestConfig": {
+                        "pipelineId": "64392f96daac500b55c543cd"
+                    }
+                }
+            });
+            
+            if (data && data.pipelineResponseConfig && data.pipelineResponseConfig[0] && data.pipelineResponseConfig[0].config && data.pipelineResponseConfig[0].config[0]) {
+                bhashiniServiceId = data.pipelineResponseConfig[0].config[0].serviceId;
+                logger.info(`[BHASHINI INIT] Successfully retrieved serviceId: ${bhashiniServiceId}`);
+            } else {
+                logger.warn('[BHASHINI INIT] Could not parse serviceId from response.');
+            }
+        } catch (err) {
+            logger.error(`[BHASHINI INIT] Failed to fetch pipeline config: ${err.message}`);
+        }
     }
 
-    // Ping on startup, then every 24 hours 
-    pingTranslator();
-    setInterval(pingTranslator, 24 * 60 * 60 * 1000);
+    // Fetch config on startup
+    initTranslator();
 }
 
 startServer();

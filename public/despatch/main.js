@@ -657,8 +657,6 @@ window.exportReportsPDF = function () {
 }
 
 // ── Utility: translation ──────────────────────────────────────────────────────
-// Translation logic has been moved to /shared/translations.js
-
 // ── Utility: mode toggle ──────────────────────────────────────────────────────
 window.toggleMode = function (el) {
     const row = document.getElementById('modeRow');

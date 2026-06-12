@@ -1,7 +1,7 @@
 // ─────────────────────────────────────────────
 //  shared/translations.js
 //  Debounced translation dispatcher.
-//  Calls the HuggingFace-backed /api/translate
+//  Calls the ANUVAAD-backed /api/translate
 //  endpoint; falls back to a static map offline.
 // ─────────────────────────────────────────────
 
